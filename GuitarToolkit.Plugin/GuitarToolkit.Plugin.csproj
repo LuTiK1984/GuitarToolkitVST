@@ -18,4 +18,33 @@
     <ProjectReference Include="..\GuitarToolkit.UI\GuitarToolkit.UI.csproj" />
   </ItemGroup>
 
+  <!-- После сборки: копируем и переименовываем бридж-файлы в output -->
+  <Target Name="CopyBridgeFiles" AfterTargets="Build">
+    <PropertyGroup>
+      <NuGetCache>$(UserProfile)\.nuget\packages</NuGetCache>
+      <Vst3Source>$(NuGetCache)\audioplugsharpvst3\0.7.9\contentFiles\vst</Vst3Source>
+      <WpfSource>$(NuGetCache)\audioplugssharpwpf\0.7.9</WpfSource>
+    </PropertyGroup>
+
+    <!-- AudioPlugSharpVst.vst3 → GuitarToolkit.PluginBridge.vst3 -->
+    <Copy SourceFiles="$(Vst3Source)\AudioPlugSharpVst.vst3"
+          DestinationFiles="$(OutputPath)GuitarToolkit.PluginBridge.vst3"
+          SkipUnchangedFiles="true"
+          Condition="Exists('$(Vst3Source)\AudioPlugSharpVst.vst3')" />
+
+    <!-- Ijwhost.dll -->
+    <Copy SourceFiles="$(Vst3Source)\Ijwhost.dll"
+          DestinationFolder="$(OutputPath)"
+          SkipUnchangedFiles="true"
+          Condition="Exists('$(Vst3Source)\Ijwhost.dll')" />
+
+    <!-- runtimeconfig для WPF-плагина -->
+    <ItemGroup>
+      <RuntimeConfig Include="$(OutputPath)GuitarToolkit.PluginBridge.runtimeconfig.json" />
+    </ItemGroup>
+    <WriteLinesToFile File="$(OutputPath)GuitarToolkit.PluginBridge.runtimeconfig.json"
+                     Overwrite="true"
+                     Lines='{"runtimeOptions":{"tfm":"net8.0","frameworks":[{"name":"Microsoft.NETCore.App","version":"8.0.0"},{"name":"Microsoft.WindowsDesktop.App","version":"8.0.0"}]}}' />
+  </Target>
+
 </Project>

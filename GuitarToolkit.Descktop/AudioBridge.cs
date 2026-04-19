@@ -54,7 +54,30 @@ public class AudioBridge : IAudioPlayback, IDisposable
         }
         return devices;
     }
+    /// <summary>
+    /// Постоянный аудиопоток метронома для микшера NAudio.
+    /// </summary>
+    private class MetronomeProvider : ISampleProvider
+    {
+        private readonly MetronomeEngine _engine;
+        public WaveFormat WaveFormat { get; }
 
+        public MetronomeProvider(MetronomeEngine engine, int sampleRate)
+        {
+            _engine = engine;
+            WaveFormat = WaveFormat.CreateIeeeFloatWaveFormat(sampleRate, 1);
+        }
+
+        public int Read(float[] buffer, int offset, int count)
+        {
+            // Очищаем буфер и заполняем метрономом
+            Array.Clear(buffer, offset, count);
+            float[] temp = new float[count];
+            _engine.ProcessBlock(temp, count);
+            Array.Copy(temp, 0, buffer, offset, count);
+            return count;
+        }
+    }
     // ── Конструктор ──────────────────────────────────────────
     public AudioBridge()
     {
@@ -67,6 +90,8 @@ public class AudioBridge : IAudioPlayback, IDisposable
         _waveOut = new WaveOutEvent { DesiredLatency = 100 };
         _waveOut.Init(_mixer);
         _waveOut.Play();
+        // Метроном — постоянный поток в микшере
+        _mixer.AddMixerInput(new MetronomeProvider(Metronome, SampleRate));
     }
 
     // ── Управление входом ────────────────────────────────────
@@ -110,29 +135,6 @@ public class AudioBridge : IAudioPlayback, IDisposable
         }
 
         Tuner.ProcessSamples(samples, count);
-
-        // Метроном — генерируем и воспроизводим через микшер
-        if (Metronome.IsRunning)
-        {
-            float[] metroBuf = new float[count];
-            Metronome.ProcessBlock(metroBuf, count);
-
-            // Проверяем есть ли реальные сэмплы
-            bool hasSound = false;
-            for (int i = 0; i < count; i++)
-            {
-                if (MathF.Abs(metroBuf[i]) > 0.001f) { hasSound = true; break; }
-            }
-
-            if (hasSound)
-            {
-                byte[] bytes = new byte[metroBuf.Length * 4];
-                Buffer.BlockCopy(metroBuf, 0, bytes, 0, bytes.Length);
-                var provider = new RawSourceWaveStream(bytes, 0, bytes.Length, Format)
-                    .ToSampleProvider();
-                _mixer?.AddMixerInput(provider);
-            }
-        }
     }
 
     // ── Очистка ──────────────────────────────────────────────
