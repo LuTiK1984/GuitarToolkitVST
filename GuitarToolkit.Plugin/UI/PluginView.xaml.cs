@@ -10,5 +10,6 @@ public partial class PluginView : UserControl
 
         TunerTab.Initialize(plugin.Tuner);
         MetronomeTab.Initialize(plugin.Metronome);
+        ChordTab.Initialize(plugin);
     }
 }

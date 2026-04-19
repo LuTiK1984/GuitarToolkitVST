@@ -19,6 +19,15 @@ public class GuitarToolkitPlugin : AudioPluginWPF
     public TunerEngine Tuner { get; private set; } = null!;
     public MetronomeEngine Metronome { get; private set; } = null!;
 
+    private float[]? _chordBuffer;
+    private int _chordPos;
+
+    public void PlayChordSamples(float[] samples)
+    {
+        _chordBuffer = samples;
+        _chordPos = 0;
+    }
+
     public GuitarToolkitPlugin()
     {
         Company = "";
@@ -93,6 +102,20 @@ public class GuitarToolkitPlugin : AudioPluginWPF
             {
                 outL[i] += metroBuf[i];
                 outR[i] += metroBuf[i];
+            }
+        }
+        catch { }
+
+        // 4. Воспроизведение аккорда
+        try
+        {
+            if (_chordBuffer != null && _chordPos < _chordBuffer.Length)
+            {
+                for (int i = 0; i < len && _chordPos < _chordBuffer.Length; i++, _chordPos++)
+                {
+                    outL[i] += _chordBuffer[_chordPos];
+                    outR[i] += _chordBuffer[_chordPos];
+                }
             }
         }
         catch { }

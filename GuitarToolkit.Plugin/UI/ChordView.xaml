@@ -1,0 +1,67 @@
+<UserControl x:Class="GuitarToolkit.Plugin.UI.ChordView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Background="#1E1E2E">
+
+    <Grid Margin="24">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- ЛЕВАЯ ЧАСТЬ — Диаграмма аккорда -->
+        <StackPanel Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center"
+                    Margin="20 0 40 0">
+
+            <!-- Название аккорда -->
+            <TextBlock x:Name="ChordNameLabel" Text="C"
+                       FontSize="48" FontWeight="Bold" Foreground="#CDD6F4"
+                       HorizontalAlignment="Center" Margin="0 0 0 16"/>
+
+            <!-- Диаграмма (рисуется программно) -->
+            <Canvas x:Name="DiagramCanvas"
+                    Width="200" Height="250"
+                    Background="Transparent"
+                    HorizontalAlignment="Center"/>
+
+            <!-- Кнопка воспроизведения -->
+            <Button x:Name="PlayButton" Content="♪  Воспроизвести"
+                    Height="40" FontSize="14" FontWeight="Bold"
+                    Foreground="#1E1E2E" Background="#89B4FA"
+                    BorderThickness="0" Cursor="Hand"
+                    Margin="0 16 0 0" Width="200"
+                    Click="PlayButton_Click"/>
+        </StackPanel>
+
+        <!-- ПРАВАЯ ЧАСТЬ — Выбор -->
+        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+
+            <!-- Выбор тоники -->
+            <TextBlock Text="Тоника" FontSize="14" Foreground="#6C7086"
+                       Margin="0 0 0 8"/>
+            <ItemsControl x:Name="RootSelector">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapPanel/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+            </ItemsControl>
+
+            <!-- Выбор типа -->
+            <TextBlock Text="Тип аккорда" FontSize="14" Foreground="#6C7086"
+                       Margin="0 24 0 8"/>
+            <ItemsControl x:Name="TypeSelector">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapPanel/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+            </ItemsControl>
+
+            <!-- Подсказка -->
+            <TextBlock x:Name="InfoLabel"
+                       Text="" FontSize="13" Foreground="#6C7086"
+                       Margin="0 24 0 0" TextWrapping="Wrap"/>
+        </StackPanel>
+    </Grid>
+</UserControl>

@@ -27,19 +27,11 @@
         </TabItem>
 
         <TabItem Header="🎵 Аккорды">
-            <Grid>
-                <TextBlock Text="Справочник аккордов — в разработке"
-                           Foreground="#6C7086" FontSize="18"
-                           HorizontalAlignment="Center" VerticalAlignment="Center"/>
-            </Grid>
+            <local:ChordView x:Name="ChordTab"/>
         </TabItem>
 
         <TabItem Header="🎼 Гаммы">
-            <Grid>
-                <TextBlock Text="Визуализатор грифа — в разработке"
-                           Foreground="#6C7086" FontSize="18"
-                           HorizontalAlignment="Center" VerticalAlignment="Center"/>
-            </Grid>
+            <local:FretboardView x:Name="FretboardTab"/>
         </TabItem>
 
     </TabControl>
