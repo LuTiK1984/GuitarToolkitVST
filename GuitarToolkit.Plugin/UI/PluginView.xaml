@@ -5,6 +5,7 @@
              Background="#1A1525">
 
     <UserControl.Resources>
+        
         <Style TargetType="TabItem">
             <Setter Property="Foreground" Value="#CDD6F4"/>
             <Setter Property="FontSize" Value="13"/>
@@ -17,6 +18,7 @@
                                           HorizontalAlignment="Left"
                                           VerticalAlignment="Center"/>
                         </Border>
+                        
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsSelected" Value="True">
                                 <Setter TargetName="Bd" Property="Background" Value="#CBA6F7"/>
@@ -33,6 +35,91 @@
         </Style>
         <Style TargetType="TextBlock">
             <Setter Property="Foreground" Value="#CDD6F4"/>
+        </Style>
+        <!-- Кнопка-переключатель внутри ComboBox -->
+        <ControlTemplate x:Key="ComboToggle" TargetType="ToggleButton">
+            <Border x:Name="Bd" Background="#4A3860" CornerRadius="6"
+            Padding="10 6" BorderThickness="0">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition Width="20"/>
+                    </Grid.ColumnDefinitions>
+                    <ContentPresenter Grid.Column="0"
+                              HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                    <TextBlock Grid.Column="1" Text="▾" FontSize="14"
+                       Foreground="#CDD6F4" VerticalAlignment="Center"
+                       HorizontalAlignment="Center"/>
+                </Grid>
+            </Border>
+            <ControlTemplate.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter TargetName="Bd" Property="Background" Value="#5A4870"/>
+                </Trigger>
+            </ControlTemplate.Triggers>
+        </ControlTemplate>
+
+        <!-- ComboBox -->
+        <Style TargetType="ComboBox">
+            <Setter Property="Foreground" Value="#CDD6F4"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ComboBox">
+                        <Grid>
+                            <ToggleButton Template="{StaticResource ComboToggle}"
+                                  IsChecked="{Binding IsDropDownOpen, Mode=TwoWay,
+                                              RelativeSource={RelativeSource TemplatedParent}}"
+                                  Focusable="False" ClickMode="Press"/>
+                            <ContentPresenter IsHitTestVisible="False"
+                                      Content="{TemplateBinding SelectionBoxItem}"
+                                      ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"
+                                      Margin="12 6 28 6"
+                                      VerticalAlignment="Center"
+                                      HorizontalAlignment="Left"/>
+                            <Popup IsOpen="{TemplateBinding IsDropDownOpen}"
+                           Placement="Bottom" AllowsTransparency="True"
+                           Focusable="False" PopupAnimation="Slide">
+                                <Border Background="#2D2240" CornerRadius="6"
+                                BorderBrush="#4A3860" BorderThickness="1"
+                                Padding="4" Margin="0 4 0 0">
+                                    <ScrollViewer MaxHeight="300">
+                                        <StackPanel IsItemsHost="True"/>
+                                    </ScrollViewer>
+                                </Border>
+                            </Popup>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Пункты выпадашки -->
+        <Style TargetType="ComboBoxItem">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="#CDD6F4"/>
+            <Setter Property="Padding" Value="10 7"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ComboBoxItem">
+                        <Border x:Name="Bd" Background="{TemplateBinding Background}"
+                        CornerRadius="4" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsHighlighted" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="#CBA6F7"/>
+                                <Setter Property="Foreground" Value="#1A1525"/>
+                            </Trigger>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="#4A3860"/>
+                                <Setter Property="Foreground" Value="#CBA6F7"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
         </Style>
     </UserControl.Resources>
 
