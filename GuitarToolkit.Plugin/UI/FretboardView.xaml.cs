@@ -17,14 +17,14 @@ public partial class FretboardView : UserControl
 
     // Цвета
     private static readonly Color RootColor = Color.FromRgb(166, 227, 161);    // зелёный
-    private static readonly Color NoteColor = Color.FromRgb(137, 180, 250);    // голубой
+    private static readonly Color NoteColor = Color.FromRgb(203, 166, 247);    // голубой
     private static readonly Color TextDark = Color.FromRgb(30, 30, 46);
     private static readonly Color TextLight = Color.FromRgb(205, 214, 244);
-    private static readonly Color FretColor = Color.FromRgb(88, 91, 112);
+    private static readonly Color FretColor = Color.FromRgb(90, 72, 110);
     private static readonly Color StringCol = Color.FromRgb(166, 173, 200);
-    private static readonly Color ActiveBg = Color.FromRgb(137, 180, 250);
-    private static readonly Color InactiveBg = Color.FromRgb(69, 71, 90);
-    private static readonly Color MarkerColor = Color.FromRgb(49, 50, 68);
+    private static readonly Color ActiveBg = Color.FromRgb(203, 166, 247);
+    private static readonly Color InactiveBg = Color.FromRgb(74, 56, 96);
+    private static readonly Color MarkerColor = Color.FromRgb(45, 34, 64);
 
     // Настройки грифа
     private const int FretCount = 15;

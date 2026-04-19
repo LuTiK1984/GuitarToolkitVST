@@ -37,9 +37,9 @@ public partial class MetronomeView : UserControl
             var dot = new Ellipse
             {
                 Width = 28, Height = 28,
-                Fill = new SolidColorBrush(Color.FromRgb(49, 50, 68)),
+                Fill = new SolidColorBrush(Color.FromRgb(45, 34, 64)),
                 Margin = new Thickness(6),
-                Stroke = new SolidColorBrush(Color.FromRgb(108, 112, 134)),
+                Stroke = new SolidColorBrush(Color.FromRgb(124, 111, 150)),
                 StrokeThickness = 1
             };
             _dots.Add(dot);
@@ -55,14 +55,14 @@ public partial class MetronomeView : UserControl
             {
                 // Сбрасываем все кружки
                 for (int i = 0; i < _dots.Count; i++)
-                    _dots[i].Fill = new SolidColorBrush(Color.FromRgb(49, 50, 68));
+                    _dots[i].Fill = new SolidColorBrush(Color.FromRgb(45, 34, 64));
 
                 // Подсвечиваем текущую долю
                 if (beatIndex < _dots.Count)
                 {
                     _dots[beatIndex].Fill = beatIndex == 0
                         ? new SolidColorBrush(Color.FromRgb(166, 227, 161))  // акцент — зелёный
-                        : new SolidColorBrush(Color.FromRgb(137, 180, 250)); // обычная — голубой
+                        : new SolidColorBrush(Color.FromRgb(203, 166, 247)); // обычная — голубой
                 }
             });
         }
@@ -132,7 +132,7 @@ public partial class MetronomeView : UserControl
 
             // Сбрасываем кружки
             foreach (var d in _dots)
-                d.Fill = new SolidColorBrush(Color.FromRgb(49, 50, 68));
+                d.Fill = new SolidColorBrush(Color.FromRgb(45, 34, 64));
         }
         else
         {

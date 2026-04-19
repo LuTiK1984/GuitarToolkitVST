@@ -1,7 +1,7 @@
 <UserControl x:Class="GuitarToolkit.Plugin.UI.ChordView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             Background="#1E1E2E">
+             Background="#1A1525">
 
     <Grid Margin="24">
         <Grid.ColumnDefinitions>
@@ -27,7 +27,7 @@
             <!-- Кнопка воспроизведения -->
             <Button x:Name="PlayButton" Content="♪  Воспроизвести"
                     Height="40" FontSize="14" FontWeight="Bold"
-                    Foreground="#1E1E2E" Background="#89B4FA"
+                    Foreground="#1A1525" Background="#CBA6F7"
                     BorderThickness="0" Cursor="Hand"
                     Margin="0 16 0 0" Width="200"
                     Click="PlayButton_Click"/>
@@ -37,7 +37,7 @@
         <StackPanel Grid.Column="1" VerticalAlignment="Center">
 
             <!-- Выбор тоники -->
-            <TextBlock Text="Тоника" FontSize="14" Foreground="#6C7086"
+            <TextBlock Text="Тоника" FontSize="14" Foreground="#7C6F96"
                        Margin="0 0 0 8"/>
             <ItemsControl x:Name="RootSelector">
                 <ItemsControl.ItemsPanel>
@@ -48,7 +48,7 @@
             </ItemsControl>
 
             <!-- Выбор типа -->
-            <TextBlock Text="Тип аккорда" FontSize="14" Foreground="#6C7086"
+            <TextBlock Text="Тип аккорда" FontSize="14" Foreground="#7C6F96"
                        Margin="0 24 0 8"/>
             <ItemsControl x:Name="TypeSelector">
                 <ItemsControl.ItemsPanel>
@@ -60,7 +60,7 @@
 
             <!-- Подсказка -->
             <TextBlock x:Name="InfoLabel"
-                       Text="" FontSize="13" Foreground="#6C7086"
+                       Text="" FontSize="13" Foreground="#7C6F96"
                        Margin="0 24 0 0" TextWrapping="Wrap"/>
         </StackPanel>
     </Grid>

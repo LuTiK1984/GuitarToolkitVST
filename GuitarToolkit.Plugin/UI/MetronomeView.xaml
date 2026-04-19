@@ -1,7 +1,7 @@
 <UserControl x:Class="GuitarToolkit.Plugin.UI.MetronomeView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             Background="#1E1E2E">
+             Background="#1A1525">
 
     <Grid>
         <Grid.ColumnDefinitions>
@@ -16,7 +16,7 @@
             <TextBlock x:Name="BpmDisplay" Text="120"
                        FontSize="72" FontWeight="Bold" Foreground="#CDD6F4"
                        HorizontalAlignment="Center" Margin="0 0 0 8"/>
-            <TextBlock Text="BPM" FontSize="14" Foreground="#6C7086"
+            <TextBlock Text="BPM" FontSize="14" Foreground="#7C6F96"
                        HorizontalAlignment="Center" Margin="0 0 0 24"/>
 
             <!-- Индикаторы долей — кружки -->
@@ -33,7 +33,7 @@
         <StackPanel Grid.Column="1" VerticalAlignment="Center" Width="300">
 
             <!-- BPM слайдер -->
-            <TextBlock Text="Темп" FontSize="14" Foreground="#6C7086"
+            <TextBlock Text="Темп" FontSize="14" Foreground="#7C6F96"
                        HorizontalAlignment="Center" Margin="0 0 0 4"/>
             <Slider x:Name="BpmSlider"
                     Minimum="30" Maximum="300" Value="120"
@@ -41,12 +41,12 @@
                     ValueChanged="BpmSlider_ValueChanged"
                     Margin="0 0 0 4"/>
             <Grid Margin="0 0 0 20">
-                <TextBlock Text="30" Foreground="#6C7086" FontSize="11" HorizontalAlignment="Left"/>
-                <TextBlock Text="300" Foreground="#6C7086" FontSize="11" HorizontalAlignment="Right"/>
+                <TextBlock Text="30" Foreground="#7C6F96" FontSize="11" HorizontalAlignment="Left"/>
+                <TextBlock Text="300" Foreground="#7C6F96" FontSize="11" HorizontalAlignment="Right"/>
             </Grid>
 
             <!-- Громкость -->
-            <TextBlock Text="Громкость" FontSize="14" Foreground="#6C7086"
+            <TextBlock Text="Громкость" FontSize="14" Foreground="#7C6F96"
                        HorizontalAlignment="Center" Margin="0 0 0 4"/>
             <Slider x:Name="VolumeSlider"
                     Minimum="0" Maximum="1" Value="0.8"
@@ -59,25 +59,25 @@
                 <TextBlock Text="Долей в такте:" Foreground="#CDD6F4"
                            VerticalAlignment="Center" Margin="0 0 12 0"/>
                 <Button Content="−" Width="36" Height="36" Click="DecrBeats_Click"
-                        FontSize="18" Background="#45475A" Foreground="#CDD6F4" BorderThickness="0"/>
+                        FontSize="18" Background="#4A3860" Foreground="#CDD6F4" BorderThickness="0"/>
                 <TextBlock x:Name="BeatsLabel" Text="4"
-                           FontSize="22" FontWeight="Bold" Foreground="#89B4FA"
+                           FontSize="22" FontWeight="Bold" Foreground="#CBA6F7"
                            VerticalAlignment="Center" Margin="16 0"/>
                 <Button Content="+" Width="36" Height="36" Click="IncrBeats_Click"
-                        FontSize="18" Background="#45475A" Foreground="#CDD6F4" BorderThickness="0"/>
+                        FontSize="18" Background="#4A3860" Foreground="#CDD6F4" BorderThickness="0"/>
             </StackPanel>
 
             <!-- Tap Tempo -->
             <Button x:Name="TapButton" Content="TAP TEMPO"
                     Height="48" FontSize="16" FontWeight="Bold"
-                    Foreground="#1E1E2E" Background="#89B4FA"
+                    Foreground="#1A1525" Background="#CBA6F7"
                     BorderThickness="0" Cursor="Hand"
                     Margin="0 0 0 12" Click="TapButton_Click"/>
 
             <!-- Старт / Стоп -->
             <Button x:Name="StartStopButton" Content="▶  СТАРТ"
                     Height="48" FontSize="16" FontWeight="Bold"
-                    Foreground="#1E1E2E" Background="#A6E3A1"
+                    Foreground="#1A1525" Background="#A6E3A1"
                     BorderThickness="0" Cursor="Hand"
                     Click="StartStop_Click"/>
         </StackPanel>

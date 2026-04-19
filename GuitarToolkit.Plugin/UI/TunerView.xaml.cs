@@ -80,8 +80,8 @@ public partial class TunerView : UserControl
         else
         {
             InTuneLabel.Text = cents > 0 ? "▼  Понизь" : "▲  Повысь";
-            InTuneLabel.Foreground = new SolidColorBrush(Color.FromRgb(137, 180, 250));
-            InTuneIndicator.Background = new SolidColorBrush(Color.FromRgb(40, 42, 54));
+            InTuneLabel.Foreground = new SolidColorBrush(Color.FromRgb(203, 166, 247));
+            InTuneIndicator.Background = new SolidColorBrush(Color.FromRgb(52, 38, 70));
         }
 
         HighlightClosestString(note);
@@ -130,7 +130,7 @@ public partial class TunerView : UserControl
             {
                 Width = 56, Height = 56, Margin = new Thickness(4),
                 CornerRadius = new CornerRadius(6),
-                Background = new SolidColorBrush(Color.FromRgb(49, 50, 68)),
+                Background = new SolidColorBrush(Color.FromRgb(45, 34, 64)),
                 Tag = strings[i]
             };
 
@@ -138,7 +138,7 @@ public partial class TunerView : UserControl
             stack.Children.Add(new TextBlock
             {
                 Text = $"{strNum}", FontSize = 10,
-                Foreground = new SolidColorBrush(Color.FromRgb(108, 112, 134)),
+                Foreground = new SolidColorBrush(Color.FromRgb(124, 111, 150)),
                 HorizontalAlignment = HorizontalAlignment.Center
             });
             stack.Children.Add(new TextBlock
@@ -164,10 +164,10 @@ public partial class TunerView : UserControl
 
             b.Background = match
                 ? new SolidColorBrush(Color.FromRgb(30, 60, 80))
-                : new SolidColorBrush(Color.FromRgb(49, 50, 68));
+                : new SolidColorBrush(Color.FromRgb(45, 34, 64));
             b.BorderThickness = new Thickness(match ? 2 : 0);
             b.BorderBrush = match
-                ? new SolidColorBrush(Color.FromRgb(137, 180, 250))
+                ? new SolidColorBrush(Color.FromRgb(203, 166, 247))
                 : Brushes.Transparent;
         }
     }

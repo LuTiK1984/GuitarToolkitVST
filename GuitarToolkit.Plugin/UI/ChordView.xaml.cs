@@ -19,12 +19,12 @@ public partial class ChordView : UserControl
     private readonly List<Button> _typeButtons = new();
 
     // Цвета
-    private static readonly Color ActiveBg = Color.FromRgb(137, 180, 250);    // #89B4FA
-    private static readonly Color InactiveBg = Color.FromRgb(69, 71, 90);     // #45475A
+    private static readonly Color ActiveBg = Color.FromRgb(203, 166, 247);    // #CBA6F7
+    private static readonly Color InactiveBg = Color.FromRgb(74, 56, 96);     // #4A3860
     private static readonly Color TextLight = Color.FromRgb(205, 214, 244);   // #CDD6F4
-    private static readonly Color TextDark = Color.FromRgb(30, 30, 46);       // #1E1E2E
+    private static readonly Color TextDark = Color.FromRgb(30, 30, 46);       // #1A1525
     private static readonly Color StringColor = Color.FromRgb(166, 173, 200); // #A6ADC8
-    private static readonly Color DotColor = Color.FromRgb(137, 180, 250);
+    private static readonly Color DotColor = Color.FromRgb(203, 166, 247);
     private static readonly Color MutedColor = Color.FromRgb(243, 139, 168);  // #F38BA8
 
     // Отображение типов
@@ -212,7 +212,7 @@ public partial class ChordView : UserControl
             {
                 X1 = leftPad, Y1 = y,
                 X2 = leftPad + gridW, Y2 = y,
-                Stroke = new SolidColorBrush(Color.FromRgb(88, 91, 112)),
+                Stroke = new SolidColorBrush(Color.FromRgb(90, 72, 110)),
                 StrokeThickness = f == 0 && chord.BaseFret > 1 ? 2 : 1
             };
             DiagramCanvas.Children.Add(line);
@@ -331,7 +331,7 @@ public partial class ChordView : UserControl
             {
                 Text = stringNames[s],
                 FontSize = 11,
-                Foreground = new SolidColorBrush(Color.FromRgb(108, 112, 134))
+                Foreground = new SolidColorBrush(Color.FromRgb(124, 111, 150))
             };
             Canvas.SetLeft(label, x - 4);
             Canvas.SetTop(label, topPad + gridH + 4);

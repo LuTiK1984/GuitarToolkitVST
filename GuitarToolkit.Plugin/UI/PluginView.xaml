@@ -2,21 +2,41 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="clr-namespace:GuitarToolkit.Plugin.UI"
-             Background="#1E1E2E">
+             Background="#1A1525">
 
     <UserControl.Resources>
         <Style TargetType="TabItem">
             <Setter Property="Foreground" Value="#CDD6F4"/>
-            <Setter Property="Background" Value="#313244"/>
             <Setter Property="FontSize" Value="13"/>
-            <Setter Property="Padding" Value="14 10"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TabItem">
+                        <Border x:Name="Bd" Background="#2D2240"
+                            Padding="14 10" Margin="2" CornerRadius="6">
+                            <ContentPresenter ContentSource="Header"
+                                          HorizontalAlignment="Left"
+                                          VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="#CBA6F7"/>
+                                <Setter Property="Foreground" Value="#1A1525"/>
+                                <Setter Property="FontWeight" Value="Bold"/>
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="#4A3860"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
         </Style>
         <Style TargetType="TextBlock">
             <Setter Property="Foreground" Value="#CDD6F4"/>
         </Style>
     </UserControl.Resources>
 
-    <TabControl Background="#1E1E2E" BorderThickness="0" TabStripPlacement="Left">
+    <TabControl Background="#1A1525" BorderThickness="0" TabStripPlacement="Left">
 
         <TabItem Header="🎸 Тюнер">
             <local:TunerView x:Name="TunerTab"/>
