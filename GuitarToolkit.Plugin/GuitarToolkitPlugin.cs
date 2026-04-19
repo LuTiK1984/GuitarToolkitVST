@@ -2,44 +2,51 @@ using System.Windows.Controls;
 using AudioPlugSharp;
 using AudioPlugSharpWPF;
 using GuitarToolkit.Core.Services;
-using GuitarToolkit.Plugin.UI;
+using GuitarToolkit.UI;
 
 namespace GuitarToolkit.Plugin;
 
 /// <summary>
-/// Главный класс VST3-плагина GuitarToolkit.
-/// Наследует AudioPluginWPF — это даёт VST3-совместимость + WPF GUI.
+/// VST3-плагин GuitarToolkit. Реализует IAudioPlayback для передачи звука из UI.
+/// UI полностью делегирован в GuitarToolkit.UI (ToolkitHostView).
 /// </summary>
-public class GuitarToolkitPlugin : AudioPluginWPF
+public class GuitarToolkitPlugin : AudioPluginWPF, IAudioPlayback
 {
     private DoubleAudioIOPort _monoInput = null!;
     private DoubleAudioIOPort _stereoOutput = null!;
 
-    // Движки Core — доступны из UI через свойства
     public TunerEngine Tuner { get; private set; } = null!;
     public MetronomeEngine Metronome { get; private set; } = null!;
 
-    private float[]? _chordBuffer;
-    private int _chordPos;
+    // Воспроизведение (аккорды и т.п.)
+    private float[]? _playbackBuffer;
+    private int _playbackPos;
 
-    public void PlayChordSamples(float[] samples)
+    // ── IAudioPlayback ───────────────────────────────────────────
+    public int SampleRate
     {
-        _chordBuffer = samples;
-        _chordPos = 0;
+        get
+        {
+            try { return (int)Host.SampleRate; } catch { return 44100; }
+        }
     }
 
+    public void PlaySamples(float[] samples)
+    {
+        _playbackBuffer = samples;
+        _playbackPos = 0;
+    }
+
+    // ── VST3 ─────────────────────────────────────────────────
     public GuitarToolkitPlugin()
     {
-        Company = "";
+        Company = "BSTU";
         Website = "";
         Contact = "";
         PluginName = "GuitarToolkit";
         PluginCategory = "Fx";
         PluginVersion = "1.0.0";
-
-        // Уникальный 64-битный ID плагина (не менять после первого релиза!)
         PluginID = 0x47546B7401000001;
-
         HasUserInterface = true;
         EditorWidth = 800;
         EditorHeight = 550;
@@ -51,14 +58,13 @@ public class GuitarToolkitPlugin : AudioPluginWPF
 
         InputPorts = new AudioIOPort[]
         {
-        _monoInput = new DoubleAudioIOPort("Mono Input", EAudioChannelConfiguration.Mono)
+            _monoInput = new DoubleAudioIOPort("Mono Input", EAudioChannelConfiguration.Mono)
         };
         OutputPorts = new AudioIOPort[]
         {
-        _stereoOutput = new DoubleAudioIOPort("Stereo Output", EAudioChannelConfiguration.Stereo)
+            _stereoOutput = new DoubleAudioIOPort("Stereo Output", EAudioChannelConfiguration.Stereo)
         };
 
-        // Fallback если хост не даёт sample rate
         int sr = 44100;
         try { sr = (int)Host.SampleRate; } catch { }
         if (sr <= 0) sr = 44100;
@@ -73,17 +79,16 @@ public class GuitarToolkitPlugin : AudioPluginWPF
         Span<double> input = _monoInput.GetAudioBuffer(0);
         Span<double> outL = _stereoOutput.GetAudioBuffer(0);
         Span<double> outR = _stereoOutput.GetAudioBuffer(1);
-
         int len = input.Length;
 
-        // 1. Всегда пишем выход (проброс), даже если дальше что-то упадёт
+        // Проброс входа
         for (int i = 0; i < len; i++)
         {
             outL[i] = input[i];
             outR[i] = input[i];
         }
 
-        // 2. Тюнер — отдельно
+        // Тюнер
         try
         {
             float[] floatBuf = new float[len];
@@ -93,7 +98,7 @@ public class GuitarToolkitPlugin : AudioPluginWPF
         }
         catch { }
 
-        // 3. Метроном — отдельно, микшируем поверх
+        // Метроном
         try
         {
             float[] metroBuf = new float[len];
@@ -106,26 +111,23 @@ public class GuitarToolkitPlugin : AudioPluginWPF
         }
         catch { }
 
-        // 4. Воспроизведение аккорда
+        // Воспроизведение (аккорды)
         try
         {
-            if (_chordBuffer != null && _chordPos < _chordBuffer.Length)
+            if (_playbackBuffer != null && _playbackPos < _playbackBuffer.Length)
             {
-                for (int i = 0; i < len && _chordPos < _chordBuffer.Length; i++, _chordPos++)
+                for (int i = 0; i < len && _playbackPos < _playbackBuffer.Length; i++, _playbackPos++)
                 {
-                    outL[i] += _chordBuffer[_chordPos];
-                    outR[i] += _chordBuffer[_chordPos];
+                    outL[i] += _playbackBuffer[_playbackPos];
+                    outR[i] += _playbackBuffer[_playbackPos];
                 }
             }
         }
         catch { }
     }
 
-    /// <summary>
-    /// Создаёт WPF-интерфейс плагина (вызывается хостом при открытии GUI).
-    /// </summary>
     public override UserControl GetEditorView()
     {
-        return new PluginView(this);
+        return new ToolkitHostView(Tuner, Metronome, this);
     }
 }

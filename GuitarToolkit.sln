@@ -1,11 +1,14 @@
-
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.0.31903.59
+# Visual Studio Version 18
+VisualStudioVersion = 18.4.11702.344 oobstable
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GuitarToolkit.Core", "GuitarToolkit.Core\GuitarToolkit.Core.csproj", "{A1B2C3D4-1111-2222-3333-444455556666}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GuitarToolkit.Plugin", "GuitarToolkit.Plugin\GuitarToolkit.Plugin.csproj", "{B2C3D4E5-7777-8888-9999-AAAABBBBCCCC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GuitarToolkit.UI", "GuitarToolkit.UI\GuitarToolkit.UI.csproj", "{D7EAD065-1097-4B9A-8B2C-28279A50334D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GuitarToolkit.Desktop", "GuitarToolkit.Descktop\GuitarToolkit.Desktop.csproj", "{98A50B4B-B0AC-4562-B80A-A8D419728C59}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,5 +24,19 @@ Global
 		{B2C3D4E5-7777-8888-9999-AAAABBBBCCCC}.Debug|x64.Build.0 = Debug|x64
 		{B2C3D4E5-7777-8888-9999-AAAABBBBCCCC}.Release|x64.ActiveCfg = Release|x64
 		{B2C3D4E5-7777-8888-9999-AAAABBBBCCCC}.Release|x64.Build.0 = Release|x64
+		{D7EAD065-1097-4B9A-8B2C-28279A50334D}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{D7EAD065-1097-4B9A-8B2C-28279A50334D}.Debug|x64.Build.0 = Debug|Any CPU
+		{D7EAD065-1097-4B9A-8B2C-28279A50334D}.Release|x64.ActiveCfg = Release|Any CPU
+		{D7EAD065-1097-4B9A-8B2C-28279A50334D}.Release|x64.Build.0 = Release|Any CPU
+		{98A50B4B-B0AC-4562-B80A-A8D419728C59}.Debug|x64.ActiveCfg = Debug|x64
+		{98A50B4B-B0AC-4562-B80A-A8D419728C59}.Debug|x64.Build.0 = Debug|x64
+		{98A50B4B-B0AC-4562-B80A-A8D419728C59}.Release|x64.ActiveCfg = Release|Any CPU
+		{98A50B4B-B0AC-4562-B80A-A8D419728C59}.Release|x64.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {CFF6FBCE-B654-4858-9E17-E763F9A6CB5E}
 	EndGlobalSection
 EndGlobal

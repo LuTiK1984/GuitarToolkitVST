@@ -5,7 +5,7 @@ using System.Windows.Media.Animation;
 using GuitarToolkit.Core.Models;
 using GuitarToolkit.Core.Services;
 
-namespace GuitarToolkit.Plugin.UI;
+namespace GuitarToolkit.UI;
 
 public partial class TunerView : UserControl
 {

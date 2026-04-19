@@ -4,7 +4,7 @@ using System.Windows.Media;
 using System.Windows.Shapes;
 using GuitarToolkit.Core.Models;
 
-namespace GuitarToolkit.Plugin.UI;
+namespace GuitarToolkit.UI;
 
 public partial class FretboardView : UserControl
 {

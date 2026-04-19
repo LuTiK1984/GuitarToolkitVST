@@ -5,11 +5,11 @@ using System.Windows.Shapes;
 using GuitarToolkit.Core.Models;
 using GuitarToolkit.Core.DSP;
 
-namespace GuitarToolkit.Plugin.UI;
+namespace GuitarToolkit.UI;
 
 public partial class ChordView : UserControl
 {
-    private GuitarToolkitPlugin? _plugin;
+    private IAudioPlayback? _audioHost;
     private string _selectedRoot = "C";
     private string _selectedType = "Major";
     private ChordDefinition? _currentChord;
@@ -40,9 +40,9 @@ public partial class ChordView : UserControl
         InitializeComponent();
     }
 
-    public void Initialize(GuitarToolkitPlugin plugin)
+    public void Initialize(IAudioPlayback audioHost)
     {
-        _plugin = plugin;
+        _audioHost = audioHost;
         BuildRootButtons();
         BuildTypeButtons();
         UpdateChord();
@@ -343,13 +343,8 @@ public partial class ChordView : UserControl
 
     private void PlayButton_Click(object sender, RoutedEventArgs e)
     {
-        if (_currentChord == null || _plugin == null) return;
-
-        int sr = 44100;
-        try { sr = (int)_plugin.Host.SampleRate; } catch { }
-        if (sr <= 0) sr = 44100;
-
-        float[] samples = ChordPlayer.Synthesize(_currentChord, sr);
-        _plugin.PlayChordSamples(samples);
+        if (_currentChord == null || _audioHost == null) return;
+        float[] samples = ChordPlayer.Synthesize(_currentChord, _audioHost.SampleRate);
+        _audioHost.PlaySamples(samples);
     }
 }
