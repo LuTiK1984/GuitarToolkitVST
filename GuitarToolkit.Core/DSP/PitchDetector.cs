@@ -58,7 +58,7 @@ public class PitchDetector
             if (hps[i] > peakVal) { peakVal = hps[i]; peak = i; }
         }
 
-        if (peakVal < 1e-6f) return 0f;
+        if (peakVal < 1e-12f) return 0f;
 
         // Параболическая интерполяция для уточнения частоты
         float freq;

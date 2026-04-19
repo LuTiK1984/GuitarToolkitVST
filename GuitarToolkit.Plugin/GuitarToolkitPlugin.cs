@@ -21,7 +21,7 @@ public class GuitarToolkitPlugin : AudioPluginWPF
 
     public GuitarToolkitPlugin()
     {
-        Company = "BSTU";
+        Company = "";
         Website = "";
         Contact = "";
         PluginName = "GuitarToolkit";
@@ -40,18 +40,20 @@ public class GuitarToolkitPlugin : AudioPluginWPF
     {
         base.Initialize();
 
-        // Аудио-порты: моно вход (гитара), стерео выход
         InputPorts = new AudioIOPort[]
         {
-            _monoInput = new DoubleAudioIOPort("Mono Input", EAudioChannelConfiguration.Mono)
+        _monoInput = new DoubleAudioIOPort("Mono Input", EAudioChannelConfiguration.Mono)
         };
         OutputPorts = new AudioIOPort[]
         {
-            _stereoOutput = new DoubleAudioIOPort("Stereo Output", EAudioChannelConfiguration.Stereo)
+        _stereoOutput = new DoubleAudioIOPort("Stereo Output", EAudioChannelConfiguration.Stereo)
         };
 
-        // Инициализация движков с sample rate от хоста
-        int sr = (int)Host.SampleRate;
+        // Fallback если хост не даёт sample rate
+        int sr = 44100;
+        try { sr = (int)Host.SampleRate; } catch { }
+        if (sr <= 0) sr = 44100;
+
         Tuner = new TunerEngine(sampleRate: sr);
         Metronome = new MetronomeEngine();
         Metronome.Initialize(sr);

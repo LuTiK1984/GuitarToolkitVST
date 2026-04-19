@@ -25,9 +25,9 @@ public class TunerEngine
 
     // ── Настройки ────────────────────────────────────────────
     public float Gain { get; set; } = 1f;
-    public float SilenceThreshold { get; set; } = 0.00005f;
+    public float SilenceThreshold { get; set; } = 0.005f;
     public float ReferenceA { get; set; } = 440f;
-    public int StableThreshold { get; set; } = 3;
+    public int StableThreshold { get; set; } = 5;
 
     // ── Текущее состояние (читается из UI) ───────────────────
     public string CurrentNote { get; private set; } = "—";
@@ -52,24 +52,17 @@ public class TunerEngine
     /// </summary>
     public void ProcessSamples(float[] samples, int count)
     {
-        // Заполняем кольцевой буфер
         for (int i = 0; i < count; i++)
         {
-            _ring[_ringPos & (_fftSize - 1)] = samples[i];
+            _ring[_ringPos & (_fftSize - 1)] = samples[i] * Gain;
             _ringPos++;
         }
         _filled = Math.Min(_filled + count, _fftSize);
-        _newSamples += count;
 
-        // RMS-громкость — считаем всегда
         float sum = 0f;
         for (int i = 0; i < _fftSize; i++) sum += _ring[i] * _ring[i];
         CurrentVolume = MathF.Sqrt(sum / _fftSize);
         VolumeChanged?.Invoke(CurrentVolume);
-
-        // Анализируем не чаще, чем раз в AnalysisInterval сэмплов
-        //if (_newSamples < AnalysisInterval) return;
-        _newSamples = 0;
 
         if (_filled < _fftSize) return;
         if (CurrentVolume < SilenceThreshold)
@@ -79,27 +72,22 @@ public class TunerEngine
             return;
         }
 
-        // Копируем кольцевой буфер по порядку
         float[] ordered = new float[_fftSize];
         int start = _ringPos % _fftSize;
         for (int i = 0; i < _fftSize; i++)
             ordered[i] = _ring[(start + i) % _fftSize];
 
-        float freq = _detector.DetectPitch(ordered, Gain);
+        float freq = _detector.DetectPitch(ordered);
         if (freq <= 0f) return;
 
-        // Сглаживание
         _smoothedFreq = _smoothedFreq < 1f
             ? freq
             : _smoothedFreq * 0.5f + freq * 0.5f;
 
         var (note, cents) = NoteUtils.FrequencyToNote(_smoothedFreq, ReferenceA);
 
-        // Стабилизация — нота должна повториться StableThreshold раз
         if (note == _lastNote)
-        {
             _stableCount++;
-        }
         else
         {
             _stableCount = 0;

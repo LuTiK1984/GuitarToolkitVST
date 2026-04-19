@@ -117,7 +117,7 @@
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                 <TextBlock Text="Усиление:" Foreground="#6C7086"
                            VerticalAlignment="Center" Margin="0 0 8 0" FontSize="13"/>
-                <Slider x:Name="GainSlider" Minimum="0" Maximum="24" Value="0"
+                <Slider x:Name="GainSlider" Minimum="0" Maximum="40" Value="20"
                         Width="160" VerticalAlignment="Center"
                         ValueChanged="GainSlider_ValueChanged"/>
                 <TextBlock x:Name="GainLabel" Text="+10 dB"
