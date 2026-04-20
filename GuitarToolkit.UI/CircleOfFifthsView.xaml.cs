@@ -12,12 +12,13 @@ public partial class CircleOfFifthsView : UserControl
 {
     private IAudioPlayback? _audio;
     private int _selectedIndex = 0;
+    private bool _showMinor = false;
 
     private static readonly string[] NoteNames =
         { "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B" };
 
-    // Интервалы мажорной гаммы
     private static readonly int[] MajorScale = { 0, 2, 4, 5, 7, 9, 11 };
+    private static readonly int[] MinorScale = { 0, 2, 3, 5, 7, 8, 10 };
 
     private static readonly Color AccentColor = Color.FromRgb(203, 166, 247);
     private static readonly Color InactiveBg = Color.FromRgb(74, 56, 96);
@@ -32,21 +33,30 @@ public partial class CircleOfFifthsView : UserControl
         InitializeComponent();
         Loaded += (s, e) => { DrawCircle(); UpdateInfo(); };
     }
+
+    public void Initialize(IAudioPlayback audio)
+    {
+        _audio = audio;
+    }
+
     private static string FlatToSharp(string note)
     {
         return note switch
         {
-            "Db" => "C#",
-            "Eb" => "D#",
-            "Gb" => "F#",
-            "Ab" => "G#",
-            "Bb" => "A#",
+            "Db" => "C#", "Eb" => "D#", "Gb" => "F#",
+            "Ab" => "G#", "Bb" => "A#",
+            "Bbm" => "A#", "Dbm" => "C#", "Ebm" => "D#",
+            "Gbm" => "F#", "Abm" => "G#",
             _ => note
         };
     }
-    public void Initialize(IAudioPlayback audio)
+
+    /// <summary>
+    /// Извлекает тонику из названия минорной тональности ("Am" → "A", "F#m" → "F#").
+    /// </summary>
+    private static string MinorRoot(string minorKey)
     {
-        _audio = audio;
+        return minorKey.EndsWith("m") ? minorKey[..^1] : minorKey;
     }
 
     private void Canvas_SizeChanged(object sender, SizeChangedEventArgs e)
@@ -91,7 +101,6 @@ public partial class CircleOfFifthsView : UserControl
         Canvas.SetTop(innerRing, cy - innerR);
         CircleCanvas.Children.Add(innerRing);
 
-        // Соседние тональности (подсветка)
         int prev = (_selectedIndex + 11) % 12;
         int next = (_selectedIndex + 1) % 12;
 
@@ -100,27 +109,34 @@ public partial class CircleOfFifthsView : UserControl
             double angle = (i * 30.0 - 90.0) * Math.PI / 180.0;
             bool isSelected = i == _selectedIndex;
             bool isNeighbor = i == prev || i == next;
+            int idx = i;
 
-            // Мажор (внешний)
+            // ── Мажор (внешний) ──────────────────────────────
             double majorR = (outerR + innerR) / 2 + 6;
             double mx = cx + majorR * Math.Cos(angle);
             double my = cy + majorR * Math.Sin(angle);
             double dotSize = isSelected ? 46 : (isNeighbor ? 42 : 38);
 
-            Color dotColor = isSelected ? AccentColor
+            bool majorActive = isSelected && !_showMinor;
+            Color majorColor = majorActive ? AccentColor
                 : isNeighbor ? Color.FromRgb(120, 96, 160)
                 : InactiveBg;
 
             var majorDot = new Ellipse
             {
                 Width = dotSize, Height = dotSize,
-                Fill = new SolidColorBrush(dotColor),
+                Fill = new SolidColorBrush(majorColor),
                 Cursor = Cursors.Hand
             };
             Canvas.SetLeft(majorDot, mx - dotSize / 2);
             Canvas.SetTop(majorDot, my - dotSize / 2);
-            int idx = i;
-            majorDot.MouseDown += (s, e) => { _selectedIndex = idx; DrawCircle(); UpdateInfo(); };
+            majorDot.MouseDown += (s, e) =>
+            {
+                _selectedIndex = idx;
+                _showMinor = false;
+                DrawCircle();
+                UpdateInfo();
+            };
             CircleCanvas.Children.Add(majorDot);
 
             var majorText = new TextBlock
@@ -128,7 +144,8 @@ public partial class CircleOfFifthsView : UserControl
                 Text = CircleOfFifths.MajorKeys[i],
                 FontSize = isSelected ? 16 : 13,
                 FontWeight = FontWeights.Bold,
-                Foreground = new SolidColorBrush(isSelected || isNeighbor ? TextDark : TextLight),
+                Foreground = new SolidColorBrush(
+                    majorActive || isNeighbor ? TextDark : TextLight),
                 TextAlignment = TextAlignment.Center,
                 Width = dotSize
             };
@@ -137,29 +154,39 @@ public partial class CircleOfFifthsView : UserControl
             majorText.IsHitTestVisible = false;
             CircleCanvas.Children.Add(majorText);
 
-            // Минор (внутренний)
+            // ── Минор (внутренний) ───────────────────────────
             double minorR = innerR * 0.65;
             double mnx = cx + minorR * Math.Cos(angle);
             double mny = cy + minorR * Math.Sin(angle);
             double minDotSize = isSelected ? 38 : 30;
 
+            bool minorActive = isSelected && _showMinor;
+            Color minorColor = minorActive ? GreenColor
+                : isSelected ? Color.FromRgb(60, 50, 80)
+                : Color.FromRgb(45, 34, 64);
+
             var minorDot = new Ellipse
             {
                 Width = minDotSize, Height = minDotSize,
-                Fill = new SolidColorBrush(isSelected ? GreenColor
-                    : Color.FromRgb(45, 34, 64)),
+                Fill = new SolidColorBrush(minorColor),
                 Cursor = Cursors.Hand
             };
             Canvas.SetLeft(minorDot, mnx - minDotSize / 2);
             Canvas.SetTop(minorDot, mny - minDotSize / 2);
-            minorDot.MouseDown += (s, e) => { _selectedIndex = idx; DrawCircle(); UpdateInfo(); };
+            minorDot.MouseDown += (s, e) =>
+            {
+                _selectedIndex = idx;
+                _showMinor = true;
+                DrawCircle();
+                UpdateInfo();
+            };
             CircleCanvas.Children.Add(minorDot);
 
             var minorText = new TextBlock
             {
                 Text = CircleOfFifths.MinorKeys[i],
                 FontSize = isSelected ? 13 : 11,
-                Foreground = new SolidColorBrush(isSelected ? TextDark : DimText),
+                Foreground = new SolidColorBrush(minorActive ? TextDark : DimText),
                 TextAlignment = TextAlignment.Center,
                 Width = minDotSize
             };
@@ -189,17 +216,74 @@ public partial class CircleOfFifthsView : UserControl
         string major = CircleOfFifths.MajorKeys[i];
         string minor = CircleOfFifths.MinorKeys[i];
 
-        KeyNameLabel.Text = $"{major} мажор";
-        MinorLabel.Text = $"Параллельный: {minor}";
-        SignatureLabel.Text = CircleOfFifths.GetKeySignatureText(i);
+        if (_showMinor)
+        {
+            // Минорная тональность
+            string root = MinorRoot(minor);
+            string sharpRoot = FlatToSharp(root);
+            int rootIdx = Array.IndexOf(NoteNames, sharpRoot);
+            if (rootIdx < 0) rootIdx = 0;
 
-        // Ноты в тональности
-        int rootIdx = Array.IndexOf(NoteNames, FlatToSharp(major));
-        string notes = string.Join("  ", MajorScale.Select(s => NoteNames[(rootIdx + s) % 12]));
-        NotesLabel.Text = notes;
+            KeyNameLabel.Text = $"{root} минор";
+            MinorLabel.Text = $"Параллельный мажор: {major}";
+            SignatureLabel.Text = CircleOfFifths.GetKeySignatureText(i);
 
-        // Диатонические аккорды
-        var chords = CircleOfFifths.GetChords(i);
+            string notes = string.Join("  ",
+                MinorScale.Select(s => NoteNames[(rootIdx + s) % 12]));
+            NotesLabel.Text = notes;
+
+            // Минорные диатонические аккорды
+            var chords = ProgressionBuilder.GetDiatonicChords(sharpRoot, modeIndex: 1);
+            DisplayChords(chords);
+
+            // Прогрессии для минора
+            string prog1 = $"{chords[0].Root}m – {chords[5].Root} – {chords[2].Root} – {chords[6].Root}";
+            string prog2 = $"{chords[0].Root}m – {chords[3].Root}m – {chords[4].Root}m – {chords[0].Root}m";
+            string prog3 = $"{chords[0].Root}m – {chords[6].Root} – {chords[5].Root} – {chords[4].Root}";
+            ProgressionsLabel.Text = $"i–VI–III–VII:  {prog1}\ni–iv–v–i:  {prog2}\ni–VII–VI–v:  {prog3}";
+
+            int prev = (i + 11) % 12;
+            int next = (i + 1) % 12;
+            RelatedLabel.Text = $"Параллельный мажор:  {major}\n"
+                              + $"Субдоминанта:  {CircleOfFifths.MinorKeys[prev]}\n"
+                              + $"Доминанта:  {CircleOfFifths.MinorKeys[next]}\n"
+                              + $"Энгармонический:  {GetEnharmonic(root)}";
+        }
+        else
+        {
+            // Мажорная тональность
+            string sharpRoot = FlatToSharp(major);
+            int rootIdx = Array.IndexOf(NoteNames, sharpRoot);
+            if (rootIdx < 0) rootIdx = 0;
+
+            KeyNameLabel.Text = $"{major} мажор";
+            MinorLabel.Text = $"Параллельный минор: {minor}";
+            SignatureLabel.Text = CircleOfFifths.GetKeySignatureText(i);
+
+            string notes = string.Join("  ",
+                MajorScale.Select(s => NoteNames[(rootIdx + s) % 12]));
+            NotesLabel.Text = notes;
+
+            var chords = CircleOfFifths.GetChords(i);
+            DisplayChords(chords);
+
+            string c(ProgressionStep s) => s.Root + (s.ChordType == "Major" ? "" : s.ChordType);
+            string prog1 = $"{c(chords[0])} – {c(chords[4])} – {c(chords[5])} – {c(chords[3])}";
+            string prog2 = $"{c(chords[0])} – {c(chords[3])} – {c(chords[4])} – {c(chords[0])}";
+            string prog3 = $"{c(chords[1])} – {c(chords[4])} – {c(chords[0])}";
+            ProgressionsLabel.Text = $"I–V–vi–IV:  {prog1}\nI–IV–V–I:  {prog2}\nii–V–I:  {prog3}";
+
+            int prev = (i + 11) % 12;
+            int next = (i + 1) % 12;
+            RelatedLabel.Text = $"IV (субдоминанта):  {CircleOfFifths.MajorKeys[prev]} мажор\n"
+                              + $"V (доминанта):  {CircleOfFifths.MajorKeys[next]} мажор\n"
+                              + $"Параллельный минор:  {minor}\n"
+                              + $"Энгармонический:  {GetEnharmonic(major)}";
+        }
+    }
+
+    private void DisplayChords(ProgressionStep[] chords)
+    {
         ChordsDisplay.Items.Clear();
 
         foreach (var step in chords)
@@ -230,20 +314,6 @@ public partial class CircleOfFifthsView : UserControl
             border.Child = stack;
             ChordsDisplay.Items.Add(border);
         }
-
-        // Родственные тональности
-        int prev = (i + 11) % 12;
-        int next = (i + 1) % 12;
-        RelatedLabel.Text = $"IV (субдоминанта):  {CircleOfFifths.MajorKeys[prev]} мажор\n"
-                          + $"V (доминанта):  {CircleOfFifths.MajorKeys[next]} мажор\n"
-                          + $"Параллельный минор:  {minor}\n"
-                          + $"Энгармонический:  {GetEnharmonic(major)}";
-
-        // Популярные прогрессии
-        string prog1 = $"{chords[0].Root} – {chords[4].Root} – {chords[5].Root}{chords[5].ChordType} – {chords[3].Root}";
-        string prog2 = $"{chords[0].Root} – {chords[3].Root} – {chords[4].Root} – {chords[0].Root}";
-        string prog3 = $"{chords[1].Root}{chords[1].ChordType} – {chords[4].Root} – {chords[0].Root}";
-        ProgressionsLabel.Text = $"I–V–vi–IV:  {prog1}\nI–IV–V–I:  {prog2}\nii–V–I:  {prog3}";
     }
 
     private string GetEnharmonic(string note)
@@ -259,30 +329,41 @@ public partial class CircleOfFifthsView : UserControl
         };
     }
 
-    // ── Воспроизведение гаммы ────────────────────────────────
-
     private void PlayScale_Click(object sender, RoutedEventArgs e)
     {
         if (_audio == null) return;
 
-        string major = CircleOfFifths.MajorKeys[_selectedIndex];
-        int rootIdx = Array.IndexOf(NoteNames, FlatToSharp(major));
+        string key;
+        int[] scale;
 
-        // MIDI нота C4 = 60, сдвигаем к нужной тонике
+        if (_showMinor)
+        {
+            key = MinorRoot(CircleOfFifths.MinorKeys[_selectedIndex]);
+            scale = MinorScale;
+        }
+        else
+        {
+            key = CircleOfFifths.MajorKeys[_selectedIndex];
+            scale = MajorScale;
+        }
+
+        string sharpKey = FlatToSharp(key);
+        int rootIdx = Array.IndexOf(NoteNames, sharpKey);
+        if (rootIdx < 0) rootIdx = 0;
+
         int baseMidi = 60 + rootIdx;
         if (baseMidi > 72) baseMidi -= 12;
 
         int sr = _audio.SampleRate;
         var allSamples = new List<float>();
 
-        // Восходящая гамма + октава
-        int[] intervals = { 0, 2, 4, 5, 7, 9, 11, 12 };
-        foreach (int interval in intervals)
+        // Гамма вверх + октава
+        foreach (int interval in scale.Append(12))
         {
             float freq = 440f * MathF.Pow(2f, (baseMidi + interval - 69) / 12f);
             float[] note = NoteSynth.GenerateNote(freq, sr, duration: 0.4f, volume: 0.25f);
             allSamples.AddRange(note);
-            allSamples.AddRange(new float[(int)(sr * 0.05f)]); // пауза
+            allSamples.AddRange(new float[(int)(sr * 0.05f)]);
         }
 
         _audio.PlaySamples(allSamples.ToArray());

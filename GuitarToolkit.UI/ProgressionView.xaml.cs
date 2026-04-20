@@ -33,8 +33,8 @@ public partial class ProgressionView : UserControl
 
     public void Initialize(IAudioPlayback audio)
     {
-        ProgressionBuilder.LoadPresetsFromDisk();
         _audio = audio;
+        ProgressionBuilder.LoadPresetsFromDisk();
         BuildKeyButtons();
         BuildModeBox();
         BuildPresetButtons();
@@ -143,27 +143,67 @@ public partial class ProgressionView : UserControl
     private void BuildPresetButtons()
     {
         PresetButtons.Items.Clear();
-        foreach (var p in ProgressionBuilder.BuiltInPresets) AddPresetButton(p);
-        foreach (var p in ProgressionBuilder.CustomPresets) AddPresetButton(p);
+
+        foreach (var p in ProgressionBuilder.BuiltInPresets)
+            AddPresetButton(p);
+
+        foreach (var p in ProgressionBuilder.CustomPresets)
+            AddPresetButton(p);
     }
 
     private void AddPresetButton(ProgressionPreset preset)
     {
-        string prefix = preset.IsCustom ? "⭐ " : "";
-        var btn = new Button
+        if (preset.IsCustom)
         {
-            Content = prefix + preset.Name, Height = 32, FontSize = 12,
-            Background = new SolidColorBrush(preset.IsCustom
-                ? Color.FromRgb(45, 34, 64) : InactiveBg),
-            Foreground = new SolidColorBrush(TextLight),
-            BorderThickness = new Thickness(0),
-            Cursor = System.Windows.Input.Cursors.Hand,
-            Margin = new Thickness(3),
-            Padding = new Thickness(12, 0, 12, 0),
-            Tag = preset
-        };
-        btn.Click += Preset_Click;
-        PresetButtons.Items.Add(btn);
+            // Пользовательский пресет — кнопка + крестик удаления
+            var panel = new StackPanel { Orientation = Orientation.Horizontal, Margin = new Thickness(3) };
+
+            var btn = new Button
+            {
+                Content = "⭐ " + preset.Name,
+                Height = 32, FontSize = 12,
+                Background = new SolidColorBrush(Color.FromRgb(45, 34, 64)),
+                Foreground = new SolidColorBrush(TextLight),
+                BorderThickness = new Thickness(0),
+                Cursor = System.Windows.Input.Cursors.Hand,
+                Padding = new Thickness(12, 0, 8, 0),
+                Tag = preset
+            };
+            btn.Click += Preset_Click;
+
+            var delBtn = new Button
+            {
+                Content = "✕", Width = 24, Height = 32,
+                FontSize = 11,
+                Background = new SolidColorBrush(Color.FromRgb(60, 40, 60)),
+                Foreground = new SolidColorBrush(DeleteColor),
+                BorderThickness = new Thickness(0),
+                Cursor = System.Windows.Input.Cursors.Hand,
+                Padding = new Thickness(0),
+                Tag = preset
+            };
+            delBtn.Click += DeletePreset_Click;
+
+            panel.Children.Add(btn);
+            panel.Children.Add(delBtn);
+            PresetButtons.Items.Add(panel);
+        }
+        else
+        {
+            var btn = new Button
+            {
+                Content = preset.Name, Height = 32, FontSize = 12,
+                Background = new SolidColorBrush(InactiveBg),
+                Foreground = new SolidColorBrush(TextLight),
+                BorderThickness = new Thickness(0),
+                Cursor = System.Windows.Input.Cursors.Hand,
+                Margin = new Thickness(3),
+                Padding = new Thickness(12, 0, 12, 0),
+                Tag = preset
+            };
+            btn.Click += Preset_Click;
+            PresetButtons.Items.Add(btn);
+        }
     }
 
     private void Preset_Click(object sender, RoutedEventArgs e)
@@ -177,6 +217,16 @@ public partial class ProgressionView : UserControl
         }
     }
 
+    private void DeletePreset_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is Button btn && btn.Tag is ProgressionPreset preset)
+        {
+            ProgressionBuilder.CustomPresets.Remove(preset);
+            ProgressionBuilder.SavePresetsToDisk();
+            BuildPresetButtons();
+        }
+    }
+
     // ── Сохранение пресета ───────────────────────────────────
 
     private void SavePreset_Click(object sender, RoutedEventArgs e)
@@ -187,8 +237,8 @@ public partial class ProgressionView : UserControl
         if (string.IsNullOrEmpty(name))
             name = $"Мой пресет {ProgressionBuilder.CustomPresets.Count + 1}";
 
-        var preset = ProgressionBuilder.SaveCustomPreset(name, _progression, _diatonicChords);
-        AddPresetButton(preset);
+        ProgressionBuilder.SaveCustomPreset(name, _progression, _diatonicChords);
+        BuildPresetButtons();
 
         _placeholderActive = true;
         PresetNameBox.Text = "Название пресета...";
