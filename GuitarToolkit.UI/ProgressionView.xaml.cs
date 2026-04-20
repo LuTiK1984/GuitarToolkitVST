@@ -10,18 +10,19 @@ public partial class ProgressionView : UserControl
 {
     private IAudioPlayback? _audio;
     private string _selectedKey = "C";
-    private bool _isMinor = false;
+    private int _selectedModeIndex = 0;
     private readonly List<ProgressionStep> _progression = new();
     private readonly List<Button> _keyButtons = new();
     private ProgressionStep[]? _diatonicChords;
     private int _bpm = 120;
-    private bool _isPlaying = false;
 
     private static readonly Color AccentColor = Color.FromRgb(203, 166, 247);
     private static readonly Color InactiveBg = Color.FromRgb(74, 56, 96);
     private static readonly Color TextLight = Color.FromRgb(205, 214, 244);
     private static readonly Color TextDark = Color.FromRgb(26, 21, 37);
     private static readonly Color DeleteColor = Color.FromRgb(243, 139, 168);
+
+    private bool _placeholderActive = true;
 
     public ProgressionView()
     {
@@ -32,8 +33,10 @@ public partial class ProgressionView : UserControl
 
     public void Initialize(IAudioPlayback audio)
     {
+        ProgressionBuilder.LoadPresetsFromDisk();
         _audio = audio;
         BuildKeyButtons();
+        BuildModeBox();
         BuildPresetButtons();
         UpdateDiatonicChords();
     }
@@ -49,15 +52,13 @@ public partial class ProgressionView : UserControl
         {
             var btn = new Button
             {
-                Content = root,
-                Width = 40, Height = 30,
+                Content = root, Width = 40, Height = 30,
                 FontSize = 13, FontWeight = FontWeights.Bold,
                 Background = new SolidColorBrush(InactiveBg),
                 Foreground = new SolidColorBrush(TextLight),
                 BorderThickness = new Thickness(0),
                 Cursor = System.Windows.Input.Cursors.Hand,
-                Margin = new Thickness(2),
-                Tag = root
+                Margin = new Thickness(2), Tag = root
             };
             btn.Click += (s, e) =>
             {
@@ -81,40 +82,45 @@ public partial class ProgressionView : UserControl
         }
     }
 
-    // ── Мажор / Минор ────────────────────────────────────────
+    // ── Выбор лада ───────────────────────────────────────────
 
-    private void Mode_Click(object sender, RoutedEventArgs e)
+    private void BuildModeBox()
     {
-        _isMinor = !_isMinor;
-        ModeButton.Content = _isMinor ? "Минор" : "Мажор";
-        ModeButton.Background = _isMinor
-            ? new SolidColorBrush(Color.FromRgb(166, 227, 161))
-            : new SolidColorBrush(AccentColor);
-        UpdateDiatonicChords();
+        ModeBox.Items.Clear();
+        foreach (var mode in ProgressionBuilder.AllModes)
+            ModeBox.Items.Add(mode.Name);
+        ModeBox.SelectedIndex = 0;
+    }
+
+    private void ModeBox_Changed(object sender, SelectionChangedEventArgs e)
+    {
+        if (ModeBox.SelectedIndex >= 0)
+        {
+            _selectedModeIndex = ModeBox.SelectedIndex;
+            UpdateDiatonicChords();
+        }
     }
 
     // ── Диатонические аккорды ────────────────────────────────
 
     private void UpdateDiatonicChords()
     {
-        _diatonicChords = ProgressionBuilder.GetDiatonicChords(_selectedKey, _isMinor);
+        _diatonicChords = ProgressionBuilder.GetDiatonicChords(_selectedKey, _selectedModeIndex);
         DegreeButtons.Items.Clear();
 
         foreach (var step in _diatonicChords)
         {
             string suffix = step.ChordType == "Major" ? "" : step.ChordType;
-            string label = $"{step.Degree}\n{step.Root}{suffix}";
             var btn = new Button
             {
-                Content = label,
+                Content = $"{step.Degree}\n{step.Root}{suffix}",
                 Width = 75, Height = 52,
                 FontSize = 12, FontWeight = FontWeights.Bold,
                 Background = new SolidColorBrush(InactiveBg),
                 Foreground = new SolidColorBrush(TextLight),
                 BorderThickness = new Thickness(0),
                 Cursor = System.Windows.Input.Cursors.Hand,
-                Margin = new Thickness(3),
-                Tag = step
+                Margin = new Thickness(3), Tag = step
             };
             btn.Click += Degree_Click;
             DegreeButtons.Items.Add(btn);
@@ -137,12 +143,8 @@ public partial class ProgressionView : UserControl
     private void BuildPresetButtons()
     {
         PresetButtons.Items.Clear();
-
-        foreach (var preset in ProgressionBuilder.BuiltInPresets)
-            AddPresetButton(preset);
-
-        foreach (var preset in ProgressionBuilder.CustomPresets)
-            AddPresetButton(preset);
+        foreach (var p in ProgressionBuilder.BuiltInPresets) AddPresetButton(p);
+        foreach (var p in ProgressionBuilder.CustomPresets) AddPresetButton(p);
     }
 
     private void AddPresetButton(ProgressionPreset preset)
@@ -150,9 +152,7 @@ public partial class ProgressionView : UserControl
         string prefix = preset.IsCustom ? "⭐ " : "";
         var btn = new Button
         {
-            Content = prefix + preset.Name,
-            Height = 32,
-            FontSize = 12,
+            Content = prefix + preset.Name, Height = 32, FontSize = 12,
             Background = new SolidColorBrush(preset.IsCustom
                 ? Color.FromRgb(45, 34, 64) : InactiveBg),
             Foreground = new SolidColorBrush(TextLight),
@@ -172,7 +172,7 @@ public partial class ProgressionView : UserControl
         {
             _progression.Clear();
             _progression.AddRange(
-                ProgressionBuilder.BuildFromPreset(_selectedKey, preset, _isMinor));
+                ProgressionBuilder.BuildFromPreset(_selectedKey, preset, _selectedModeIndex));
             UpdateProgressionDisplay();
         }
     }
@@ -183,23 +183,25 @@ public partial class ProgressionView : UserControl
     {
         if (_progression.Count == 0 || _diatonicChords == null) return;
 
-        string name = PresetNameBox.Text.Trim();
-        if (string.IsNullOrEmpty(name) || name == "Название пресета...") 
+        string name = _placeholderActive ? "" : PresetNameBox.Text.Trim();
+        if (string.IsNullOrEmpty(name))
             name = $"Мой пресет {ProgressionBuilder.CustomPresets.Count + 1}";
 
         var preset = ProgressionBuilder.SaveCustomPreset(name, _progression, _diatonicChords);
         AddPresetButton(preset);
 
+        _placeholderActive = true;
         PresetNameBox.Text = "Название пресета...";
         PresetNameBox.Foreground = new SolidColorBrush(Color.FromRgb(124, 111, 150));
     }
 
     private void PresetNameBox_GotFocus(object sender, RoutedEventArgs e)
     {
-        if (PresetNameBox.Text == "Название пресета...")
+        if (_placeholderActive)
         {
             PresetNameBox.Text = "";
             PresetNameBox.Foreground = new SolidColorBrush(TextLight);
+            _placeholderActive = false;
         }
     }
 
@@ -209,6 +211,7 @@ public partial class ProgressionView : UserControl
         {
             PresetNameBox.Text = "Название пресета...";
             PresetNameBox.Foreground = new SolidColorBrush(Color.FromRgb(124, 111, 150));
+            _placeholderActive = true;
         }
     }
 
@@ -247,32 +250,25 @@ public partial class ProgressionView : UserControl
             grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
             grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
 
-            // Аккорд
             var stack = new StackPanel { Orientation = Orientation.Vertical };
             stack.Children.Add(new TextBlock
             {
-                Text = step.Degree,
-                FontSize = 10,
+                Text = step.Degree, FontSize = 10,
                 Foreground = new SolidColorBrush(AccentColor),
                 HorizontalAlignment = HorizontalAlignment.Center
             });
             stack.Children.Add(new TextBlock
             {
-                Text = step.Root + suffix,
-                FontSize = 16,
-                FontWeight = FontWeights.Bold,
+                Text = step.Root + suffix, FontSize = 16, FontWeight = FontWeights.Bold,
                 Foreground = new SolidColorBrush(TextLight),
                 HorizontalAlignment = HorizontalAlignment.Center
             });
             Grid.SetColumn(stack, 0);
             grid.Children.Add(stack);
 
-            // Кнопка удаления
             var delBtn = new Button
             {
-                Content = "✕",
-                Width = 18, Height = 18,
-                FontSize = 10,
+                Content = "✕", Width = 18, Height = 18, FontSize = 10,
                 Background = Brushes.Transparent,
                 Foreground = new SolidColorBrush(DeleteColor),
                 BorderThickness = new Thickness(0),
@@ -311,11 +307,8 @@ public partial class ProgressionView : UserControl
         int repeats = loop ? 32 : 1;
 
         int oneCycleLen = samplesPerBeat * _progression.Count;
-        int totalSamples = oneCycleLen * repeats;
-        float[] buffer = new float[totalSamples];
-
-        // Генерируем один цикл
         float[] oneCycle = new float[oneCycleLen];
+
         for (int i = 0; i < _progression.Count; i++)
         {
             var step = _progression[i];
@@ -331,22 +324,17 @@ public partial class ProgressionView : UserControl
                 oneCycle[offset + j] += chordSamples[j];
         }
 
-        // Копируем цикл нужное количество раз
+        float[] buffer = new float[oneCycleLen * repeats];
         for (int r = 0; r < repeats; r++)
             Array.Copy(oneCycle, 0, buffer, r * oneCycleLen, oneCycleLen);
 
         _audio.PlaySamples(buffer);
-        _isPlaying = true;
         StopButton.Visibility = Visibility.Visible;
     }
 
     private void Stop_Click(object sender, RoutedEventArgs e)
     {
-        if (_audio == null) return;
-
-        // Играем пустой буфер — перебивает текущий
-        _audio.PlaySamples(new float[1]);
-        _isPlaying = false;
+        _audio?.StopPlayback();
         StopButton.Visibility = Visibility.Collapsed;
     }
 

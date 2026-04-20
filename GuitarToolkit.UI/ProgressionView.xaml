@@ -13,10 +13,10 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <!-- Тональность + мажор/минор -->
+        <!-- Тональность + лад -->
         <StackPanel Grid.Row="0" Margin="0 0 0 12">
             <StackPanel Orientation="Horizontal" Margin="0 0 0 8">
-                <TextBlock Text="Тональность:" FontSize="14" Foreground="#7C6F96"
+                <TextBlock Text="Тоника:" FontSize="14" Foreground="#7C6F96"
                            VerticalAlignment="Center" Margin="0 0 12 0"/>
                 <ItemsControl x:Name="KeySelector">
                     <ItemsControl.ItemsPanel>
@@ -25,11 +25,12 @@
                         </ItemsPanelTemplate>
                     </ItemsControl.ItemsPanel>
                 </ItemsControl>
-                <Button x:Name="ModeButton" Content="Мажор" Width="90" Height="30"
-                        FontSize="13" FontWeight="Bold" Margin="16 0 0 0"
-                        Background="#CBA6F7" Foreground="#1A1525"
-                        BorderThickness="0" Cursor="Hand"
-                        Click="Mode_Click"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="Лад:" FontSize="14" Foreground="#7C6F96"
+                           VerticalAlignment="Center" Margin="0 0 12 0"/>
+                <ComboBox x:Name="ModeBox" Width="300" Height="30"
+                          SelectionChanged="ModeBox_Changed"/>
             </StackPanel>
         </StackPanel>
 
@@ -40,7 +41,7 @@
             <ItemsControl x:Name="DegreeButtons">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
-                        <StackPanel Orientation="Horizontal"/>
+                        <WrapPanel/>
                     </ItemsPanelTemplate>
                 </ItemsControl.ItemsPanel>
             </ItemsControl>
@@ -58,7 +59,7 @@
             </ItemsControl>
         </StackPanel>
 
-        <!-- Текущая прогрессия -->
+        <!-- Прогрессия -->
         <Border Grid.Row="3" Background="#251D38" CornerRadius="8"
                 Padding="16 12" Margin="0 0 0 12">
             <Grid>
@@ -81,8 +82,7 @@
 
                 <StackPanel Grid.Column="1" VerticalAlignment="Center">
                     <Button x:Name="PlayButton" Content="▶ Играть"
-                            Height="40" Width="120"
-                            FontSize="14" FontWeight="Bold"
+                            Height="40" Width="120" FontSize="14" FontWeight="Bold"
                             Foreground="#1A1525" Background="#CBA6F7"
                             BorderThickness="0" Cursor="Hand"
                             Click="Play_Click" Margin="0 0 0 4"/>
@@ -104,9 +104,7 @@
         <StackPanel Grid.Row="4" Orientation="Horizontal" Margin="0 0 0 12">
             <TextBox x:Name="PresetNameBox" Width="220" Height="30"
                      Background="#2D2240" Foreground="#CDD6F4" BorderThickness="0"
-                     FontSize="13" Padding="8 4"
-                     VerticalContentAlignment="Center"
-                     Text="" Tag="Название пресета..."
+                     FontSize="13" Padding="8 4" VerticalContentAlignment="Center"
                      GotFocus="PresetNameBox_GotFocus"
                      LostFocus="PresetNameBox_LostFocus"/>
             <Button Content="💾 Сохранить пресет" Height="30"

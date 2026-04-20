@@ -6,7 +6,7 @@
     <Grid Margin="16">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="320"/>
+            <ColumnDefinition Width="330"/>
         </Grid.ColumnDefinitions>
 
         <!-- Круг -->
@@ -14,34 +14,59 @@
                 Background="Transparent"
                 SizeChanged="Canvas_SizeChanged"/>
 
-        <!-- Информация о выбранной тональности -->
-        <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="16 0 0 0">
+        <!-- Информация -->
+        <ScrollViewer Grid.Column="1" VerticalScrollBarVisibility="Auto" Margin="16 0 0 0">
+            <StackPanel>
 
-            <TextBlock x:Name="KeyNameLabel" Text="C мажор"
-                       FontSize="32" FontWeight="Bold" Foreground="#CDD6F4"
-                       Margin="0 0 0 4"/>
-            <TextBlock x:Name="MinorLabel" Text="Параллельный: Am"
-                       FontSize="16" Foreground="#7C6F96"
-                       Margin="0 0 0 4"/>
-            <TextBlock x:Name="SignatureLabel" Text="Без знаков"
-                       FontSize="16" Foreground="#CBA6F7"
-                       Margin="0 0 0 24"/>
+                <TextBlock x:Name="KeyNameLabel" Text="C мажор"
+                           FontSize="32" FontWeight="Bold" Foreground="#CDD6F4"
+                           Margin="0 0 0 4"/>
+                <TextBlock x:Name="MinorLabel" Text="Параллельный: Am"
+                           FontSize="15" Foreground="#7C6F96" Margin="0 0 0 4"/>
+                <TextBlock x:Name="SignatureLabel" Text="Без знаков"
+                           FontSize="15" Foreground="#CBA6F7" Margin="0 0 0 12"/>
 
-            <TextBlock Text="Диатонические аккорды:" FontSize="14"
-                       Foreground="#7C6F96" Margin="0 0 0 10"/>
-            <ItemsControl x:Name="ChordsDisplay">
-                <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <WrapPanel/>
-                    </ItemsPanelTemplate>
-                </ItemsControl.ItemsPanel>
-            </ItemsControl>
+                <!-- Кнопка воспроизведения гаммы -->
+                <Button Content="🔊 Играть гамму" Height="36" Width="200"
+                        FontSize="13" FontWeight="Bold"
+                        Foreground="#1A1525" Background="#CBA6F7"
+                        BorderThickness="0" Cursor="Hand"
+                        HorizontalAlignment="Left" Margin="0 0 0 16"
+                        Click="PlayScale_Click"/>
 
-            <TextBlock Text="Родственные тональности:" FontSize="14"
-                       Foreground="#7C6F96" Margin="0 24 0 10"/>
-            <TextBlock x:Name="RelatedLabel" Text=""
-                       FontSize="14" Foreground="#CDD6F4"
-                       TextWrapping="Wrap"/>
-        </StackPanel>
+                <!-- Ноты в тональности -->
+                <TextBlock Text="Ноты в тональности:" FontSize="13"
+                           Foreground="#7C6F96" Margin="0 0 0 6"/>
+                <TextBlock x:Name="NotesLabel" Text="C  D  E  F  G  A  B"
+                           FontSize="16" FontWeight="Bold" Foreground="#CDD6F4"
+                           Margin="0 0 0 16"/>
+
+                <!-- Диатонические аккорды -->
+                <TextBlock Text="Диатонические аккорды:" FontSize="13"
+                           Foreground="#7C6F96" Margin="0 0 0 8"/>
+                <ItemsControl x:Name="ChordsDisplay">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                </ItemsControl>
+
+                <!-- Популярные прогрессии -->
+                <TextBlock Text="Популярные прогрессии:" FontSize="13"
+                           Foreground="#7C6F96" Margin="0 16 0 8"/>
+                <TextBlock x:Name="ProgressionsLabel" Text=""
+                           FontSize="13" Foreground="#CDD6F4"
+                           TextWrapping="Wrap" LineHeight="22"/>
+
+                <!-- Родственные тональности -->
+                <TextBlock Text="Родственные тональности:" FontSize="13"
+                           Foreground="#7C6F96" Margin="0 16 0 8"/>
+                <TextBlock x:Name="RelatedLabel" Text=""
+                           FontSize="13" Foreground="#CDD6F4"
+                           TextWrapping="Wrap" LineHeight="22"/>
+
+            </StackPanel>
+        </ScrollViewer>
     </Grid>
 </UserControl>

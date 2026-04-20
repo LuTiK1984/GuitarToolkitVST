@@ -6,10 +6,6 @@ using GuitarToolkit.UI;
 
 namespace GuitarToolkit.Plugin;
 
-/// <summary>
-/// VST3-плагин GuitarToolkit. Реализует IAudioPlayback для передачи звука из UI.
-/// UI полностью делегирован в GuitarToolkit.UI (ToolkitHostView).
-/// </summary>
 public class GuitarToolkitPlugin : AudioPluginWPF, IAudioPlayback
 {
     private DoubleAudioIOPort _monoInput = null!;
@@ -18,11 +14,9 @@ public class GuitarToolkitPlugin : AudioPluginWPF, IAudioPlayback
     public TunerEngine Tuner { get; private set; } = null!;
     public MetronomeEngine Metronome { get; private set; } = null!;
 
-    // Воспроизведение (аккорды и т.п.)
     private float[]? _playbackBuffer;
     private int _playbackPos;
 
-    // ── IAudioPlayback ───────────────────────────────────────────
     public int SampleRate
     {
         get
@@ -37,7 +31,12 @@ public class GuitarToolkitPlugin : AudioPluginWPF, IAudioPlayback
         _playbackPos = 0;
     }
 
-    // ── VST3 ─────────────────────────────────────────────────
+    public void StopPlayback()
+    {
+        _playbackBuffer = null;
+        _playbackPos = 0;
+    }
+
     public GuitarToolkitPlugin()
     {
         Company = "BSTU";
@@ -81,14 +80,12 @@ public class GuitarToolkitPlugin : AudioPluginWPF, IAudioPlayback
         Span<double> outR = _stereoOutput.GetAudioBuffer(1);
         int len = input.Length;
 
-        // Проброс входа
         for (int i = 0; i < len; i++)
         {
             outL[i] = input[i];
             outR[i] = input[i];
         }
 
-        // Тюнер
         try
         {
             float[] floatBuf = new float[len];
@@ -98,7 +95,6 @@ public class GuitarToolkitPlugin : AudioPluginWPF, IAudioPlayback
         }
         catch { }
 
-        // Метроном
         try
         {
             float[] metroBuf = new float[len];
@@ -111,15 +107,15 @@ public class GuitarToolkitPlugin : AudioPluginWPF, IAudioPlayback
         }
         catch { }
 
-        // Воспроизведение (аккорды)
         try
         {
-            if (_playbackBuffer != null && _playbackPos < _playbackBuffer.Length)
+            var buf = _playbackBuffer;
+            if (buf != null && _playbackPos < buf.Length)
             {
-                for (int i = 0; i < len && _playbackPos < _playbackBuffer.Length; i++, _playbackPos++)
+                for (int i = 0; i < len && _playbackPos < buf.Length; i++, _playbackPos++)
                 {
-                    outL[i] += _playbackBuffer[_playbackPos];
-                    outR[i] += _playbackBuffer[_playbackPos];
+                    outL[i] += buf[_playbackPos];
+                    outR[i] += buf[_playbackPos];
                 }
             }
         }

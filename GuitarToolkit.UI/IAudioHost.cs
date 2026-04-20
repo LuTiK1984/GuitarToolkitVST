@@ -11,4 +11,7 @@ public interface IAudioPlayback
 
     /// <summary>Поставить буфер сэмплов в очередь на воспроизведение.</summary>
     void PlaySamples(float[] samples);
+
+    /// <summary>Остановить текущее воспроизведение.</summary>
+    void StopPlayback();
 }

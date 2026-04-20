@@ -5,45 +5,37 @@ using GuitarToolkit.UI;
 
 namespace GuitarToolkit.Desktop;
 
-/// <summary>
-/// Мост между NAudio и движками Core.
-/// Захватывает звук с выбранного устройства → подаёт в TunerEngine.
-/// Воспроизводит метроном и аккорды через WaveOutEvent.
-/// Реализует IAudioHost для UI.
-/// </summary>
 public class AudioBridge : IAudioPlayback, IDisposable
 {
     private WaveInEvent? _waveIn;
     private WaveOutEvent? _waveOut;
     private MixingSampleProvider? _mixer;
 
-    private float[]? _playbackBuffer;
-    private int _playbackPos;
+    private StoppableProvider? _currentPlayback;
 
     private static readonly WaveFormat Format = WaveFormat.CreateIeeeFloatWaveFormat(44100, 1);
 
-    // ── Движки Core ──────────────────────────────────────────
     public TunerEngine Tuner { get; }
     public MetronomeEngine Metronome { get; }
 
-    // ── IAudioHost ───────────────────────────────────────────
     public int SampleRate => 44100;
 
     public void PlaySamples(float[] samples)
     {
-        // Воспроизводим через микшер NAudio
-        float[] buf = new float[samples.Length];
-        Array.Copy(samples, buf, samples.Length);
+        // Останавливаем предыдущее
+        _currentPlayback?.Stop();
 
-        byte[] bytes = new byte[buf.Length * 4];
-        Buffer.BlockCopy(buf, 0, bytes, 0, bytes.Length);
-
-        var provider = new RawSourceWaveStream(bytes, 0, bytes.Length, Format)
-            .ToSampleProvider();
+        var provider = new StoppableProvider(samples, SampleRate);
+        _currentPlayback = provider;
         _mixer?.AddMixerInput(provider);
     }
 
-    // ── Устройства ввода ─────────────────────────────────────
+    public void StopPlayback()
+    {
+        _currentPlayback?.Stop();
+        _currentPlayback = null;
+    }
+
     public static List<string> GetInputDevices()
     {
         var devices = new List<string>();
@@ -54,8 +46,47 @@ public class AudioBridge : IAudioPlayback, IDisposable
         }
         return devices;
     }
+
     /// <summary>
-    /// Постоянный аудиопоток метронома для микшера NAudio.
+    /// Провайдер, который можно остановить извне.
+    /// </summary>
+    private class StoppableProvider : ISampleProvider
+    {
+        private readonly float[] _buffer;
+        private int _pos;
+        private bool _stopped;
+
+        public WaveFormat WaveFormat { get; }
+
+        public StoppableProvider(float[] buffer, int sampleRate)
+        {
+            _buffer = buffer;
+            WaveFormat = WaveFormat.CreateIeeeFloatWaveFormat(sampleRate, 1);
+        }
+
+        public void Stop() => _stopped = true;
+
+        public int Read(float[] buffer, int offset, int count)
+        {
+            if (_stopped || _pos >= _buffer.Length)
+            {
+                Array.Clear(buffer, offset, count);
+                return 0; // сигнал микшеру убрать этот источник
+            }
+
+            int toCopy = Math.Min(count, _buffer.Length - _pos);
+            Array.Copy(_buffer, _pos, buffer, offset, toCopy);
+            _pos += toCopy;
+
+            if (toCopy < count)
+                Array.Clear(buffer, offset + toCopy, count - toCopy);
+
+            return toCopy;
+        }
+    }
+
+    /// <summary>
+    /// Постоянный поток метронома.
     /// </summary>
     private class MetronomeProvider : ISampleProvider
     {
@@ -70,7 +101,6 @@ public class AudioBridge : IAudioPlayback, IDisposable
 
         public int Read(float[] buffer, int offset, int count)
         {
-            // Очищаем буфер и заполняем метрономом
             Array.Clear(buffer, offset, count);
             float[] temp = new float[count];
             _engine.ProcessBlock(temp, count);
@@ -78,23 +108,21 @@ public class AudioBridge : IAudioPlayback, IDisposable
             return count;
         }
     }
-    // ── Конструктор ──────────────────────────────────────────
+
     public AudioBridge()
     {
         Tuner = new TunerEngine(sampleRate: SampleRate);
         Metronome = new MetronomeEngine();
         Metronome.Initialize(SampleRate);
 
-        // Выход — постоянно работающий микшер
         _mixer = new MixingSampleProvider(Format) { ReadFully = true };
         _waveOut = new WaveOutEvent { DesiredLatency = 100 };
         _waveOut.Init(_mixer);
         _waveOut.Play();
-        // Метроном — постоянный поток в микшере
+
         _mixer.AddMixerInput(new MetronomeProvider(Metronome, SampleRate));
     }
 
-    // ── Управление входом ────────────────────────────────────
     public void StartInput(int deviceIndex)
     {
         StopInput();
@@ -137,7 +165,6 @@ public class AudioBridge : IAudioPlayback, IDisposable
         Tuner.ProcessSamples(samples, count);
     }
 
-    // ── Очистка ──────────────────────────────────────────────
     public void Dispose()
     {
         StopInput();
