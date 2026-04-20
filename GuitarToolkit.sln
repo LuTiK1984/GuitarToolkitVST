@@ -10,6 +10,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GuitarToolkit.UI", "GuitarT
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GuitarToolkit.Desktop", "GuitarToolkit.Desktop\GuitarToolkit.Desktop.csproj", "{32E6B71E-7C48-61B5-746E-39A2A0A2FA94}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GuitarToolkit.Tests", "GuitarToolkit.Tests\GuitarToolkit.Tests.csproj", "{C2672D2C-89BF-148F-1FC0-05B7BE842812}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -32,6 +34,10 @@ Global
 		{32E6B71E-7C48-61B5-746E-39A2A0A2FA94}.Debug|x64.Build.0 = Debug|x64
 		{32E6B71E-7C48-61B5-746E-39A2A0A2FA94}.Release|x64.ActiveCfg = Release|x64
 		{32E6B71E-7C48-61B5-746E-39A2A0A2FA94}.Release|x64.Build.0 = Release|x64
+		{C2672D2C-89BF-148F-1FC0-05B7BE842812}.Debug|x64.ActiveCfg = Debug|x64
+		{C2672D2C-89BF-148F-1FC0-05B7BE842812}.Debug|x64.Build.0 = Debug|x64
+		{C2672D2C-89BF-148F-1FC0-05B7BE842812}.Release|x64.ActiveCfg = Release|x64
+		{C2672D2C-89BF-148F-1FC0-05B7BE842812}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
