@@ -1,8 +1,9 @@
+using GuitarToolkit.Core.DSP;
+using GuitarToolkit.Core.Models;
+using GuitarToolkit.Core.Services;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
-using GuitarToolkit.Core.DSP;
-using GuitarToolkit.Core.Models;
 
 namespace GuitarToolkit.UI;
 
@@ -31,14 +32,32 @@ public partial class ProgressionView : UserControl
         PresetNameBox.Foreground = new SolidColorBrush(Color.FromRgb(124, 111, 150));
     }
 
-    public void Initialize(IAudioPlayback audio)
+    public void Initialize(IAudioPlayback audio) => Initialize(audio, null);
+
+    public void Initialize(IAudioPlayback audio, UserSettings? settings)
     {
         _audio = audio;
         ProgressionBuilder.LoadPresetsFromDisk();
         BuildKeyButtons();
         BuildModeBox();
         BuildPresetButtons();
+
+        if (settings != null)
+        {
+            _selectedKey = settings.LastProgressionKey;
+            HighlightKeyButtons();
+            ModeBox.SelectedIndex = Math.Clamp(settings.LastModeIndex, 0, ModeBox.Items.Count - 1);
+            BpmSlider.Value = settings.ProgressionBPM;
+        }
+
         UpdateDiatonicChords();
+    }
+
+    public void SaveTo(UserSettings settings)
+    {
+        settings.LastProgressionKey = _selectedKey;
+        settings.LastModeIndex = ModeBox.SelectedIndex;
+        settings.ProgressionBPM = (int)BpmSlider.Value;
     }
 
     // ── Тональность ──────────────────────────────────────────

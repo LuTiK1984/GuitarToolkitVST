@@ -1,9 +1,10 @@
+using GuitarToolkit.Core.DSP;
+using GuitarToolkit.Core.Models;
+using GuitarToolkit.Core.Services;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Shapes;
-using GuitarToolkit.Core.Models;
-using GuitarToolkit.Core.DSP;
 
 namespace GuitarToolkit.UI;
 
@@ -42,12 +43,29 @@ public partial class ChordView : UserControl
         InitializeComponent();
     }
 
-    public void Initialize(IAudioPlayback audioHost)
+    public void SaveTo(UserSettings settings)
+    {
+        settings.LastChordRoot = _selectedRoot;
+        settings.LastChordType = _selectedType;
+    }
+
+    public void Initialize(IAudioPlayback audioHost) => Initialize(audioHost, null);
+
+    public void Initialize(IAudioPlayback audioHost, UserSettings? settings)
     {
         _audioHost = audioHost;
         ChordLibrary.LoadFavorites();
         BuildRootButtons();
         BuildTypeButtons();
+
+        if (settings != null)
+        {
+            _selectedRoot = settings.LastChordRoot;
+            _selectedType = settings.LastChordType;
+            HighlightButtons(_rootButtons, _selectedRoot);
+            HighlightTypeButtons();
+        }
+
         UpdateChord();
     }
 

@@ -30,11 +30,35 @@ public partial class MetronomeView : UserControl
         InitializeComponent();
     }
 
-    public void Initialize(MetronomeEngine metronome)
+    public void SaveTo(UserSettings settings)
+    {
+        settings.BPM = (int)BpmSlider.Value;
+        settings.BeatsPerMeasure = _metronome?.BeatsPerMeasure ?? 4;
+        settings.MetronomeVolume = (float)VolumeSlider.Value;
+    }
+
+    public void ToggleStartStop()
+    {
+        StartStop_Click(this, new RoutedEventArgs());
+    }
+
+    public void Initialize(MetronomeEngine metronome) => Initialize(metronome, null);
+
+    public void Initialize(MetronomeEngine metronome, UserSettings? settings)
     {
         _metronome = metronome;
         _metronome.BeatTick += OnBeat;
-        BuildBeatDots();
+
+        if (settings != null)
+        {
+            BpmSlider.Value = settings.BPM;
+            VolumeSlider.Value = settings.MetronomeVolume;
+            SetBeats(settings.BeatsPerMeasure);
+        }
+        else
+        {
+            BuildBeatDots();
+        }
     }
 
     private void BuildBeatDots()

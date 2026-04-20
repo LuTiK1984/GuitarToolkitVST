@@ -12,7 +12,6 @@ public partial class TunerView : UserControl
     private TunerEngine? _tuner;
     private string _displayedNote = "—";
 
-    // Статические кисти — не создаём новые на каждый кадр
     private static readonly SolidColorBrush BrushGreen = new(Color.FromRgb(166, 227, 161));
     private static readonly SolidColorBrush BrushYellow = new(Color.FromRgb(249, 226, 175));
     private static readonly SolidColorBrush BrushRed = new(Color.FromRgb(243, 139, 168));
@@ -32,21 +31,38 @@ public partial class TunerView : UserControl
         BrushInTuneBg.Freeze(); BrushDefaultBg.Freeze();
     }
 
-    public TunerView()
-    {
-        InitializeComponent();
-    }
+    public TunerView() { InitializeComponent(); }
 
-    public void Initialize(TunerEngine tuner)
+    public void Initialize(TunerEngine tuner) => Initialize(tuner, null);
+
+    public void Initialize(TunerEngine tuner, UserSettings? settings)
     {
         _tuner = tuner;
 
         foreach (var t in Tunings.All.Keys)
             TuningBox.Items.Add(t);
-        TuningBox.SelectedIndex = 0;
+
+        if (settings != null)
+        {
+            TuningBox.SelectedIndex = Math.Clamp(settings.TuningIndex, 0, TuningBox.Items.Count - 1);
+            GainSlider.Value = settings.TunerGainDb;
+            _tuner.ReferenceA = settings.ReferenceA;
+            RefLabel.Text = settings.ReferenceA.ToString("F0");
+        }
+        else
+        {
+            TuningBox.SelectedIndex = 0;
+        }
 
         _tuner.NoteDetected += OnNoteDetected;
         _tuner.VolumeChanged += OnVolumeChanged;
+    }
+
+    public void SaveTo(UserSettings settings)
+    {
+        settings.TunerGainDb = (float)GainSlider.Value;
+        settings.ReferenceA = _tuner?.ReferenceA ?? 440f;
+        settings.TuningIndex = TuningBox.SelectedIndex;
     }
 
     private void OnNoteDetected(string note, float freq, float cents)
@@ -66,7 +82,6 @@ public partial class TunerView : UserControl
         FreqLabel.Text = $"{freq:F1} Hz";
         CentsLabel.Text = $"{cents:+0.0;-0.0;0} центов";
 
-        // Плавная смена ноты — fade out/in
         if (note != _displayedNote && note != "—")
         {
             var fadeOut = new DoubleAnimation(1, 0.3, TimeSpan.FromMilliseconds(60));
@@ -85,7 +100,6 @@ public partial class TunerView : UserControl
             _displayedNote = "—";
         }
 
-        // Стрелка: шкала 340px
         double x = 170 + (cents / 50.0) * 165;
         x = Math.Clamp(x, 5, 335);
 
@@ -127,10 +141,7 @@ public partial class TunerView : UserControl
         if (GainLabel != null) GainLabel.Text = $"+{e.NewValue:F0} dB";
     }
 
-    private void TuningBox_SelectionChanged(object s, SelectionChangedEventArgs e)
-    {
-        BuildStrings();
-    }
+    private void TuningBox_SelectionChanged(object s, SelectionChangedEventArgs e) => BuildStrings();
 
     private void BuildStrings()
     {
@@ -143,7 +154,6 @@ public partial class TunerView : UserControl
         for (int i = 0; i < strings.Length; i++)
         {
             int strNum = 6 - i;
-            // Вычисляем частоту каждой струны для octave-aware подсветки
             float strFreq = NoteUtils.NoteToFrequency(strings[i]);
 
             var border = new Border
@@ -151,7 +161,7 @@ public partial class TunerView : UserControl
                 Width = 56, Height = 56, Margin = new Thickness(4),
                 CornerRadius = new CornerRadius(6),
                 Background = BrushCard,
-                Tag = strFreq,  // храним частоту, а не имя
+                Tag = strFreq,
                 ToolTip = $"Струна {strNum}: {strings[i]} ({strFreq:F1} Гц)"
             };
 
@@ -174,29 +184,24 @@ public partial class TunerView : UserControl
         }
     }
 
-    /// <summary>
-    /// Подсвечивает ближайшую по ЧАСТОТЕ струну (а не просто по имени ноты).
-    /// </summary>
     private void HighlightClosestString(float detectedFreq)
     {
         if (detectedFreq <= 0) return;
 
         int closestIdx = -1;
         float minDist = float.MaxValue;
-
         int idx = 0;
+
         foreach (var item in StringsPanel.Items)
         {
             if (item is Border b && b.Tag is float strFreq)
             {
-                // Расстояние в полутонах
                 float dist = MathF.Abs(12f * MathF.Log2(detectedFreq / strFreq));
                 if (dist < minDist) { minDist = dist; closestIdx = idx; }
             }
             idx++;
         }
 
-        // Подсвечиваем только если в пределах полутона от струны
         idx = 0;
         foreach (var item in StringsPanel.Items)
         {

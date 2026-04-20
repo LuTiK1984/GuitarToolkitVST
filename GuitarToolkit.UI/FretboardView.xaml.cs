@@ -1,9 +1,10 @@
+using GuitarToolkit.Core.DSP;
+using GuitarToolkit.Core.Models;
+using GuitarToolkit.Core.Services;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Shapes;
-using GuitarToolkit.Core.DSP;
-using GuitarToolkit.Core.Models;
 
 namespace GuitarToolkit.UI;
 
@@ -42,11 +43,29 @@ public partial class FretboardView : UserControl
         BuildScaleBox();
     }
 
-    public void Initialize(IAudioPlayback audio)
+    public void Initialize(IAudioPlayback audio) => Initialize(audio, null);
+
+    public void Initialize(IAudioPlayback audio, UserSettings? settings)
     {
         _audio = audio;
-    }
 
+        if (settings != null)
+        {
+            int rootIdx = Array.IndexOf(ScaleLibrary.NoteNames, settings.LastScaleRoot);
+            if (rootIdx >= 0)
+            {
+                _selectedRoot = settings.LastScaleRoot;
+                _selectedRootSemitone = rootIdx;
+            }
+            ScaleBox.SelectedIndex = Math.Clamp(settings.LastScaleIndex, 0, ScaleLibrary.All.Count - 1);
+            HighlightRootButtons();
+        }
+    }
+    public void SaveTo(UserSettings settings)
+    {
+        settings.LastScaleRoot = _selectedRoot;
+        settings.LastScaleIndex = ScaleBox.SelectedIndex;
+    }
     private void Canvas_SizeChanged(object sender, SizeChangedEventArgs e)
     {
         DrawFretboard();
