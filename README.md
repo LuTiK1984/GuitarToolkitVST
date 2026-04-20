@@ -263,4 +263,4 @@ GuitarToolkit появится в списке **эффектов** (не инс
 
 ## Лицензия
 
-Учебный проект, БГТУ, направление 09.03.01 ИВТ. VST3 — товарный знак Steinberg Media Technologies.
+Учебный проект. VST3 — товарный знак Steinberg Media Technologies.
