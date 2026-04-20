@@ -1,23 +1,67 @@
 namespace GuitarToolkit.Core.Models;
 
-/// <summary>
-/// Библиотека гитарных аккордов.
-/// Генерирует аппликатуры из шаблонов E-формы и A-формы + ручные открытые аккорды.
-/// </summary>
 public static class ChordLibrary
 {
     private static readonly string[] Roots = { "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B" };
 
-    // Типы аккордов для UI
     public static readonly string[] Types = { "Major", "m", "7", "maj7", "m7", "sus2", "sus4", "dim", "aug" };
 
     public static IReadOnlyList<string> AllRoots => Roots;
     public static IReadOnlyList<string> AllTypes => Types;
 
-    // ── Шаблоны форм (относительные лады) ────────────────────
+    // Хранилище: ключ → список вариантов аппликатуры
+    private static readonly Dictionary<string, List<ChordDefinition>> _cache = new();
 
-    // E-форма: тоника на 6-й струне
-    // Индекс 0 в шаблоне = открытая (при rootFret=0) или баррэ-лад
+    // ── Избранное ────────────────────────────────────────────
+
+    public static readonly HashSet<string> Favorites = new();
+
+    private static string FavoritesPath =>
+        System.IO.Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+            "GuitarToolkit", "favorites.json");
+
+    public static void LoadFavorites()
+    {
+        try
+        {
+            if (!System.IO.File.Exists(FavoritesPath)) return;
+            string json = System.IO.File.ReadAllText(FavoritesPath);
+            var items = System.Text.Json.JsonSerializer.Deserialize(
+                json, typeof(string[])) as string[];
+            if (items != null)
+            {
+                Favorites.Clear();
+                foreach (var item in items) Favorites.Add(item);
+            }
+        }
+        catch { }
+    }
+
+    public static void SaveFavorites()
+    {
+        try
+        {
+            var dir = System.IO.Path.GetDirectoryName(FavoritesPath)!;
+            if (!System.IO.Directory.Exists(dir))
+                System.IO.Directory.CreateDirectory(dir);
+            string json = System.Text.Json.JsonSerializer.Serialize(Favorites.ToArray());
+            System.IO.File.WriteAllText(FavoritesPath, json);
+        }
+        catch { }
+    }
+
+    public static bool IsFavorite(string root, string type) => Favorites.Contains($"{root}|{type}");
+
+    public static void ToggleFavorite(string root, string type)
+    {
+        string key = $"{root}|{type}";
+        if (!Favorites.Remove(key)) Favorites.Add(key);
+        SaveFavorites();
+    }
+
+    // ── Шаблоны ──────────────────────────────────────────────
+
     private static readonly Dictionary<string, int[]> EShapes = new()
     {
         { "Major", new[] { 0, 2, 2, 1, 0, 0 } },
@@ -29,7 +73,6 @@ public static class ChordLibrary
         { "aug",   new[] { 0, 3, 2, 1, 1, 0 } },
     };
 
-    // A-форма: тоника на 5-й струне
     private static readonly Dictionary<string, int[]> AShapes = new()
     {
         { "Major", new[] { -1, 0, 2, 2, 2, 0 } },
@@ -42,7 +85,6 @@ public static class ChordLibrary
         { "dim",   new[] { -1, 0, 1, 2, 1, -1 } },
     };
 
-    // Открытые аккорды с уникальными аппликатурами (переопределяют сгенерированные)
     private static readonly List<ChordDefinition> OpenOverrides = new()
     {
         new("C",  "Major", new[] { -1, 3, 2, 0, 1, 0 }, 1),
@@ -77,73 +119,93 @@ public static class ChordLibrary
         new("E",  "aug",   new[] { 0, 3, 2, 1, 1, 0 }, 1),
     };
 
-    // Кеш всех аккордов
-    private static readonly Dictionary<string, ChordDefinition> _cache = new();
-
     static ChordLibrary()
     {
-        // 1. Генерируем из E-формы (тоника на 6-й струне)
-        // E=лад 0, F=1, F#=2, G=3, G#=4, A=5, A#=6, B=7, C=8, C#=9, D=10, D#=11
+        // E-формы
         foreach (var (type, shape) in EShapes)
         {
             for (int fret = 0; fret <= 11; fret++)
             {
-                int rootIdx = (4 + fret) % 12; // E = индекс 4 в массиве Roots
+                int rootIdx = (4 + fret) % 12;
                 string root = Roots[rootIdx];
-                var chord = FromShape(root, type, shape, fret);
-                string key = $"{root}|{type}";
-                _cache.TryAdd(key, chord);
+                AddVoicing(root, type, FromShape(root, type, shape, fret));
             }
         }
 
-        // 2. Генерируем из A-формы (тоника на 5-й струне)
+        // A-формы
         foreach (var (type, shape) in AShapes)
         {
             for (int fret = 0; fret <= 11; fret++)
             {
-                int rootIdx = (9 + fret) % 12; // A = индекс 9 в массиве Roots
+                int rootIdx = (9 + fret) % 12;
                 string root = Roots[rootIdx];
-                string key = $"{root}|{type}";
-
-                // A-форму добавляем только если нет E-формы с более низкой позицией
-                if (!_cache.ContainsKey(key))
-                    _cache[key] = FromShape(root, type, shape, fret);
-                else if (_cache[key].BaseFret > (fret == 0 ? 1 : fret))
-                    _cache[key] = FromShape(root, type, shape, fret);
+                AddVoicing(root, type, FromShape(root, type, shape, fret));
             }
         }
 
-        // 3. Перекрываем ручными открытыми аккордами
+        // Открытые (добавляются первыми в список)
         foreach (var chord in OpenOverrides)
         {
             string key = $"{chord.Root}|{chord.Type}";
-            _cache[key] = chord;
+            if (_cache.ContainsKey(key))
+                _cache[key].Insert(0, chord);
+            else
+                _cache[key] = new List<ChordDefinition> { chord };
         }
+
+        // Убираем дубликаты по Frets
+        foreach (var kvp in _cache)
+        {
+            var unique = kvp.Value
+                .GroupBy(c => string.Join(",", c.Frets))
+                .Select(g => g.First())
+                .OrderBy(c => c.BaseFret)
+                .ToList();
+            _cache[kvp.Key] = unique;
+        }
+    }
+
+    private static void AddVoicing(string root, string type, ChordDefinition chord)
+    {
+        string key = $"{root}|{type}";
+        if (!_cache.ContainsKey(key))
+            _cache[key] = new List<ChordDefinition>();
+        _cache[key].Add(chord);
     }
 
     private static ChordDefinition FromShape(string root, string type, int[] shape, int rootFret)
     {
         int[] frets = new int[6];
         for (int i = 0; i < 6; i++)
-        {
             frets[i] = shape[i] < 0 ? -1 : shape[i] + rootFret;
-        }
         return new ChordDefinition(root, type, frets, rootFret == 0 ? 1 : rootFret);
     }
 
     /// <summary>
-    /// Получить аккорд по тонике и типу.
+    /// Первый (основной) вариант аккорда. Обратная совместимость.
     /// </summary>
     public static ChordDefinition? Get(string root, string type)
     {
-        return _cache.GetValueOrDefault($"{root}|{type}");
+        return _cache.GetValueOrDefault($"{root}|{type}")?.FirstOrDefault();
     }
 
     /// <summary>
-    /// Все аккорды для данной тоники.
+    /// Все варианты аппликатуры для данного аккорда.
     /// </summary>
-    public static IEnumerable<ChordDefinition> GetByRoot(string root)
+    public static IReadOnlyList<ChordDefinition> GetVoicings(string root, string type)
     {
-        return _cache.Values.Where(c => c.Root == root);
+        return _cache.GetValueOrDefault($"{root}|{type}") ?? new List<ChordDefinition>();
+    }
+
+    /// <summary>
+    /// Все аккорды-избранные.
+    /// </summary>
+    public static IEnumerable<ChordDefinition> GetFavorites()
+    {
+        return Favorites.Select(key =>
+        {
+            var parts = key.Split('|');
+            return parts.Length == 2 ? Get(parts[0], parts[1]) : null;
+        }).Where(c => c != null)!;
     }
 }

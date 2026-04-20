@@ -20,17 +20,14 @@ public partial class TunerView : UserControl
     {
         _tuner = tuner;
 
-        // Заполняем ComboBox строёв
         foreach (var t in Tunings.All.Keys)
             TuningBox.Items.Add(t);
         TuningBox.SelectedIndex = 0;
 
-        // Подписка на события движка (приходят из аудиопотока!)
         _tuner.NoteDetected += OnNoteDetected;
         _tuner.VolumeChanged += OnVolumeChanged;
     }
 
-    // ── События от движка ────────────────────────────────────
     private void OnNoteDetected(string note, float freq, float cents)
     {
         try { Dispatcher.BeginInvoke(() => UpdateUI(note, freq, cents)); }
@@ -43,16 +40,15 @@ public partial class TunerView : UserControl
         catch { }
     }
 
-    // ── Обновление UI ────────────────────────────────────────
     private void UpdateUI(string note, float freq, float cents)
     {
         NoteLabel.Text = note;
         FreqLabel.Text = $"{freq:F1} Hz";
         CentsLabel.Text = $"{cents:+0.0;-0.0;0} центов";
 
-        // Стрелка: cents от -50 до +50, ширина шкалы 320
-        double x = 160 + (cents / 50.0) * 155;
-        x = Math.Clamp(x, 5, 315);
+        // Шкала 340px: центр 170, размах ±165
+        double x = 170 + (cents / 50.0) * 165;
+        x = Math.Clamp(x, 5, 335);
 
         var anim = new DoubleAnimation
         {
@@ -61,15 +57,14 @@ public partial class TunerView : UserControl
         };
         NeedleTranslate.BeginAnimation(TranslateTransform.XProperty, anim);
 
-        // Цвет стрелки
         bool inTune = Math.Abs(cents) < 5;
         bool close = Math.Abs(cents) < 15;
 
         NeedleArrow.Fill = inTune
-            ? new SolidColorBrush(Color.FromRgb(166, 227, 161))    // зелёный
+            ? new SolidColorBrush(Color.FromRgb(166, 227, 161))
             : close
-                ? new SolidColorBrush(Color.FromRgb(249, 226, 175)) // жёлтый
-                : new SolidColorBrush(Color.FromRgb(243, 139, 168)); // красный
+                ? new SolidColorBrush(Color.FromRgb(249, 226, 175))
+                : new SolidColorBrush(Color.FromRgb(243, 139, 168));
 
         if (inTune)
         {
@@ -89,18 +84,17 @@ public partial class TunerView : UserControl
 
     private void UpdateVolumeBar(float volume)
     {
-        double width = Math.Clamp(volume * 600, 0, 320);
+        double width = Math.Clamp(volume * 640, 0, 340);
         VolumeBar.Width = width;
 
-        if (width < 192)
+        if (width < 204)
             VolumeBar.Fill = new SolidColorBrush(Color.FromRgb(166, 227, 161));
-        else if (width < 272)
+        else if (width < 289)
             VolumeBar.Fill = new SolidColorBrush(Color.FromRgb(249, 226, 175));
         else
             VolumeBar.Fill = new SolidColorBrush(Color.FromRgb(243, 139, 168));
     }
 
-    // ── Усиление ─────────────────────────────────────────────
     private void GainSlider_ValueChanged(object s, RoutedPropertyChangedEventArgs<double> e)
     {
         if (_tuner == null) return;
@@ -109,7 +103,6 @@ public partial class TunerView : UserControl
         if (GainLabel != null) GainLabel.Text = $"+{e.NewValue:F0} dB";
     }
 
-    // ── Строй ────────────────────────────────────────────────
     private void TuningBox_SelectionChanged(object s, SelectionChangedEventArgs e)
     {
         BuildStrings();
@@ -172,7 +165,6 @@ public partial class TunerView : UserControl
         }
     }
 
-    // ── Эталон ───────────────────────────────────────────────
     private void RefUp_Click(object s, RoutedEventArgs e) => SetRef(_tuner!.ReferenceA + 1);
     private void RefDown_Click(object s, RoutedEventArgs e) => SetRef(_tuner!.ReferenceA - 1);
 

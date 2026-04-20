@@ -47,8 +47,8 @@ public class GuitarToolkitPlugin : AudioPluginWPF, IAudioPlayback
         PluginVersion = "1.0.0";
         PluginID = 0x47546B7401000001;
         HasUserInterface = true;
-        EditorWidth = 800;
-        EditorHeight = 550;
+        EditorWidth = 950;
+        EditorHeight = 650;
     }
 
     public override void Initialize()

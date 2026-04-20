@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              Background="#1A1525">
 
-    <Grid>
+    <Grid Margin="20 12">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
@@ -11,16 +11,14 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <!-- Верхняя панель — строй и эталон -->
+        <!-- Строй и эталон -->
         <StackPanel Grid.Row="0" Orientation="Horizontal"
-                    HorizontalAlignment="Center" Margin="0 16 0 0">
+                    HorizontalAlignment="Center" Margin="0 4 0 0">
 
             <StackPanel Margin="0 0 32 0">
                 <TextBlock Text="Строй" Foreground="#7C6F96" FontSize="12"
                            HorizontalAlignment="Center" Margin="0 0 0 4"/>
-                <ComboBox x:Name="TuningBox" Width="200" Height="32"
-                          Background="#2D2240" Foreground="#CDD6F4"
-                          BorderThickness="0" FontSize="13"
+                <ComboBox x:Name="TuningBox" Width="220" Height="32"
                           SelectionChanged="TuningBox_SelectionChanged"/>
             </StackPanel>
 
@@ -28,34 +26,31 @@
                 <TextBlock Text="Эталон (Hz)" Foreground="#7C6F96" FontSize="12"
                            HorizontalAlignment="Center" Margin="0 0 0 4"/>
                 <StackPanel Orientation="Horizontal">
-                    <Button Content="−" Width="32" Height="32"
-                            Click="RefDown_Click" FontSize="16"
-                            Background="#4A3860" Foreground="#CDD6F4" BorderThickness="0"/>
+                    <Button Content="−" Width="34" Height="34"
+                            Click="RefDown_Click" FontSize="16"/>
                     <TextBlock x:Name="RefLabel" Text="440"
-                               FontSize="20" FontWeight="Bold" Foreground="#CBA6F7"
+                               FontSize="22" FontWeight="Bold" Foreground="#CBA6F7"
                                VerticalAlignment="Center" Margin="12 0"
-                               MinWidth="40" TextAlignment="Center"/>
-                    <Button Content="+" Width="32" Height="32"
-                            Click="RefUp_Click" FontSize="16"
-                            Background="#4A3860" Foreground="#CDD6F4" BorderThickness="0"/>
+                               MinWidth="44" TextAlignment="Center"/>
+                    <Button Content="+" Width="34" Height="34"
+                            Click="RefUp_Click" FontSize="16"/>
                 </StackPanel>
             </StackPanel>
         </StackPanel>
 
-        <!-- Центр — нота и стрелка -->
-        <StackPanel Grid.Row="1" VerticalAlignment="Center"
-                    HorizontalAlignment="Center">
+        <!-- Нота и стрелка -->
+        <StackPanel Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center">
 
             <TextBlock x:Name="NoteLabel" Text="—"
-                       FontSize="96" FontWeight="Bold" Foreground="#CDD6F4"
+                       FontSize="88" FontWeight="Bold" Foreground="#CDD6F4"
                        HorizontalAlignment="Center"/>
 
             <TextBlock x:Name="FreqLabel" Text="— Hz"
-                       FontSize="18" Foreground="#7C6F96"
-                       HorizontalAlignment="Center" Margin="0 -8 0 20"/>
+                       FontSize="16" Foreground="#7C6F96"
+                       HorizontalAlignment="Center" Margin="0 -6 0 16"/>
 
             <!-- Шкала центов -->
-            <Grid Width="320" Height="70" Margin="0 0 0 8">
+            <Grid Width="340" Height="65" Margin="0 0 0 6">
                 <Rectangle Height="4" VerticalAlignment="Center"
                            Fill="#2D2240" RadiusX="2" RadiusY="2"/>
                 <Rectangle Width="3" Height="20" Fill="#A6E3A1"
@@ -68,33 +63,33 @@
                 <TextBlock Text="+50" Foreground="#7C6F96" FontSize="11"
                            HorizontalAlignment="Right" VerticalAlignment="Bottom"/>
 
-                <Canvas Width="320" Height="60" VerticalAlignment="Center">
+                <Canvas Width="340" Height="55" VerticalAlignment="Center">
                     <Polygon x:Name="NeedleArrow"
                              Points="0,-18 6,10 -6,10" Fill="#CBA6F7">
                         <Polygon.RenderTransform>
-                            <TranslateTransform x:Name="NeedleTranslate" X="160" Y="30"/>
+                            <TranslateTransform x:Name="NeedleTranslate" X="170" Y="28"/>
                         </Polygon.RenderTransform>
                     </Polygon>
                 </Canvas>
             </Grid>
 
             <TextBlock x:Name="CentsLabel" Text="0 центов"
-                       FontSize="16" Foreground="#7C6F96"
+                       FontSize="15" Foreground="#7C6F96"
                        HorizontalAlignment="Center"/>
 
             <Border x:Name="InTuneIndicator" Background="#2D2240"
-                    CornerRadius="8" Padding="20 8" Margin="0 12 0 0"
+                    CornerRadius="8" Padding="24 8" Margin="0 10 0 0"
                     HorizontalAlignment="Center">
                 <TextBlock x:Name="InTuneLabel" Text="Ожидание сигнала..."
-                           FontSize="16" FontWeight="Bold" Foreground="#7C6F96"
+                           FontSize="15" FontWeight="Bold" Foreground="#7C6F96"
                            HorizontalAlignment="Center"/>
             </Border>
         </StackPanel>
 
         <!-- Струны -->
-        <StackPanel Grid.Row="2" Margin="0 0 0 12">
+        <StackPanel Grid.Row="2" Margin="0 0 0 8">
             <TextBlock Text="Струны" Foreground="#7C6F96" FontSize="12"
-                       HorizontalAlignment="Center" Margin="0 12 0 6"/>
+                       HorizontalAlignment="Center" Margin="0 8 0 6"/>
             <ItemsControl x:Name="StringsPanel" HorizontalAlignment="Center">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
@@ -104,23 +99,22 @@
             </ItemsControl>
         </StackPanel>
 
-        <!-- Уровень сигнала и усиление -->
-        <StackPanel Grid.Row="3" Margin="0 0 0 16">
+        <!-- Уровень + усиление -->
+        <StackPanel Grid.Row="3" Margin="0 0 0 8">
             <TextBlock Text="Уровень сигнала" Foreground="#7C6F96" FontSize="12"
                        HorizontalAlignment="Center" Margin="0 0 0 4"/>
-            <Grid Width="320" Height="16" HorizontalAlignment="Center" Margin="0 0 0 8">
-                <Rectangle Fill="#1e3a2a" RadiusX="4" RadiusY="4"/>
+            <Grid Width="340" Height="14" HorizontalAlignment="Center" Margin="0 0 0 8">
+                <Rectangle Fill="#1e3a2a" RadiusX="7" RadiusY="7"/>
                 <Rectangle x:Name="VolumeBar" Fill="#A6E3A1"
-                           HorizontalAlignment="Left" Width="0" RadiusX="4" RadiusY="4"/>
+                           HorizontalAlignment="Left" Width="0" RadiusX="7" RadiusY="7"/>
             </Grid>
-
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                 <TextBlock Text="Усиление:" Foreground="#7C6F96"
                            VerticalAlignment="Center" Margin="0 0 8 0" FontSize="13"/>
                 <Slider x:Name="GainSlider" Minimum="0" Maximum="40" Value="20"
-                        Width="160" VerticalAlignment="Center"
+                        Width="180" VerticalAlignment="Center"
                         ValueChanged="GainSlider_ValueChanged"/>
-                <TextBlock x:Name="GainLabel" Text="+10 dB"
+                <TextBlock x:Name="GainLabel" Text="+20 dB"
                            Foreground="#CDD6F4" FontSize="13"
                            VerticalAlignment="Center" Margin="8 0 0 0"/>
             </StackPanel>
