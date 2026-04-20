@@ -10,10 +10,8 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <!-- Верхняя панель — выбор тоники + гаммы + режим отображения -->
+        <!-- Тоника + гамма + кнопки -->
         <StackPanel Grid.Row="0" Margin="0 0 0 12">
-
-            <!-- Тоника -->
             <StackPanel Orientation="Horizontal" Margin="0 0 0 8">
                 <TextBlock Text="Тоника:" FontSize="14" Foreground="#7C6F96"
                            VerticalAlignment="Center" Margin="0 0 12 0"/>
@@ -26,21 +24,26 @@
                 </ItemsControl>
             </StackPanel>
 
-            <!-- Гамма + переключатель -->
             <StackPanel Orientation="Horizontal">
                 <TextBlock Text="Гамма:" FontSize="14" Foreground="#7C6F96"
                            VerticalAlignment="Center" Margin="0 0 12 0"/>
                 <ComboBox x:Name="ScaleBox" Width="280" Height="30"
-                          Background="#2D2240" Foreground="#CDD6F4"
-                          BorderThickness="0" FontSize="13"
-                          SelectionChanged="ScaleBox_SelectionChanged"/>
+                          SelectionChanged="ScaleBox_SelectionChanged"
+                          ToolTip="Выберите гамму или лад"/>
 
                 <Button x:Name="ModeButton" Content="Ноты"
                         Width="100" Height="30" FontSize="13"
                         Background="#4A3860" Foreground="#CDD6F4"
                         BorderThickness="0" Cursor="Hand"
-                        Margin="16 0 0 0"
-                        Click="ModeButton_Click"/>
+                        Margin="12 0 0 0" Click="ModeButton_Click"
+                        ToolTip="Переключить отображение: ноты / ступени"/>
+
+                <Button x:Name="PlayScaleButton" Content="🔊 Играть"
+                        Width="100" Height="30" FontSize="13"
+                        Background="#CBA6F7" Foreground="#1A1525"
+                        BorderThickness="0" Cursor="Hand"
+                        Margin="8 0 0 0" Click="PlayScale_Click"
+                        ToolTip="Воспроизвести выбранную гамму"/>
             </StackPanel>
         </StackPanel>
 
@@ -52,9 +55,9 @@
         <!-- Гриф -->
         <Border Grid.Row="2" Background="#251D38" CornerRadius="8" Padding="12">
             <Canvas x:Name="FretboardCanvas"
-                    Height="210"
                     Background="Transparent"
-                    HorizontalAlignment="Stretch"/>
+                    HorizontalAlignment="Stretch"
+                    SizeChanged="Canvas_SizeChanged"/>
         </Border>
     </Grid>
 </UserControl>

@@ -19,7 +19,8 @@
                 <TextBlock Text="Строй" Foreground="#7C6F96" FontSize="12"
                            HorizontalAlignment="Center" Margin="0 0 0 4"/>
                 <ComboBox x:Name="TuningBox" Width="220" Height="32"
-                          SelectionChanged="TuningBox_SelectionChanged"/>
+                          SelectionChanged="TuningBox_SelectionChanged"
+                          ToolTip="Выберите строй гитары"/>
             </StackPanel>
 
             <StackPanel>
@@ -27,13 +28,16 @@
                            HorizontalAlignment="Center" Margin="0 0 0 4"/>
                 <StackPanel Orientation="Horizontal">
                     <Button Content="−" Width="34" Height="34"
-                            Click="RefDown_Click" FontSize="16"/>
+                            Click="RefDown_Click" FontSize="16"
+                            ToolTip="Понизить эталонную частоту"/>
                     <TextBlock x:Name="RefLabel" Text="440"
                                FontSize="22" FontWeight="Bold" Foreground="#CBA6F7"
                                VerticalAlignment="Center" Margin="12 0"
-                               MinWidth="44" TextAlignment="Center"/>
+                               MinWidth="44" TextAlignment="Center"
+                               ToolTip="Эталонная частота ноты A4 (стандарт: 440 Гц)"/>
                     <Button Content="+" Width="34" Height="34"
-                            Click="RefUp_Click" FontSize="16"/>
+                            Click="RefUp_Click" FontSize="16"
+                            ToolTip="Повысить эталонную частоту"/>
                 </StackPanel>
             </StackPanel>
         </StackPanel>
@@ -49,8 +53,8 @@
                        FontSize="16" Foreground="#7C6F96"
                        HorizontalAlignment="Center" Margin="0 -6 0 16"/>
 
-            <!-- Шкала центов -->
-            <Grid Width="340" Height="65" Margin="0 0 0 6">
+            <Grid Width="340" Height="65" Margin="0 0 0 6"
+                  ToolTip="Отклонение от ноты в центах (-50 … +50)">
                 <Rectangle Height="4" VerticalAlignment="Center"
                            Fill="#2D2240" RadiusX="2" RadiusY="2"/>
                 <Rectangle Width="3" Height="20" Fill="#A6E3A1"
@@ -103,7 +107,8 @@
         <StackPanel Grid.Row="3" Margin="0 0 0 8">
             <TextBlock Text="Уровень сигнала" Foreground="#7C6F96" FontSize="12"
                        HorizontalAlignment="Center" Margin="0 0 0 4"/>
-            <Grid Width="340" Height="14" HorizontalAlignment="Center" Margin="0 0 0 8">
+            <Grid Width="340" Height="14" HorizontalAlignment="Center" Margin="0 0 0 8"
+                  ToolTip="Уровень входного аудиосигнала">
                 <Rectangle Fill="#1e3a2a" RadiusX="7" RadiusY="7"/>
                 <Rectangle x:Name="VolumeBar" Fill="#A6E3A1"
                            HorizontalAlignment="Left" Width="0" RadiusX="7" RadiusY="7"/>
@@ -113,7 +118,8 @@
                            VerticalAlignment="Center" Margin="0 0 8 0" FontSize="13"/>
                 <Slider x:Name="GainSlider" Minimum="0" Maximum="40" Value="20"
                         Width="180" VerticalAlignment="Center"
-                        ValueChanged="GainSlider_ValueChanged"/>
+                        ValueChanged="GainSlider_ValueChanged"
+                        ToolTip="Усиление входного сигнала (дБ)"/>
                 <TextBlock x:Name="GainLabel" Text="+20 dB"
                            Foreground="#CDD6F4" FontSize="13"
                            VerticalAlignment="Center" Margin="8 0 0 0"/>

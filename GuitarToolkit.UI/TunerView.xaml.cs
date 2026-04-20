@@ -10,6 +10,27 @@ namespace GuitarToolkit.UI;
 public partial class TunerView : UserControl
 {
     private TunerEngine? _tuner;
+    private string _displayedNote = "—";
+
+    // Статические кисти — не создаём новые на каждый кадр
+    private static readonly SolidColorBrush BrushGreen = new(Color.FromRgb(166, 227, 161));
+    private static readonly SolidColorBrush BrushYellow = new(Color.FromRgb(249, 226, 175));
+    private static readonly SolidColorBrush BrushRed = new(Color.FromRgb(243, 139, 168));
+    private static readonly SolidColorBrush BrushAccent = new(Color.FromRgb(203, 166, 247));
+    private static readonly SolidColorBrush BrushDim = new(Color.FromRgb(124, 111, 150));
+    private static readonly SolidColorBrush BrushCard = new(Color.FromRgb(45, 34, 64));
+    private static readonly SolidColorBrush BrushCardActive = new(Color.FromRgb(30, 60, 80));
+    private static readonly SolidColorBrush BrushText = new(Color.FromRgb(205, 214, 244));
+    private static readonly SolidColorBrush BrushInTuneBg = new(Color.FromRgb(30, 50, 35));
+    private static readonly SolidColorBrush BrushDefaultBg = new(Color.FromRgb(52, 38, 70));
+
+    static TunerView()
+    {
+        BrushGreen.Freeze(); BrushYellow.Freeze(); BrushRed.Freeze();
+        BrushAccent.Freeze(); BrushDim.Freeze(); BrushCard.Freeze();
+        BrushCardActive.Freeze(); BrushText.Freeze();
+        BrushInTuneBg.Freeze(); BrushDefaultBg.Freeze();
+    }
 
     public TunerView()
     {
@@ -42,64 +63,67 @@ public partial class TunerView : UserControl
 
     private void UpdateUI(string note, float freq, float cents)
     {
-        NoteLabel.Text = note;
         FreqLabel.Text = $"{freq:F1} Hz";
         CentsLabel.Text = $"{cents:+0.0;-0.0;0} центов";
 
-        // Шкала 340px: центр 170, размах ±165
+        // Плавная смена ноты — fade out/in
+        if (note != _displayedNote && note != "—")
+        {
+            var fadeOut = new DoubleAnimation(1, 0.3, TimeSpan.FromMilliseconds(60));
+            fadeOut.Completed += (s, e) =>
+            {
+                NoteLabel.Text = note;
+                _displayedNote = note;
+                var fadeIn = new DoubleAnimation(0.3, 1, TimeSpan.FromMilliseconds(100));
+                NoteLabel.BeginAnimation(OpacityProperty, fadeIn);
+            };
+            NoteLabel.BeginAnimation(OpacityProperty, fadeOut);
+        }
+        else if (note == "—" && _displayedNote != "—")
+        {
+            NoteLabel.Text = "—";
+            _displayedNote = "—";
+        }
+
+        // Стрелка: шкала 340px
         double x = 170 + (cents / 50.0) * 165;
         x = Math.Clamp(x, 5, 335);
 
-        var anim = new DoubleAnimation
-        {
-            To = x,
-            Duration = TimeSpan.FromMilliseconds(80)
-        };
-        NeedleTranslate.BeginAnimation(TranslateTransform.XProperty, anim);
+        NeedleTranslate.BeginAnimation(TranslateTransform.XProperty,
+            new DoubleAnimation { To = x, Duration = TimeSpan.FromMilliseconds(80) });
 
         bool inTune = Math.Abs(cents) < 5;
         bool close = Math.Abs(cents) < 15;
 
-        NeedleArrow.Fill = inTune
-            ? new SolidColorBrush(Color.FromRgb(166, 227, 161))
-            : close
-                ? new SolidColorBrush(Color.FromRgb(249, 226, 175))
-                : new SolidColorBrush(Color.FromRgb(243, 139, 168));
+        NeedleArrow.Fill = inTune ? BrushGreen : close ? BrushYellow : BrushRed;
 
         if (inTune)
         {
             InTuneLabel.Text = "✓  В СТРОЕ";
-            InTuneLabel.Foreground = new SolidColorBrush(Color.FromRgb(166, 227, 161));
-            InTuneIndicator.Background = new SolidColorBrush(Color.FromRgb(30, 50, 35));
+            InTuneLabel.Foreground = BrushGreen;
+            InTuneIndicator.Background = BrushInTuneBg;
         }
         else
         {
             InTuneLabel.Text = cents > 0 ? "▼  Понизь" : "▲  Повысь";
-            InTuneLabel.Foreground = new SolidColorBrush(Color.FromRgb(203, 166, 247));
-            InTuneIndicator.Background = new SolidColorBrush(Color.FromRgb(52, 38, 70));
+            InTuneLabel.Foreground = BrushAccent;
+            InTuneIndicator.Background = BrushDefaultBg;
         }
 
-        HighlightClosestString(note);
+        HighlightClosestString(freq);
     }
 
     private void UpdateVolumeBar(float volume)
     {
         double width = Math.Clamp(volume * 640, 0, 340);
         VolumeBar.Width = width;
-
-        if (width < 204)
-            VolumeBar.Fill = new SolidColorBrush(Color.FromRgb(166, 227, 161));
-        else if (width < 289)
-            VolumeBar.Fill = new SolidColorBrush(Color.FromRgb(249, 226, 175));
-        else
-            VolumeBar.Fill = new SolidColorBrush(Color.FromRgb(243, 139, 168));
+        VolumeBar.Fill = width < 204 ? BrushGreen : width < 289 ? BrushYellow : BrushRed;
     }
 
     private void GainSlider_ValueChanged(object s, RoutedPropertyChangedEventArgs<double> e)
     {
         if (_tuner == null) return;
-        float linear = MathF.Pow(10f, (float)e.NewValue / 20f);
-        _tuner.Gain = linear;
+        _tuner.Gain = MathF.Pow(10f, (float)e.NewValue / 20f);
         if (GainLabel != null) GainLabel.Text = $"+{e.NewValue:F0} dB";
     }
 
@@ -119,25 +143,29 @@ public partial class TunerView : UserControl
         for (int i = 0; i < strings.Length; i++)
         {
             int strNum = 6 - i;
+            // Вычисляем частоту каждой струны для octave-aware подсветки
+            float strFreq = NoteUtils.NoteToFrequency(strings[i]);
+
             var border = new Border
             {
                 Width = 56, Height = 56, Margin = new Thickness(4),
                 CornerRadius = new CornerRadius(6),
-                Background = new SolidColorBrush(Color.FromRgb(45, 34, 64)),
-                Tag = strings[i]
+                Background = BrushCard,
+                Tag = strFreq,  // храним частоту, а не имя
+                ToolTip = $"Струна {strNum}: {strings[i]} ({strFreq:F1} Гц)"
             };
 
             var stack = new StackPanel { VerticalAlignment = VerticalAlignment.Center };
             stack.Children.Add(new TextBlock
             {
                 Text = $"{strNum}", FontSize = 10,
-                Foreground = new SolidColorBrush(Color.FromRgb(124, 111, 150)),
+                Foreground = BrushDim,
                 HorizontalAlignment = HorizontalAlignment.Center
             });
             stack.Children.Add(new TextBlock
             {
                 Text = strings[i], FontSize = 16, FontWeight = FontWeights.Bold,
-                Foreground = new SolidColorBrush(Color.FromRgb(205, 214, 244)),
+                Foreground = BrushText,
                 HorizontalAlignment = HorizontalAlignment.Center
             });
 
@@ -146,22 +174,40 @@ public partial class TunerView : UserControl
         }
     }
 
-    private void HighlightClosestString(string detectedNote)
+    /// <summary>
+    /// Подсвечивает ближайшую по ЧАСТОТЕ струну (а не просто по имени ноты).
+    /// </summary>
+    private void HighlightClosestString(float detectedFreq)
     {
+        if (detectedFreq <= 0) return;
+
+        int closestIdx = -1;
+        float minDist = float.MaxValue;
+
+        int idx = 0;
         foreach (var item in StringsPanel.Items)
         {
-            if (item is not Border b) continue;
+            if (item is Border b && b.Tag is float strFreq)
+            {
+                // Расстояние в полутонах
+                float dist = MathF.Abs(12f * MathF.Log2(detectedFreq / strFreq));
+                if (dist < minDist) { minDist = dist; closestIdx = idx; }
+            }
+            idx++;
+        }
 
-            string strNoteName = NoteUtils.StripOctave(b.Tag?.ToString() ?? "");
-            bool match = strNoteName == detectedNote;
-
-            b.Background = match
-                ? new SolidColorBrush(Color.FromRgb(30, 60, 80))
-                : new SolidColorBrush(Color.FromRgb(45, 34, 64));
-            b.BorderThickness = new Thickness(match ? 2 : 0);
-            b.BorderBrush = match
-                ? new SolidColorBrush(Color.FromRgb(203, 166, 247))
-                : Brushes.Transparent;
+        // Подсвечиваем только если в пределах полутона от струны
+        idx = 0;
+        foreach (var item in StringsPanel.Items)
+        {
+            if (item is Border b)
+            {
+                bool match = idx == closestIdx && minDist < 1.5f;
+                b.Background = match ? BrushCardActive : BrushCard;
+                b.BorderThickness = new Thickness(match ? 2 : 0);
+                b.BorderBrush = match ? BrushAccent : Brushes.Transparent;
+            }
+            idx++;
         }
     }
 

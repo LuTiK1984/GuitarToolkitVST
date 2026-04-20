@@ -2,23 +2,24 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Shapes;
+using GuitarToolkit.Core.DSP;
 using GuitarToolkit.Core.Models;
 
 namespace GuitarToolkit.UI;
 
 public partial class FretboardView : UserControl
 {
+    private IAudioPlayback? _audio;
     private string _selectedRoot = "C";
     private int _selectedRootSemitone = 0;
     private ScaleDefinition _selectedScale;
-    private bool _showIntervals = false; // false = ноты, true = интервалы
+    private bool _showIntervals = false;
 
     private readonly List<Button> _rootButtons = new();
 
-    // Цвета
-    private static readonly Color RootColor = Color.FromRgb(166, 227, 161);    // зелёный
-    private static readonly Color NoteColor = Color.FromRgb(203, 166, 247);    // голубой
-    private static readonly Color TextDark = Color.FromRgb(30, 30, 46);
+    private static readonly Color RootColor = Color.FromRgb(166, 227, 161);
+    private static readonly Color NoteColor = Color.FromRgb(203, 166, 247);
+    private static readonly Color TextDark = Color.FromRgb(26, 21, 37);
     private static readonly Color TextLight = Color.FromRgb(205, 214, 244);
     private static readonly Color FretColor = Color.FromRgb(90, 72, 110);
     private static readonly Color StringCol = Color.FromRgb(166, 173, 200);
@@ -26,7 +27,6 @@ public partial class FretboardView : UserControl
     private static readonly Color InactiveBg = Color.FromRgb(74, 56, 96);
     private static readonly Color MarkerColor = Color.FromRgb(45, 34, 64);
 
-    // Настройки грифа
     private const int FretCount = 15;
     private const int StringCount = 6;
     private static readonly int[] DotFrets = { 3, 5, 7, 9, 12, 15 };
@@ -40,12 +40,17 @@ public partial class FretboardView : UserControl
 
         BuildRootButtons();
         BuildScaleBox();
-
-        Loaded += (s, e) => DrawFretboard();
-        SizeChanged += (s, e) => DrawFretboard();
     }
 
-    // ── Построение UI ────────────────────────────────────────
+    public void Initialize(IAudioPlayback audio)
+    {
+        _audio = audio;
+    }
+
+    private void Canvas_SizeChanged(object sender, SizeChangedEventArgs e)
+    {
+        DrawFretboard();
+    }
 
     private void BuildRootButtons()
     {
@@ -59,15 +64,14 @@ public partial class FretboardView : UserControl
 
             var btn = new Button
             {
-                Content = note,
-                Width = 40, Height = 30,
+                Content = note, Width = 40, Height = 30,
                 FontSize = 13, FontWeight = FontWeights.Bold,
                 Background = new SolidColorBrush(InactiveBg),
                 Foreground = new SolidColorBrush(TextLight),
                 BorderThickness = new Thickness(0),
                 Cursor = System.Windows.Input.Cursors.Hand,
-                Margin = new Thickness(2),
-                Tag = semitone
+                Margin = new Thickness(2), Tag = semitone,
+                ToolTip = $"Тоника: {note}"
             };
             btn.Click += (s, e) =>
             {
@@ -100,8 +104,6 @@ public partial class FretboardView : UserControl
         }
     }
 
-    // ── События ──────────────────────────────────────────────
-
     private void ScaleBox_SelectionChanged(object s, SelectionChangedEventArgs e)
     {
         if (ScaleBox.SelectedIndex >= 0 && ScaleBox.SelectedIndex < ScaleLibrary.All.Count)
@@ -118,7 +120,30 @@ public partial class FretboardView : UserControl
         DrawFretboard();
     }
 
-    // ── Рисование грифа ──────────────────────────────────────
+    // ── Воспроизведение гаммы ────────────────────────────────
+
+    private void PlayScale_Click(object s, RoutedEventArgs e)
+    {
+        if (_audio == null) return;
+
+        int baseMidi = 60 + _selectedRootSemitone;
+        if (baseMidi > 72) baseMidi -= 12;
+
+        int sr = _audio.SampleRate;
+        var allSamples = new List<float>();
+
+        foreach (int interval in _selectedScale.Intervals.Append(12))
+        {
+            float freq = 440f * MathF.Pow(2f, (baseMidi + interval - 69) / 12f);
+            float[] note = NoteSynth.GenerateNote(freq, sr, duration: 0.35f, volume: 0.25f);
+            allSamples.AddRange(note);
+            allSamples.AddRange(new float[(int)(sr * 0.04f)]);
+        }
+
+        _audio.PlaySamples(allSamples.ToArray());
+    }
+
+    // ── Рисование ────────────────────────────────────────────
 
     private void DrawFretboard()
     {
@@ -128,7 +153,7 @@ public partial class FretboardView : UserControl
         double canvasH = FretboardCanvas.ActualHeight;
         if (canvasW < 100 || canvasH < 50) return;
 
-        double leftPad = 32;  // место для подписей струн
+        double leftPad = 32;
         double topPad = 10;
         double bottomPad = 25;
         double gridW = canvasW - leftPad - 10;
@@ -137,49 +162,39 @@ public partial class FretboardView : UserControl
         double fretW = gridW / FretCount;
         double stringSpacing = gridH / (StringCount - 1);
 
-        // Инфо
         string notes = string.Join(" ",
             _selectedScale.Intervals.Select(i => ScaleLibrary.NoteNames[(_selectedRootSemitone + i) % 12]));
         InfoLabel.Text = $"{_selectedRoot} {_selectedScale.Name}: {notes}";
 
-        // ── Порожек (нулевой лад) ────────────────────────────
-        var nut = new Line
+        // Порожек
+        FretboardCanvas.Children.Add(new Line
         {
-            X1 = leftPad, Y1 = topPad,
-            X2 = leftPad, Y2 = topPad + gridH,
-            Stroke = new SolidColorBrush(TextLight),
-            StrokeThickness = 4
-        };
-        FretboardCanvas.Children.Add(nut);
+            X1 = leftPad, Y1 = topPad, X2 = leftPad, Y2 = topPad + gridH,
+            Stroke = new SolidColorBrush(TextLight), StrokeThickness = 4
+        });
 
-        // ── Лады (вертикальные линии) ────────────────────────
+        // Лады + номера
         for (int f = 1; f <= FretCount; f++)
         {
             double x = leftPad + f * fretW;
-            var line = new Line
+            FretboardCanvas.Children.Add(new Line
             {
-                X1 = x, Y1 = topPad,
-                X2 = x, Y2 = topPad + gridH,
-                Stroke = new SolidColorBrush(FretColor),
-                StrokeThickness = 1.2
-            };
-            FretboardCanvas.Children.Add(line);
+                X1 = x, Y1 = topPad, X2 = x, Y2 = topPad + gridH,
+                Stroke = new SolidColorBrush(FretColor), StrokeThickness = 1.2
+            });
 
-            // Номер лада внизу
             var label = new TextBlock
             {
-                Text = f.ToString(),
-                FontSize = 10,
+                Text = f.ToString(), FontSize = 10,
                 Foreground = new SolidColorBrush(FretColor),
-                TextAlignment = TextAlignment.Center,
-                Width = fretW
+                TextAlignment = TextAlignment.Center, Width = fretW
             };
             Canvas.SetLeft(label, leftPad + (f - 1) * fretW);
             Canvas.SetTop(label, topPad + gridH + 4);
             FretboardCanvas.Children.Add(label);
         }
 
-        // ── Маркеры (точки на ладах 3, 5, 7, 9, 12, 15) ────
+        // Маркеры
         foreach (int f in DotFrets)
         {
             if (f > FretCount) break;
@@ -188,25 +203,23 @@ public partial class FretboardView : UserControl
 
             if (isDouble)
             {
-                DrawDot(cx, topPad + gridH * 0.28, 5, MarkerColor);
-                DrawDot(cx, topPad + gridH * 0.72, 5, MarkerColor);
+                DrawMarker(cx, topPad + gridH * 0.28, 5);
+                DrawMarker(cx, topPad + gridH * 0.72, 5);
             }
             else
             {
-                DrawDot(cx, topPad + gridH * 0.5, 5, MarkerColor);
+                DrawMarker(cx, topPad + gridH * 0.5, 5);
             }
         }
 
-        // ── Струны (горизонтальные линии) ────────────────────
+        // Струны + подписи
         for (int s = 0; s < StringCount; s++)
         {
             double y = topPad + s * stringSpacing;
 
-            // Подпись слева
             var label = new TextBlock
             {
-                Text = StringLabels[s],
-                FontSize = 12,
+                Text = StringLabels[s], FontSize = 12,
                 Foreground = new SolidColorBrush(StringCol),
                 FontWeight = FontWeights.Bold
             };
@@ -214,19 +227,15 @@ public partial class FretboardView : UserControl
             Canvas.SetTop(label, y - 8);
             FretboardCanvas.Children.Add(label);
 
-            // Линия струны
-            var line = new Line
+            FretboardCanvas.Children.Add(new Line
             {
-                X1 = leftPad, Y1 = y,
-                X2 = leftPad + gridW, Y2 = y,
+                X1 = leftPad, Y1 = y, X2 = leftPad + gridW, Y2 = y,
                 Stroke = new SolidColorBrush(StringCol),
-                StrokeThickness = 2.0 - s * 0.2,
-                Opacity = 0.6
-            };
-            FretboardCanvas.Children.Add(line);
+                StrokeThickness = 2.0 - s * 0.2, Opacity = 0.6
+            });
         }
 
-        // ── Ноты гаммы ──────────────────────────────────────
+        // Ноты гаммы
         for (int s = 0; s < StringCount; s++)
         {
             int openNote = ScaleLibrary.StandardTuning[s];
@@ -235,19 +244,13 @@ public partial class FretboardView : UserControl
             for (int f = 0; f <= FretCount; f++)
             {
                 int note = (openNote + f) % 12;
-
                 if (!ScaleLibrary.IsInScale(note, _selectedRootSemitone, _selectedScale))
                     continue;
 
                 bool isRoot = note == _selectedRootSemitone;
-                double cx = f == 0
-                    ? leftPad - 1
-                    : leftPad + (f - 0.5) * fretW;
+                double cx = f == 0 ? leftPad - 1 : leftPad + (f - 0.5) * fretW;
+                double dotSize = Math.Clamp(Math.Min(fretW * 0.7, stringSpacing * 0.7), 16, 28);
 
-                double dotSize = Math.Min(fretW * 0.7, stringSpacing * 0.7);
-                dotSize = Math.Clamp(dotSize, 16, 28);
-
-                // Кружок
                 var dot = new Ellipse
                 {
                     Width = dotSize, Height = dotSize,
@@ -257,20 +260,17 @@ public partial class FretboardView : UserControl
                 Canvas.SetTop(dot, y - dotSize / 2);
                 FretboardCanvas.Children.Add(dot);
 
-                // Текст
                 string text = _showIntervals
                     ? ScaleLibrary.GetInterval(note, _selectedRootSemitone)
                     : ScaleLibrary.NoteNames[note];
 
                 var tb = new TextBlock
                 {
-                    Text = text,
-                    FontSize = dotSize * 0.4,
+                    Text = text, FontSize = dotSize * 0.4,
                     FontWeight = FontWeights.Bold,
                     Foreground = new SolidColorBrush(TextDark),
                     TextAlignment = TextAlignment.Center,
-                    Width = dotSize,
-                    HorizontalAlignment = HorizontalAlignment.Center
+                    Width = dotSize
                 };
                 Canvas.SetLeft(tb, cx - dotSize / 2);
                 Canvas.SetTop(tb, y - dotSize * 0.25);
@@ -279,13 +279,12 @@ public partial class FretboardView : UserControl
         }
     }
 
-    private void DrawDot(double cx, double cy, double radius, Color color)
+    private void DrawMarker(double cx, double cy, double radius)
     {
         var dot = new Ellipse
         {
-            Width = radius * 2,
-            Height = radius * 2,
-            Fill = new SolidColorBrush(color)
+            Width = radius * 2, Height = radius * 2,
+            Fill = new SolidColorBrush(MarkerColor)
         };
         Canvas.SetLeft(dot, cx - radius);
         Canvas.SetTop(dot, cy - radius);

@@ -1,6 +1,7 @@
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using System.Windows.Threading;
 using GuitarToolkit.Core.DSP;
 using GuitarToolkit.Core.Models;
 
@@ -12,10 +13,20 @@ public partial class IntervalTrainerView : UserControl
     private readonly IntervalTrainer _trainer = new();
     private float[]? _lastSamples;
     private bool _questionActive = false;
+    private DispatcherTimer? _autoAdvanceTimer;
 
-    private static readonly Color CorrectColor = Color.FromRgb(166, 227, 161);
-    private static readonly Color WrongColor = Color.FromRgb(243, 139, 168);
-    private static readonly Color AccentColor = Color.FromRgb(203, 166, 247);
+    private static readonly SolidColorBrush BrushCorrect = new(Color.FromRgb(166, 227, 161));
+    private static readonly SolidColorBrush BrushWrong = new(Color.FromRgb(243, 139, 168));
+    private static readonly SolidColorBrush BrushAccent = new(Color.FromRgb(203, 166, 247));
+    private static readonly SolidColorBrush BrushBtn = new(Color.FromRgb(74, 56, 96));
+    private static readonly SolidColorBrush BrushText = new(Color.FromRgb(205, 214, 244));
+    private static readonly SolidColorBrush BrushDim = new(Color.FromRgb(124, 111, 150));
+
+    static IntervalTrainerView()
+    {
+        BrushCorrect.Freeze(); BrushWrong.Freeze(); BrushAccent.Freeze();
+        BrushBtn.Freeze(); BrushText.Freeze(); BrushDim.Freeze();
+    }
 
     public IntervalTrainerView()
     {
@@ -26,12 +37,13 @@ public partial class IntervalTrainerView : UserControl
     {
         _audio = audio;
         BuildAnswerButtons();
-    }
 
-    private void BuildAnswerButtons()
-    {
-        AnswerButtons.Items.Clear();
-        UpdateVisibleButtons();
+        _autoAdvanceTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(1500) };
+        _autoAdvanceTimer.Tick += (s, e) =>
+        {
+            _autoAdvanceTimer.Stop();
+            if (_audio != null) PlayNewQuestion();
+        };
     }
 
     private void UpdateVisibleButtons()
@@ -47,43 +59,42 @@ public partial class IntervalTrainerView : UserControl
             var btn = new Button
             {
                 Content = $"{interval.ShortName}\n{interval.Name}",
-                Width = 110,
-                Height = 52,
-                FontSize = 12,
-                FontWeight = FontWeights.Bold,
-                Background = new SolidColorBrush(Color.FromRgb(74, 56, 96)),
-                Foreground = new SolidColorBrush(Color.FromRgb(205, 214, 244)),
+                Width = 110, Height = 52,
+                FontSize = 12, FontWeight = FontWeights.Bold,
+                Background = BrushBtn, Foreground = BrushText,
                 BorderThickness = new Thickness(0),
                 Cursor = System.Windows.Input.Cursors.Hand,
                 Margin = new Thickness(4),
                 Tag = interval.Semitones,
-                IsEnabled = false
+                IsEnabled = false,
+                ToolTip = $"{interval.Name} ({interval.Semitones} полутонов)"
             };
             btn.Click += Answer_Click;
             AnswerButtons.Items.Add(btn);
         }
     }
 
+    private void BuildAnswerButtons()
+    {
+        AnswerButtons.Items.Clear();
+        UpdateVisibleButtons();
+    }
+
     private void SetButtonsEnabled(bool enabled)
     {
         foreach (var item in AnswerButtons.Items)
-        {
-            if (item is Button btn)
-                btn.IsEnabled = enabled;
-        }
+            if (item is Button btn) btn.IsEnabled = enabled;
     }
 
     private void ResetButtonColors()
     {
         foreach (var item in AnswerButtons.Items)
-        {
-            if (item is Button btn)
-                btn.Background = new SolidColorBrush(Color.FromRgb(74, 56, 96));
-        }
+            if (item is Button btn) btn.Background = BrushBtn;
     }
 
     // ── Играть ───────────────────────────────────────────────
-    private void Play_Click(object sender, RoutedEventArgs e)
+
+    private void PlayNewQuestion()
     {
         if (_audio == null) return;
 
@@ -97,9 +108,11 @@ public partial class IntervalTrainerView : UserControl
         RepeatButton.IsEnabled = true;
 
         ResultLabel.Text = "Слушай и выбери интервал...";
-        ResultLabel.Foreground = new SolidColorBrush(AccentColor);
+        ResultLabel.Foreground = BrushAccent;
         ResultBorder.Background = new SolidColorBrush(Color.FromArgb(30, 203, 166, 247));
     }
+
+    private void Play_Click(object sender, RoutedEventArgs e) => PlayNewQuestion();
 
     private void Repeat_Click(object sender, RoutedEventArgs e)
     {
@@ -108,6 +121,7 @@ public partial class IntervalTrainerView : UserControl
     }
 
     // ── Ответ ────────────────────────────────────────────────
+
     private void Answer_Click(object sender, RoutedEventArgs e)
     {
         if (!_questionActive || sender is not Button btn) return;
@@ -118,34 +132,36 @@ public partial class IntervalTrainerView : UserControl
         _questionActive = false;
         SetButtonsEnabled(false);
 
-        // Подсветить правильный/неправильный
         foreach (var item in AnswerButtons.Items)
         {
             if (item is Button b)
             {
                 int tag = (int)b.Tag;
                 if (tag == _trainer.CurrentInterval.Semitones)
-                    b.Background = new SolidColorBrush(CorrectColor);
+                    b.Background = BrushCorrect;
                 else if (tag == answered && !correct)
-                    b.Background = new SolidColorBrush(WrongColor);
+                    b.Background = BrushWrong;
             }
         }
 
         if (correct)
         {
             ResultLabel.Text = $"✓ Верно! {_trainer.CurrentInterval.Name}";
-            ResultLabel.Foreground = new SolidColorBrush(CorrectColor);
+            ResultLabel.Foreground = BrushCorrect;
             ResultBorder.Background = new SolidColorBrush(Color.FromArgb(30, 166, 227, 161));
         }
         else
         {
-            var answered_interval = IntervalTrainer.AllIntervals.FirstOrDefault(x => x.Semitones == answered);
             ResultLabel.Text = $"✗ Нет! Было: {_trainer.CurrentInterval.Name}";
-            ResultLabel.Foreground = new SolidColorBrush(WrongColor);
+            ResultLabel.Foreground = BrushWrong;
             ResultBorder.Background = new SolidColorBrush(Color.FromArgb(30, 243, 139, 168));
         }
 
         UpdateStats();
+
+        // Автопереход к следующему вопросу через 1.5 сек
+        _autoAdvanceTimer?.Stop();
+        _autoAdvanceTimer?.Start();
     }
 
     private void UpdateStats()
@@ -153,7 +169,6 @@ public partial class IntervalTrainerView : UserControl
         StatsLabel.Text = $"  |  {_trainer.CorrectAnswers}/{_trainer.TotalAnswers} ({_trainer.Accuracy:F0}%)";
     }
 
-    // ── Настройки ────────────────────────────────────────────
     private void Difficulty_Changed(object sender, SelectionChangedEventArgs e)
     {
         if (DifficultyBox?.SelectedItem is ComboBoxItem item && item.Tag != null
@@ -176,13 +191,14 @@ public partial class IntervalTrainerView : UserControl
 
     private void Reset_Click(object sender, RoutedEventArgs e)
     {
+        _autoAdvanceTimer?.Stop();
         _trainer.ResetStats();
         UpdateStats();
         ResetButtonColors();
         _questionActive = false;
         SetButtonsEnabled(false);
         ResultLabel.Text = "Статистика сброшена. Нажми «Играть»";
-        ResultLabel.Foreground = new SolidColorBrush(Color.FromRgb(124, 111, 150));
+        ResultLabel.Foreground = BrushDim;
         ResultBorder.Background = Brushes.Transparent;
     }
 }

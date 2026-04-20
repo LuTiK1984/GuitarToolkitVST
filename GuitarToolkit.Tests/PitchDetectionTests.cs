@@ -12,7 +12,7 @@ namespace GuitarToolkit.Tests;
 public class PitchDetectionTests
 {
     private const int SampleRate = 44100;
-    private const int FftSize = 4096;
+    private const int FftSize = 8192;
 
     /// <summary>
     /// Генерирует чистую синусоиду заданной частоты.

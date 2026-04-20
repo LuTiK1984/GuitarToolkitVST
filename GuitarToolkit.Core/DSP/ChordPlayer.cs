@@ -3,30 +3,15 @@ using GuitarToolkit.Core.Models;
 namespace GuitarToolkit.Core.DSP;
 
 /// <summary>
-/// Простой синтезатор звучания аккорда: каждая струна — затухающая синусоида,
-/// со сдвигом по времени (эффект удара по струнам).
+/// Синтезатор звучания аккордов с плавным затуханием.
 /// </summary>
 public static class ChordPlayer
 {
-    // Частоты открытых струн стандартного строя (6→1: E2 A2 D3 G3 B3 E4)
     private static readonly float[] OpenStringFreqs =
     {
-        82.41f,   // E2
-        110.00f,  // A2
-        146.83f,  // D3
-        196.00f,  // G3
-        246.94f,  // B3
-        329.63f   // E4
+        82.41f, 110.00f, 146.83f, 196.00f, 246.94f, 329.63f
     };
 
-    /// <summary>
-    /// Синтезирует звучание аккорда.
-    /// </summary>
-    /// <param name="chord">Определение аккорда.</param>
-    /// <param name="sampleRate">Частота дискретизации.</param>
-    /// <param name="duration">Длительность звучания (секунды).</param>
-    /// <param name="strumDelay">Задержка между струнами (секунды, эффект удара).</param>
-    /// <returns>Массив сэмплов.</returns>
     public static float[] Synthesize(
         ChordDefinition chord,
         int sampleRate = 44100,
@@ -39,15 +24,11 @@ public static class ChordPlayer
         for (int s = 0; s < 6; s++)
         {
             int fret = chord.Frets[s];
-            if (fret < 0) continue; // заглушенная струна
+            if (fret < 0) continue;
 
-            // Частота = открытая струна × 2^(лад/12)
             float freq = OpenStringFreqs[s] * MathF.Pow(2f, fret / 12f);
-
-            // Смещение для эффекта удара (от 6-й к 1-й струне)
             int offset = (int)(s * strumDelay * sampleRate);
 
-            // Генерация: синусоида + вторая гармоника + экспоненциальное затухание
             int count = totalSamples - offset;
             for (int i = 0; i < count; i++)
             {
@@ -60,6 +41,14 @@ public static class ChordPlayer
 
                 buffer[i + offset] += sample * envelope * 0.12f;
             }
+        }
+
+        // Плавный fade-out на последних 500 сэмплах
+        int fadeLen = Math.Min(500, totalSamples);
+        for (int i = 0; i < fadeLen; i++)
+        {
+            float fade = (float)i / fadeLen;
+            buffer[totalSamples - fadeLen + i] *= fade < 0.5f ? 1f : 1f - (fade - 0.5f) * 2f;
         }
 
         return buffer;

@@ -1,6 +1,7 @@
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using System.Windows.Media.Animation;
 using System.Windows.Shapes;
 using GuitarToolkit.Core.Services;
 
@@ -12,6 +13,17 @@ public partial class MetronomeView : UserControl
     private bool _isRunning;
     private readonly List<DateTime> _taps = new();
     private readonly List<Ellipse> _dots = new();
+
+    private static readonly SolidColorBrush BrushDotOff = new(Color.FromRgb(45, 34, 64));
+    private static readonly SolidColorBrush BrushAccent = new(Color.FromRgb(166, 227, 161));
+    private static readonly SolidColorBrush BrushNormal = new(Color.FromRgb(203, 166, 247));
+    private static readonly SolidColorBrush BrushStroke = new(Color.FromRgb(124, 111, 150));
+
+    static MetronomeView()
+    {
+        BrushDotOff.Freeze(); BrushAccent.Freeze();
+        BrushNormal.Freeze(); BrushStroke.Freeze();
+    }
 
     public MetronomeView()
     {
@@ -25,7 +37,6 @@ public partial class MetronomeView : UserControl
         BuildBeatDots();
     }
 
-    // ── Индикаторы долей (кружки) ────────────────────────────
     private void BuildBeatDots()
     {
         BeatIndicators.Items.Clear();
@@ -37,10 +48,11 @@ public partial class MetronomeView : UserControl
             var dot = new Ellipse
             {
                 Width = 28, Height = 28,
-                Fill = new SolidColorBrush(Color.FromRgb(45, 34, 64)),
+                Fill = BrushDotOff,
                 Margin = new Thickness(6),
-                Stroke = new SolidColorBrush(Color.FromRgb(124, 111, 150)),
-                StrokeThickness = 1
+                Stroke = BrushStroke,
+                StrokeThickness = 1,
+                ToolTip = i == 0 ? "Сильная доля" : $"Доля {i + 1}"
             };
             _dots.Add(dot);
             BeatIndicators.Items.Add(dot);
@@ -53,23 +65,38 @@ public partial class MetronomeView : UserControl
         {
             Dispatcher.BeginInvoke(() =>
             {
-                // Сбрасываем все кружки
+                // Плавное затухание всех кружков
                 for (int i = 0; i < _dots.Count; i++)
-                    _dots[i].Fill = new SolidColorBrush(Color.FromRgb(45, 34, 64));
+                {
+                    if (i != beatIndex)
+                    {
+                        var fadeOut = new ColorAnimation(
+                            Color.FromRgb(45, 34, 64),
+                            TimeSpan.FromMilliseconds(200));
+                        _dots[i].Fill = new SolidColorBrush();
+                        ((SolidColorBrush)_dots[i].Fill).BeginAnimation(
+                            SolidColorBrush.ColorProperty, fadeOut);
+                    }
+                }
 
-                // Подсвечиваем текущую долю
+                // Текущая доля — загорается мгновенно
                 if (beatIndex < _dots.Count)
                 {
-                    _dots[beatIndex].Fill = beatIndex == 0
-                        ? new SolidColorBrush(Color.FromRgb(166, 227, 161))  // акцент — зелёный
-                        : new SolidColorBrush(Color.FromRgb(203, 166, 247)); // обычная — голубой
+                    Color targetColor = beatIndex == 0
+                        ? Color.FromRgb(166, 227, 161)
+                        : Color.FromRgb(203, 166, 247);
+                    _dots[beatIndex].Fill = new SolidColorBrush(targetColor);
                 }
+
+                // Пульсация BPM-числа
+                var pulse = new DoubleAnimation(1.08, 1.0, TimeSpan.FromMilliseconds(150));
+                BpmScale.BeginAnimation(ScaleTransform.ScaleXProperty, pulse);
+                BpmScale.BeginAnimation(ScaleTransform.ScaleYProperty, pulse);
             });
         }
         catch { }
     }
 
-    // ── BPM ──────────────────────────────────────────────────
     private void BpmSlider_ValueChanged(object s, RoutedPropertyChangedEventArgs<double> e)
     {
         int bpm = (int)e.NewValue;
@@ -77,13 +104,11 @@ public partial class MetronomeView : UserControl
         if (_metronome != null) _metronome.BPM = bpm;
     }
 
-    // ── Громкость ────────────────────────────────────────────
     private void VolumeSlider_ValueChanged(object s, RoutedPropertyChangedEventArgs<double> e)
     {
         if (_metronome != null) _metronome.Volume = (float)e.NewValue;
     }
 
-    // ── Доли в такте ─────────────────────────────────────────
     private void IncrBeats_Click(object s, RoutedEventArgs e) => SetBeats((_metronome?.BeatsPerMeasure ?? 4) + 1);
     private void DecrBeats_Click(object s, RoutedEventArgs e) => SetBeats((_metronome?.BeatsPerMeasure ?? 4) - 1);
 
@@ -96,7 +121,6 @@ public partial class MetronomeView : UserControl
         BuildBeatDots();
     }
 
-    // ── Tap Tempo ────────────────────────────────────────────
     private void TapButton_Click(object s, RoutedEventArgs e)
     {
         var now = DateTime.Now;
@@ -119,7 +143,6 @@ public partial class MetronomeView : UserControl
         if (_taps.Count > 8) _taps.RemoveAt(0);
     }
 
-    // ── Старт / Стоп ─────────────────────────────────────────
     private void StartStop_Click(object s, RoutedEventArgs e)
     {
         if (_metronome == null) return;
@@ -130,9 +153,8 @@ public partial class MetronomeView : UserControl
             StartStopButton.Content = "▶  СТАРТ";
             StartStopButton.Background = new SolidColorBrush(Color.FromRgb(166, 227, 161));
 
-            // Сбрасываем кружки
             foreach (var d in _dots)
-                d.Fill = new SolidColorBrush(Color.FromRgb(45, 34, 64));
+                d.Fill = BrushDotOff;
         }
         else
         {

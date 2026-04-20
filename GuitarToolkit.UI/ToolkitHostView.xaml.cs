@@ -15,5 +15,6 @@ public partial class ToolkitHostView : UserControl
         IntervalTab.Initialize(audioHost);
         ProgressionTab.Initialize(audioHost);
         CircleTab.Initialize(audioHost);
+        FretboardTab.Initialize(audioHost);
     }
 }
