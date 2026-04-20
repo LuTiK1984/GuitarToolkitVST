@@ -39,7 +39,7 @@ public class GuitarToolkitPlugin : AudioPluginWPF, IAudioPlayback
 
     public GuitarToolkitPlugin()
     {
-        Company = "BSTU";
+        Company = "Samizdat";
         Website = "";
         Contact = "";
         PluginName = "GuitarToolkit";
