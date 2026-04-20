@@ -174,5 +174,17 @@
             <local:FretboardView x:Name="FretboardTab"/>
         </TabItem>
 
+        <TabItem Header="🎧 Интервалы">
+            <local:IntervalTrainerView x:Name="IntervalTab"/>
+        </TabItem>
+
+        <TabItem Header="🎶 Прогрессии">
+            <local:ProgressionView x:Name="ProgressionTab"/>
+        </TabItem>
+
+        <TabItem Header="⭕ Круг квинт">
+            <local:CircleOfFifthsView x:Name="CircleTab"/>
+        </TabItem>
+
     </TabControl>
 </UserControl>

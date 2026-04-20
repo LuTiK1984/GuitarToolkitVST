@@ -12,5 +12,7 @@ public partial class ToolkitHostView : UserControl
         TunerTab.Initialize(tuner);
         MetronomeTab.Initialize(metronome);
         ChordTab.Initialize(audioHost);
+        IntervalTab.Initialize(audioHost);
+        ProgressionTab.Initialize(audioHost);
     }
 }
