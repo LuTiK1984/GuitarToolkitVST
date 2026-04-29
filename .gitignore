@@ -6,3 +6,6 @@ obj/
 *.cache
 *.pdb
 artifacts/
+analysis_docs/
+reports/
+samples/tabs/
