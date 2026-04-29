@@ -1,266 +1,316 @@
-# 🎸 GuitarToolkit
+# GuitarToolkit
 
-Набор инструментов для гитариста — VST3-плагин и standalone-приложение на C# / .NET 8.
+**GuitarToolkit** is a guitar-focused toolkit for Windows: a VST3 plugin for DAW hosts and a standalone WPF desktop application built on C# / .NET 8.
 
-Семь модулей в одном пакете: тюнер, метроном, справочник аккордов, визуализатор гамм, тренажёр интервалов, построитель прогрессий, круг квинт. Единая кодовая база — две платформы.
+It combines seven practice and theory tools in one interface: tuner, metronome, chord library, fretboard scale visualizer, interval ear trainer, chord progression builder, and circle of fifths.
 
----
+[Русская версия](#guitartoolkit-ru)
 
-## Возможности
+## Downloads
 
-### 🎸 Тюнер
-Определение высоты звука в реальном времени. Алгоритм: FFT (8192 точек) → Harmonic Product Spectrum (5 гармоник) → параболическая интерполяция. Отображает ноту, частоту в Гц и отклонение в центах на визуальной шкале. 8 гитарных строёв (стандарт, Drop D, Drop C, Open G, Open D, DADGAD, Half/Full Step Down). Настраиваемый эталон A4 (420–460 Гц). Регулировка усиления входа 0–40 дБ. Подсветка ближайшей струны с учётом октавы. Плавная анимация смены ноты (fade out → fade in).
+The latest release provides two separate archives:
 
-### 🥁 Метроном
-30–300 BPM, 2–8 долей в такте. Sample-accurate генерация щелчков прямо в аудиобуфер (без таймеров — идеальная точность). Акцент первой доли (1000 Гц) и обычные доли (700 Гц). Tap Tempo — определение темпа по нажатиям. Визуальные индикаторы долей с плавным затуханием. Пульсация числа BPM на каждый удар. Горячая клавиша: **пробел** — старт/стоп с любой вкладки.
+- `GuitarToolkit_VST3_v.1.1.0.zip` - VST3 plugin package for DAW hosts.
+- `GuitarToolkit_DESKTOP_v.1.1.0.zip` - standalone Windows desktop application.
 
-### 🎵 Справочник аккордов
-12 тоник × 9 типов (мажор, минор, 7, maj7, m7, sus2, sus4, dim, aug). Несколько вариантов аппликатуры для каждого аккорда — навигация стрелками ◀ ▶. Диаграмма грифа с баррэ, открытыми и заглушенными струнами. Теория аккорда: полное название типа, формула ступеней (1 – ♭3 – 5), конкретные ноты (Am = A, C, E). Фильтрация по сложности: простые (открытые), баррэ, избранное. Система избранного с сохранением на диск. Воспроизведение аккорда (аддитивный синтез, 3 гармоники, эффект удара по струнам).
+Open the project releases page:
 
-### 🎼 Визуализатор гамм
-Гриф гитары — 15 ладов, 6 струн, маркеры на 3/5/7/9/12. 13 гамм и ладов: мажор, натуральный минор, пентатоника мажорная и минорная, блюзовая, дорийский, миксолидийский, фригийский, лидийский, локрийский, гармонический минор, мелодический минор, хроматическая. Тоника выделена зелёным, остальные ноты — фиолетовым. Переключение: имена нот (C, D, E) ↔ ступени (1, ♭3, 5). Кнопка воспроизведения — проигрывает гамму восходящей последовательностью.
+[GitHub Releases](https://github.com/LuTiK1984/GuitarToolkitVST/releases)
 
-### 🎧 Тренажёр интервалов
-Развитие музыкального слуха. Программа воспроизводит два звука — нужно определить интервал. 13 интервалов: от унисона до октавы. Три уровня сложности: до квинты (легко), до октавы (средне), все + унисон. Статистика правильных ответов. Автоматический переход к следующему вопросу через 1.5 сек. Повтор текущего интервала.
+## Features
 
-### 🎶 Построитель прогрессий
-Выбор тональности (12 тоник) и лада (11 вариантов: мажор, минор, гармонический/мелодический минор, дорийский, миксолидийский, фригийский, лидийский, локрийский, блюзовый, минорная пентатоника). Диатонические аккорды на ступенях — нажал на ступень, аккорд добавился в прогрессию. Удаление аккордов по одному (крестик ✕). 15 встроенных пресетов (Pop, Jazz, Blues, Rock, Canon, 50s, Axis, Кантри, Турнараунд, Андалузский и др.). Сохранение пользовательских пресетов на диск (⭐) с возможностью удаления. Воспроизведение с заданным темпом (60–200 BPM). Зацикливание — прогрессия повторяется, можно подыгрывать на гитаре. Кнопка «Стоп» мгновенно останавливает воспроизведение.
+### Tuner
 
-### ⭕ Круг квинт
-Интерактивная визуализация кварто-квинтового круга. 12 мажорных тональностей (внешний круг) и 12 параллельных минорных (внутренний). Клик по мажору — фиолетовая подсветка, информация о мажорной тональности. Клик по минору — зелёная подсветка, информация о минорной. Для каждой тональности: ключевые знаки, ноты в гамме, диатонические аккорды, три популярные прогрессии с конкретными аккордами, родственные тональности (субдоминанта, доминанта), энгармонический эквивалент. Подсветка соседних тональностей на круге. Кнопка «Играть гамму» — воспроизведение мажорной или минорной гаммы.
+- Real-time pitch detection for guitar input.
+- FFT + Harmonic Product Spectrum + parabolic interpolation.
+- Note name, frequency, cents deviation, input level meter.
+- Standard and alternate tunings: Standard, Drop D, Drop C, Open G, Open D, DADGAD, Half Step Down, Full Step Down.
+- Adjustable A4 reference from 420 to 460 Hz.
+- Input gain control from 0 to 40 dB.
 
-### Общее
-- Сохранение настроек между сессиями (строй, темп, усиление, последний аккорд и гамма)
-- Тултипы на всех контролах
-- Горячие клавиши (пробел — старт/стоп метронома)
-- Тёмная тема оформления (Catppuccin Mocha, фиолетовый акцент)
-- 60+ модульных тестов (xUnit)
+### Metronome
 
----
+- 30-300 BPM.
+- 2-8 beats per measure.
+- Accent click on the first beat.
+- Tap tempo.
+- Sample-accurate click generation directly in the audio buffer.
+- Spacebar toggles start/stop from any tab.
 
-## Архитектура
+### Chord Library
 
-```
+- 12 roots and 9 chord types: major, minor, 7, maj7, m7, sus2, sus4, dim, aug.
+- Multiple voicings per chord.
+- Fretboard chord diagrams with open strings, muted strings, and barre display.
+- Chord theory: full type name, formula, and exact notes.
+- Difficulty and favorites filters.
+- Favorite chords saved to disk.
+- Synthesized chord playback.
+
+### Fretboard & Scales
+
+- 15-fret guitar fretboard with 6 strings.
+- Scale highlighting for major, natural minor, pentatonic, blues, modes, harmonic minor, melodic minor, and chromatic scale.
+- Note-name or scale-degree display modes.
+- Tonic highlighting.
+- Ascending scale playback.
+
+### Interval Ear Trainer
+
+- Plays two notes and asks the user to identify the interval.
+- 13 intervals from unison to octave.
+- Three difficulty levels.
+- Correct-answer statistics.
+- Repeat current question.
+
+### Progression Builder
+
+- Generates diatonic chords for 12 roots and 11 modes/scales.
+- Click-to-build chord progressions.
+- 15 built-in presets, including pop, jazz, blues, rock, canon-style, and turnaround patterns.
+- Custom preset saving.
+- Tempo-based progression playback with optional looping.
+
+### Circle of Fifths
+
+- Interactive major/minor circle of fifths.
+- Displays key signatures, scale notes, diatonic chords, common progressions, related keys, and enharmonic equivalents.
+- Plays the selected major or minor scale.
+
+## Architecture
+
+```text
 GuitarToolkit.sln
-│
-├── GuitarToolkit.Core/              Ядро (0 зависимостей)
-│   ├── DSP/
-│   │   ├── Fft.cs                     FFT Cooley–Tukey (radix-2, 8192 точек)
-│   │   ├── PitchDetector.cs           FFT + HPS (5 гармоник) + интерполяция
-│   │   ├── ClickGenerator.cs          Синтез щелчков метронома
-│   │   ├── ChordPlayer.cs            Аддитивный синтез аккордов (3 гармоники)
-│   │   └── NoteSynth.cs              Синтез отдельных нот (интервалы, гаммы)
-│   ├── Models/
-│   │   ├── NoteUtils.cs               Частота ↔ нота, центы, MIDI
-│   │   ├── Tunings.cs                 8 гитарных строёв
-│   │   ├── ChordDefinition.cs         Модель аккорда (аппликатура, сложность)
-│   │   ├── ChordLibrary.cs            Библиотека аккордов (E/A-формы + открытые)
-│   │   ├── ChordTheory.cs             Формулы, ноты, названия типов
-│   │   ├── ScaleDefinition.cs         Модель гаммы
-│   │   ├── ScaleLibrary.cs            13 гамм и ладов
-│   │   ├── IntervalTrainer.cs         Логика тренажёра интервалов
-│   │   ├── ProgressionBuilder.cs      Прогрессии: 11 ладов, 15 пресетов
-│   │   └── CircleOfFifths.cs          Данные кварто-квинтового круга
-│   └── Services/
-│       ├── TunerEngine.cs             Движок тюнера (ring buffer, сглаживание)
-│       ├── MetronomeEngine.cs         Движок метронома (sample-accurate)
-│       └── UserSettings.cs            Сохранение/загрузка настроек (JSON)
-│
-├── GuitarToolkit.UI/               WPF-компоненты (общие для обеих платформ)
-│   ├── IAudioHost.cs                  Интерфейс IAudioPlayback
-│   ├── ToolkitHostView.xaml           Главная панель + все стили + горячие клавиши
-│   ├── TunerView.xaml                 Тюнер
-│   ├── MetronomeView.xaml             Метроном
-│   ├── ChordView.xaml                 Справочник аккордов
-│   ├── FretboardView.xaml             Визуализатор гамм
-│   ├── IntervalTrainerView.xaml       Тренажёр интервалов
-│   ├── ProgressionView.xaml           Построитель прогрессий
-│   └── CircleOfFifthsView.xaml        Круг квинт
-│
-├── GuitarToolkit.Plugin/           VST3-плагин (AudioPlugSharp)
-│   └── GuitarToolkitPlugin.cs         Точка входа, реализация IAudioPlayback
-│
-├── GuitarToolkit.Desktop/          Standalone-приложение (NAudio)
-│   ├── AudioBridge.cs                 NAudio-обёртка, реализация IAudioPlayback
-│   └── MainWindow.xaml                Окно + выбор устройства ввода
-│
-└── GuitarToolkit.Tests/            Модульные тесты (xUnit)
-    ├── PitchDetectionTests.cs         Тюнер: все 12 нот, гармоники, тишина, центы
-    └── ModelTests.cs                  Аккорды, гаммы, интервалы, прогрессии
+├── GuitarToolkit.Core      DSP, theory models, engines, settings
+├── GuitarToolkit.UI        Shared WPF controls used by both app targets
+├── GuitarToolkit.Plugin    VST3 plugin entry point via AudioPlugSharp
+├── GuitarToolkit.Desktop   Standalone WPF app via NAudio
+└── GuitarToolkit.Tests     xUnit tests for Core behavior
 ```
 
----
+Core is intentionally independent from WPF, NAudio, and AudioPlugSharp. Platform-specific audio input/output is implemented only in the Desktop and Plugin projects.
 
-## Требования
+## Technology Stack
 
-- **Visual Studio 2022** (17.8+)
-- **.NET 8 SDK**
-- **Компонент C++/CLI** — нужен для AudioPlugSharp бридж-файла:
-  - Visual Studio Installer → Изменить → Отдельные компоненты
-  - Найти **«Поддержка C++/CLI для средств сборки v143»** (C++/CLI support for v143 build tools)
-  - Установить, перезапустить VS
-- **DAW с поддержкой VST3** для тестирования плагина (FL Studio, Reaper, Cubase и др.)
+| Area | Technology |
+| --- | --- |
+| Language | C# |
+| Runtime | .NET 8 |
+| UI | WPF |
+| Plugin | VST3 via AudioPlugSharp 0.7.9 |
+| Desktop audio | NAudio 2.2.1 |
+| Tests | xUnit |
+| Theme | Catppuccin Mocha-inspired dark UI |
 
----
+## Requirements
 
-## Быстрый старт
+- Windows 10/11 x64.
+- .NET 8 runtime or SDK.
+- Visual Studio 2022 for development.
+- For VST3: a DAW with VST3 support, such as FL Studio, Reaper, Cubase, Ableton Live, or another compatible host.
 
-### 1. Клонировать и открыть
+## Build From Source
 
-```bash
-git clone <url> GuitarToolkit
+Open `GuitarToolkit.sln` in Visual Studio 2022 and select `x64`.
+
+Command line:
+
+```powershell
+dotnet build GuitarToolkit.sln --configuration Debug
+dotnet test GuitarToolkit.sln --configuration Debug
 ```
 
-Открыть `GuitarToolkit.sln` в Visual Studio.
+Current verification status:
 
-### 2. Платформа
+- Build: 0 errors, 0 warnings.
+- Tests: 73/73 passing.
 
-В тулбаре VS выбрать платформу **x64** (не Any CPU!). Конфигурация: Debug.
+## VST3 Deployment
 
-### 3. Собрать
+Build the plugin project in `x64`, then run:
 
-**Ctrl+Shift+B** — NuGet-пакеты подтянутся автоматически при первой сборке:
-- `AudioPlugSharp` 0.7.9
-- `AudioPlugSharpWPF` 0.7.9
-- `NAudio` 2.2.1
-- `xunit` 2.6.2
-
-### 4. Запустить Desktop
-
-ПКМ на `GuitarToolkit.Desktop` → **Set as Startup Project** → **F5**.
-
-Откроется окно — сверху выбрать устройство ввода (микрофон / линейный вход / аудиоинтерфейс) → тюнер начнёт ловить звук. Все настройки сохраняются автоматически при закрытии.
-
-### 5. Запустить тесты
-
-**Test → Test Explorer** (Ctrl+E, T) → **Run All**. Все 60+ тестов должны быть зелёными.
-
----
-
-## Установка VST3-плагина
-
-### Способ 1: Скрипт (рекомендуемый)
-
-Запустить `deploy-vst.bat` **от имени администратора** (ПКМ → Запуск от имени администратора).
-
-Скрипт скопирует все необходимые файлы в `C:\Program Files\Common Files\VST3\GuitarToolkit\`.
-
-### Способ 2: Вручную
-
-Если скрипт ругается на отсутствие бридж-файла — его нужно найти и скопировать вручную.
-
-**Шаг 1.** Найти бридж-файлы в NuGet-кеше:
-
-```
-%USERPROFILE%\.nuget\packages\audioplugsharpvst3\0.7.9\contentFiles\vst\
+```powershell
+deploy-vst.bat
 ```
 
-Там лежат два файла:
-- `AudioPlugSharpVst.vst3` — бридж между DAW и .NET
-- `Ijwhost.dll` — загрузчик .NET runtime
+The script copies the required plugin files to:
 
-**Шаг 2.** Скопировать оба файла в папку сборки плагина:
-
-```
-GuitarToolkit.Plugin\bin\x64\Debug\net8.0-windows\
-```
-
-**Шаг 3.** Переименовать бридж:
-
-```
-AudioPlugSharpVst.vst3  →  GuitarToolkit.PluginBridge.vst3
-```
-
-Имя должно совпадать с именем DLL плагина + `Bridge`. То есть `GuitarToolkit.Plugin.dll` → `GuitarToolkit.PluginBridge.vst3`.
-
-**Шаг 4.** Создать файл `GuitarToolkit.PluginBridge.runtimeconfig.json` в той же папке:
-
-```json
-{
-  "runtimeOptions": {
-    "tfm": "net8.0",
-    "frameworks": [
-      { "name": "Microsoft.NETCore.App", "version": "8.0.0" },
-      { "name": "Microsoft.WindowsDesktop.App", "version": "8.0.0" }
-    ]
-  }
-}
-```
-
-Этот файл нужен потому что плагин использует WPF — без второго фреймворка (`WindowsDesktop.App`) GUI не загрузится.
-
-**Шаг 5.** Скопировать **все файлы** из папки сборки в путь VST3:
-
-```
+```text
 C:\Program Files\Common Files\VST3\GuitarToolkit\
 ```
 
-Должно быть скопировано минимум:
-- `GuitarToolkit.Plugin.dll`
-- `GuitarToolkit.Core.dll`
-- `GuitarToolkit.UI.dll`
-- `AudioPlugSharp.dll`
-- `AudioPlugSharpWPF.dll`
+Run the script as Administrator if Windows blocks access to the VST3 folder. Close your DAW before redeploying, then rescan plugins after copying.
+
+The repository intentionally includes several NuGet-sourced VST bridge/runtime files used for deployment and DAW loading:
+
 - `GuitarToolkit.PluginBridge.vst3`
 - `GuitarToolkit.PluginBridge.runtimeconfig.json`
+- `AudioPlugSharpWPF.dll`
 - `Ijwhost.dll`
 
-**Шаг 6.** В DAW пересканировать плагины:
+## Data Storage
 
-- **FL Studio**: Options → File Settings → Manage plugins → Find plugins
-- **Reaper**: Options → Preferences → VST → Re-scan
-- **Cubase**: Studio → Studio Setup → VST Plug-in Manager → Rescan
+User data is stored in:
 
-GuitarToolkit появится в списке **эффектов** (не инструментов), категория **Fx**.
+```text
+%AppData%\GuitarToolkit\
+```
 
-### Типичные проблемы
+Files:
 
-| Проблема | Решение |
-|----------|---------|
-| FL Studio не видит плагин | Проверить что `.vst3` файл переименован правильно и `Ijwhost.dll` на месте |
-| Плагин в списке, но статус «error» | Не хватает `runtimeconfig.json` или `AudioPlugSharpWPF.dll` |
-| Плагин крашит DAW при загрузке | Не установлен компонент C++/CLI в Visual Studio |
-| Плагин загружается, но нет звука | Проверить что на трек миксера подан вход (микрофон/линейный) |
-| При пересборке изменения не видны | FL Studio кеширует — полностью закрыть FL, скопировать файлы, открыть заново |
+- `settings.json` - general settings.
+- `favorites.json` - favorite chords.
+- `custom_presets.json` - custom progression presets.
 
 ---
 
-## Отладка VST3
+<a id="guitartoolkit-ru"></a>
 
-1. Собрать в Debug, задеплоить через `deploy-vst.bat`
-2. Открыть DAW, загрузить плагин
-3. В VS: **Debug → Attach to Process** → выбрать `FL64.exe` (или `reaper.exe`) → Attach
-4. Поставить breakpoint в `GuitarToolkitPlugin.cs` → он сработает при следующем вызове `Process()`
+# GuitarToolkit RU
 
----
+**GuitarToolkit** - набор инструментов для гитариста под Windows: VST3-плагин для DAW и самостоятельное WPF-приложение на C# / .NET 8.
 
-## Стек технологий
+В одном интерфейсе собраны семь модулей: тюнер, метроном, справочник аккордов, визуализатор гамм на грифе, тренажер интервалов, построитель аккордовых прогрессий и круг квинт.
 
-| Компонент | Технология |
-|-----------|-----------|
-| Язык | C# |
-| Платформа | .NET 8, x64 |
-| UI | WPF |
-| VST3 бридж | AudioPlugSharp 0.7.9 |
-| Аудио (Desktop) | NAudio 2.2.1 |
-| DSP | Собственная реализация (FFT, HPS, аддитивный синтез) |
-| Тесты | xUnit 2.6 |
-| Тема | Catppuccin Mocha (фиолетовый акцент) |
+## Загрузка
 
----
+В релизе доступны два архива:
+
+- `GuitarToolkit_VST3_v.1.1.0.zip` - VST3-плагин для DAW.
+- `GuitarToolkit_DESKTOP_v.1.1.0.zip` - standalone-приложение для Windows.
+
+Страница релизов:
+
+[GitHub Releases](https://github.com/LuTiK1984/GuitarToolkitVST/releases)
+
+## Возможности
+
+### Тюнер
+
+- Определение высоты звука в реальном времени.
+- Алгоритм FFT + Harmonic Product Spectrum + параболическая интерполяция.
+- Отображение ноты, частоты, отклонения в центах и уровня входного сигнала.
+- Стандартный и альтернативные строи: Standard, Drop D, Drop C, Open G, Open D, DADGAD, Half Step Down, Full Step Down.
+- Настраиваемая опорная частота A4: 420-460 Гц.
+- Усиление входного сигнала: 0-40 дБ.
+
+### Метроном
+
+- Темп 30-300 BPM.
+- Размер 2-8 долей в такте.
+- Акцент первой доли.
+- Tap tempo.
+- Sample-accurate генерация щелчков прямо в аудиобуфере.
+- Пробел запускает и останавливает метроном с любой вкладки.
+
+### Справочник аккордов
+
+- 12 тоник и 9 типов аккордов: мажор, минор, 7, maj7, m7, sus2, sus4, dim, aug.
+- Несколько аппликатур для каждого аккорда.
+- Диаграмма грифа с открытыми, заглушенными струнами и баррэ.
+- Теория аккорда: название типа, формула и конкретные ноты.
+- Фильтры по сложности и избранному.
+- Избранные аккорды сохраняются на диск.
+- Синтезированное воспроизведение аккорда.
+
+### Гриф и гаммы
+
+- Гриф на 15 ладов и 6 струн.
+- Подсветка нот выбранной гаммы или лада.
+- Поддержка мажора, минора, пентатоник, блюзовой гаммы, ладов, гармонического/мелодического минора и хроматической гаммы.
+- Режимы отображения: имена нот или ступени.
+- Отдельная подсветка тоники.
+- Воспроизведение гаммы восходящей последовательностью.
+
+### Тренажер интервалов
+
+- Воспроизводит две ноты и предлагает определить интервал.
+- 13 интервалов от унисона до октавы.
+- Три уровня сложности.
+- Статистика правильных ответов.
+- Повтор текущего вопроса.
+
+### Построитель прогрессий
+
+- Диатонические аккорды для 12 тоник и 11 ладов/гамм.
+- Сборка прогрессии нажатием на ступени.
+- 15 встроенных пресетов.
+- Сохранение пользовательских пресетов.
+- Воспроизведение прогрессии в заданном темпе с возможностью зацикливания.
+
+### Круг квинт
+
+- Интерактивный кварто-квинтовый круг.
+- Мажорные и параллельные минорные тональности.
+- Ключевые знаки, ноты гаммы, диатонические аккорды, популярные прогрессии и родственные тональности.
+- Воспроизведение выбранной мажорной или минорной гаммы.
+
+## Архитектура
+
+```text
+GuitarToolkit.sln
+├── GuitarToolkit.Core      DSP, теория, движки, настройки
+├── GuitarToolkit.UI        Общие WPF-компоненты
+├── GuitarToolkit.Plugin    VST3-плагин через AudioPlugSharp
+├── GuitarToolkit.Desktop   Standalone WPF-приложение через NAudio
+└── GuitarToolkit.Tests     xUnit-тесты ядра
+```
+
+`GuitarToolkit.Core` не зависит от WPF, NAudio и AudioPlugSharp. Различия между desktop-версией и VST3-плагином находятся только в платформенных проектах.
+
+## Сборка
+
+Откройте `GuitarToolkit.sln` в Visual Studio 2022 и выберите платформу `x64`.
+
+Через командную строку:
+
+```powershell
+dotnet build GuitarToolkit.sln --configuration Debug
+dotnet test GuitarToolkit.sln --configuration Debug
+```
+
+Текущее состояние:
+
+- Сборка: 0 ошибок, 0 предупреждений.
+- Тесты: 73/73 проходят.
+
+## Установка VST3
+
+Соберите проект плагина в `x64`, затем запустите:
+
+```powershell
+deploy-vst.bat
+```
+
+Скрипт копирует файлы в:
+
+```text
+C:\Program Files\Common Files\VST3\GuitarToolkit\
+```
+
+Если Windows запрещает запись в папку VST3, запустите скрипт от имени администратора. Перед повторным деплоем закройте DAW, затем выполните пересканирование плагинов.
+
+В репозитории намеренно лежат bridge/runtime-файлы из NuGet, необходимые для загрузки VST3-плагина:
+
+- `GuitarToolkit.PluginBridge.vst3`
+- `GuitarToolkit.PluginBridge.runtimeconfig.json`
+- `AudioPlugSharpWPF.dll`
+- `Ijwhost.dll`
 
 ## Хранение данных
 
-Пользовательские данные сохраняются в `%AppData%\GuitarToolkit\`:
+Пользовательские данные сохраняются в:
 
-| Файл | Содержимое |
-|------|-----------|
-| `settings.json` | Настройки (строй, темп, усиление, эталон A4, последние выбранные аккорд и гамма) |
-| `favorites.json` | Избранные аккорды |
-| `custom_presets.json` | Пользовательские пресеты прогрессий |
+```text
+%AppData%\GuitarToolkit\
+```
 
----
+Файлы:
 
-## Лицензия
+- `settings.json` - основные настройки.
+- `favorites.json` - избранные аккорды.
+- `custom_presets.json` - пользовательские пресеты прогрессий.
 
-Учебный проект. VST3 — товарный знак Steinberg Media Technologies.
+## License
+
+Educational project. VST is a trademark of Steinberg Media Technologies GmbH.
