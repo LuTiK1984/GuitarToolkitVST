@@ -208,5 +208,9 @@
             <local:CircleOfFifthsView x:Name="CircleTab"/>
         </TabItem>
 
+        <TabItem Header="📄 Табы">
+            <local:TabPlayerView x:Name="TabPlayerTab"/>
+        </TabItem>
+
     </TabControl>
 </UserControl>
