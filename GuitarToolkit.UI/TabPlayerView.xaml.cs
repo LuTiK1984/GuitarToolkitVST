@@ -21,6 +21,7 @@ public partial class TabPlayerView : UserControl
     private bool _isUpdatingTrackMode;
     private readonly DispatcherTimer _volumeRampTimer;
     private readonly DispatcherTimer _scrollToCursorTimer;
+    private readonly DispatcherTimer _resizeRenderTimer;
     private double _currentMasterVolume = 0.35d;
     private double _targetMasterVolume = 0.35d;
     private bool _playbackEventsAttached;
@@ -29,6 +30,7 @@ public partial class TabPlayerView : UserControl
     private bool _pendingScrollAfterRender;
     private TabScrollHandler? _tabScrollHandler;
     private bool _isUpdatingPlayButton;
+    private int _pendingResizeRenderPasses;
 
     public ObservableCollection<Track> TracksToDisplay { get; } = new();
 
@@ -39,6 +41,8 @@ public partial class TabPlayerView : UserControl
         _volumeRampTimer.Tick += VolumeRampTimer_Tick;
         _scrollToCursorTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(120) };
         _scrollToCursorTimer.Tick += ScrollToCursorTimer_Tick;
+        _resizeRenderTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(260) };
+        _resizeRenderTimer.Tick += ResizeRenderTimer_Tick;
         DataContext = this;
         ApplyPlaybackSettings();
         Loaded += (_, _) => ConfigureAlphaTabPlayer();
@@ -226,6 +230,18 @@ public partial class TabPlayerView : UserControl
         e.Handled = true;
     }
 
+    private void TabScrollViewer_SizeChanged(object sender, SizeChangedEventArgs e)
+    {
+        ConfigureAlphaTabPlayer();
+
+        if (_score == null)
+            return;
+
+        _pendingResizeRenderPasses = 3;
+        _resizeRenderTimer.Stop();
+        _resizeRenderTimer.Start();
+    }
+
     private void VolumeSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
     {
         if (VolumeLabel != null)
@@ -350,6 +366,12 @@ public partial class TabPlayerView : UserControl
         api.Settings.Player.ScrollMode = ScrollMode.Smooth;
         api.Settings.Player.ScrollSpeed = 350d;
         api.Settings.Player.ScrollOffsetY = 90d;
+        FitAlphaTabToViewport();
+        api.Settings.Display.LayoutMode = LayoutMode.Page;
+        api.Settings.Display.BarsPerRow = -1d;
+        api.Settings.Display.JustifyLastSystem = true;
+        api.Settings.Display.StretchForce = 0.9d;
+        api.Settings.Display.Scale = GetAdaptiveNotationScale();
 
         _tabScrollHandler ??= new TabScrollHandler(
             TabScrollViewer,
@@ -429,6 +451,64 @@ public partial class TabPlayerView : UserControl
         if (AutoScrollCheckBox?.IsChecked == true)
         {
             AlphaTab?.Api?.ScrollToCursor();
+        }
+    }
+
+    private void ResizeRenderTimer_Tick(object? sender, EventArgs e)
+    {
+        var api = AlphaTab?.Api;
+        if (api == null || _score == null || TracksToDisplay.Count == 0)
+        {
+            _resizeRenderTimer.Stop();
+            return;
+        }
+
+        _pendingTickAfterRender = api.TickPosition;
+        _pendingScrollAfterRender = AutoScrollCheckBox?.IsChecked == true;
+        ConfigureAlphaTabPlayer();
+        FitAlphaTabToViewport();
+        AlphaTab?.InvalidateMeasure();
+        AlphaTab?.UpdateLayout();
+        AlphaTab?.RenderTracks();
+
+        _pendingResizeRenderPasses--;
+        if (_pendingResizeRenderPasses <= 0)
+        {
+            _resizeRenderTimer.Stop();
+        }
+    }
+
+    private double GetAdaptiveNotationScale()
+    {
+        double width = TabScrollViewer?.ActualWidth ?? ActualWidth;
+
+        if (width <= 0d)
+            return 0.9d;
+
+        if (width < 760d)
+            return 0.7d;
+
+        if (width < 980d)
+            return 0.78d;
+
+        if (width < 1250d)
+            return 0.86d;
+
+        return 0.95d;
+    }
+
+    private void FitAlphaTabToViewport()
+    {
+        if (AlphaTab == null || TabScrollViewer == null)
+            return;
+
+        double width = TabScrollViewer.ViewportWidth > 0d
+            ? TabScrollViewer.ViewportWidth
+            : TabScrollViewer.ActualWidth;
+
+        if (width > 0d)
+        {
+            AlphaTab.Width = Math.Max(320d, width - 18d);
         }
     }
 
@@ -568,7 +648,7 @@ public partial class TabPlayerView : UserControl
             if (beatBounds == null || !_isEnabled())
                 return;
 
-            if (!force && (DateTime.UtcNow - _lastScrollUtc).TotalMilliseconds < 140)
+            if (!force && (DateTime.UtcNow - _lastScrollUtc).TotalMilliseconds < 220)
                 return;
 
             _lastScrollUtc = DateTime.UtcNow;
@@ -587,15 +667,26 @@ public partial class TabPlayerView : UserControl
                     _scrollViewer.ScrollToVerticalOffset(targetY);
                 }
 
-                double left = bounds.X;
-                double right = bounds.X + bounds.W;
+                double cursorX = beatBounds.OnNotesX > 0d
+                    ? beatBounds.OnNotesX
+                    : bounds.X + bounds.W / 2d;
                 double viewportLeft = _scrollViewer.HorizontalOffset;
                 double viewportRight = viewportLeft + _scrollViewer.ViewportWidth;
+                double viewportWidth = _scrollViewer.ViewportWidth;
+                double comfortRight = viewportLeft + viewportWidth * 0.84d;
 
-                if (force || left < viewportLeft + 40d || right > viewportRight - 120d)
+                if (force)
                 {
-                    double targetX = Math.Max(0d, left - 80d);
+                    double targetX = Math.Max(0d, cursorX - viewportWidth * 0.40d);
                     _scrollViewer.ScrollToHorizontalOffset(targetX);
+                }
+                else if (cursorX > comfortRight)
+                {
+                    double targetX = Math.Max(0d, cursorX - viewportWidth * 0.38d);
+                    if (targetX > viewportLeft)
+                    {
+                        _scrollViewer.ScrollToHorizontalOffset(targetX);
+                    }
                 }
             }, DispatcherPriority.Background);
         }

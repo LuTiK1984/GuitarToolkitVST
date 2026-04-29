@@ -45,7 +45,6 @@
     <Grid Margin="16">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
@@ -200,17 +199,6 @@
         </StackPanel>
 
         <Border Grid.Row="1"
-                Background="#241B33"
-                CornerRadius="6"
-                Padding="12"
-                Margin="0 0 0 12">
-            <TextBlock TextWrapping="Wrap"
-                       Foreground="#CDD6F4"
-                       FontSize="13"
-                       Text="Первый прототип вкладки табулатур: загрузка файлов Guitar Pro / MusicXML, выбор дорожки и отображение нотной записи с табулатурой через alphaTab."/>
-        </Border>
-
-        <Border Grid.Row="2"
                 Background="#F7F5FA"
                 CornerRadius="6"
                 Padding="8">
@@ -219,6 +207,7 @@
                           VerticalScrollBarVisibility="Auto"
                           CanContentScroll="False"
                           PanningMode="Both"
+                          SizeChanged="TabScrollViewer_SizeChanged"
                           PreviewMouseWheel="TabScrollViewer_PreviewMouseWheel">
                 <wpf:AlphaTab x:Name="AlphaTab"
                               Tracks="{Binding TracksToDisplay}"/>
