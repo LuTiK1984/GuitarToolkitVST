@@ -1,4 +1,5 @@
 using System.Text.Json;
+using System.Diagnostics;
 
 namespace GuitarToolkit.Core.Services;
 
@@ -48,7 +49,11 @@ public class UserSettings
             string json = System.IO.File.ReadAllText(FilePath);
             return JsonSerializer.Deserialize<UserSettings>(json) ?? new UserSettings();
         }
-        catch { return new UserSettings(); }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"Failed to load GuitarToolkit settings: {ex.Message}");
+            return new UserSettings();
+        }
     }
 
     public void Save()
@@ -63,6 +68,9 @@ public class UserSettings
             string json = JsonSerializer.Serialize(this, options);
             System.IO.File.WriteAllText(FilePath, json);
         }
-        catch { }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"Failed to save GuitarToolkit settings: {ex.Message}");
+        }
     }
 }
