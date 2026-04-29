@@ -1,0 +1,38 @@
+name: Feature request
+description: Suggest an improvement or new module
+title: "[Feature]: "
+labels:
+  - enhancement
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem or use case
+      description: What should GuitarToolkit help with?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: What would you like to see?
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Tuner
+        - Metronome
+        - Chord Library
+        - Fretboard & Scales
+        - Interval Trainer
+        - Progression Builder
+        - Circle of Fifths
+        - Desktop app
+        - VST3 plugin
+        - Documentation
+        - Other
+    validations:
+      required: true

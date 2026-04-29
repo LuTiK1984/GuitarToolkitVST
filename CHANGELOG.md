@@ -2,6 +2,26 @@
 
 All notable changes to GuitarToolkit are documented here.
 
+## [1.2.0] - 2026-04-29
+
+### Added
+
+- Application icon for the standalone desktop executable and main window.
+- GitHub README badges.
+- README screenshots for tuner, chord library, and fretboard/scales.
+- Release checklist for repeatable publishing.
+- GitHub issue templates for bug reports, DAW compatibility reports, and feature requests.
+
+### Changed
+
+- Updated project, desktop, and VST plugin version to `1.2.0`.
+- Updated installation docs and release archive names for `v1.2.0`.
+
+### Verified
+
+- Build passes with 0 errors and 0 warnings.
+- Test suite passes: 73/73.
+
 ## [1.1.0] - 2026-04-29
 
 ### Added

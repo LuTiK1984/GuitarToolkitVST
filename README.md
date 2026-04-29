@@ -1,5 +1,11 @@
 # GuitarToolkit
 
+[![CI](https://github.com/LuTiK1984/GuitarToolkitVST/actions/workflows/ci.yml/badge.svg)](https://github.com/LuTiK1984/GuitarToolkitVST/actions/workflows/ci.yml)
+![.NET](https://img.shields.io/badge/.NET-8.0-7B5CD6)
+![Windows](https://img.shields.io/badge/platform-Windows-7C6F96)
+![VST3](https://img.shields.io/badge/plugin-VST3-CBA6F7)
+![Tests](https://img.shields.io/badge/tests-73%2F73-brightgreen)
+
 **GuitarToolkit** is a guitar-focused toolkit for Windows: a VST3 plugin for DAW hosts and a standalone WPF desktop application built on C# / .NET 8.
 
 It combines seven practice and theory tools in one interface: tuner, metronome, chord library, fretboard scale visualizer, interval ear trainer, chord progression builder, and circle of fifths.
@@ -10,12 +16,26 @@ It combines seven practice and theory tools in one interface: tuner, metronome, 
 
 The latest release provides two separate archives:
 
-- `GuitarToolkit_VST3_v.1.1.0.zip` - VST3 plugin package for DAW hosts.
-- `GuitarToolkit_DESKTOP_v.1.1.0.zip` - standalone Windows desktop application.
+- `GuitarToolkit_VST3_v.1.2.0.zip` - VST3 plugin package for DAW hosts.
+- `GuitarToolkit_DESKTOP_v.1.2.0.zip` - standalone Windows desktop application.
 
 Open the project releases page:
 
 [GitHub Releases](https://github.com/LuTiK1984/GuitarToolkitVST/releases)
+
+## Screenshots
+
+### Tuner
+
+![GuitarToolkit tuner](docs/images/tuner.png)
+
+### Chord Library
+
+![GuitarToolkit chord library](docs/images/chords.png)
+
+### Fretboard & Scales
+
+![GuitarToolkit fretboard and scales](docs/images/fretboard.png)
 
 ## Features
 
@@ -176,8 +196,8 @@ Files:
 
 В релизе доступны два архива:
 
-- `GuitarToolkit_VST3_v.1.1.0.zip` - VST3-плагин для DAW.
-- `GuitarToolkit_DESKTOP_v.1.1.0.zip` - standalone-приложение для Windows.
+- `GuitarToolkit_VST3_v.1.2.0.zip` - VST3-плагин для DAW.
+- `GuitarToolkit_DESKTOP_v.1.2.0.zip` - standalone-приложение для Windows.
 
 Страница релизов:
 

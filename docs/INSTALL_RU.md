@@ -2,14 +2,14 @@
 
 ## Desktop-версия
 
-1. Скачайте архив `GuitarToolkit_DESKTOP_v.1.1.0.zip` из GitHub Releases.
+1. Скачайте архив `GuitarToolkit_DESKTOP_v.1.2.0.zip` из GitHub Releases.
 2. Распакуйте архив в удобную папку.
 3. Запустите `GuitarToolkit.Desktop.exe`.
 4. В верхней панели выберите устройство ввода: микрофон, линейный вход или аудиоинтерфейс.
 
 ## VST3-плагин
 
-1. Скачайте архив `GuitarToolkit_VST3_v.1.1.0.zip` из GitHub Releases.
+1. Скачайте архив `GuitarToolkit_VST3_v.1.2.0.zip` из GitHub Releases.
 2. Закройте DAW, если она открыта.
 3. Распакуйте содержимое архива в папку:
 

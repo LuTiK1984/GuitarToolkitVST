@@ -1,0 +1,56 @@
+name: DAW compatibility report
+description: Report VST3 behavior in a specific DAW
+title: "[DAW]: "
+labels:
+  - daw
+  - vst3
+body:
+  - type: input
+    id: daw
+    attributes:
+      label: DAW and version
+      placeholder: FL Studio 24, Reaper 7, Cubase, Ableton Live...
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: GuitarToolkit version
+      placeholder: v1.1.0
+    validations:
+      required: true
+  - type: dropdown
+    id: result
+    attributes:
+      label: Result
+      options:
+        - Works
+        - Loads but has issues
+        - Does not load
+        - Crashes DAW
+    validations:
+      required: true
+  - type: textarea
+    id: details
+    attributes:
+      label: Details
+      description: Describe what works or fails.
+    validations:
+      required: true
+  - type: textarea
+    id: audio_setup
+    attributes:
+      label: Audio setup
+      placeholder: |
+        Audio interface:
+        Input type:
+        Buffer size:
+        Sample rate:
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps tested
+      placeholder: |
+        1. Added plugin to track.
+        2. Assigned input.
+        3. Enabled monitoring.
