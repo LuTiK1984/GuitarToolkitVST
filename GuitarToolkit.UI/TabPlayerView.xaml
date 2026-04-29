@@ -11,7 +11,9 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <DockPanel Grid.Row="0" LastChildFill="True" Margin="0 0 0 12">
+        <WrapPanel Grid.Row="0"
+                   Margin="0 0 0 12"
+                   VerticalAlignment="Center">
             <Button Content="Открыть"
                     Width="110" Height="34"
                     Margin="0 0 10 0"
@@ -25,30 +27,69 @@
                       Margin="0 0 10 0"
                       SelectionChanged="TrackCombo_SelectionChanged"/>
 
-            <Button Content="▶"
-                    Width="42" Height="34"
+            <Button Content="▶ Играть"
+                    Width="92" Height="34"
                     Margin="0 0 6 0"
                     ToolTip="Play"
                     Click="Play_Click"/>
 
-            <Button Content="⏸"
-                    Width="42" Height="34"
+            <Button Content="⏸ Пауза"
+                    Width="82" Height="34"
                     Margin="0 0 6 0"
                     ToolTip="Pause"
                     Click="Pause_Click"/>
 
-            <Button Content="■"
-                    Width="42" Height="34"
+            <Button Content="■ Стоп"
+                    Width="76" Height="34"
                     Margin="0 0 10 0"
                     ToolTip="Stop"
                     Click="Stop_Click"/>
+
+            <TextBlock Text="Громкость"
+                       VerticalAlignment="Center"
+                       Foreground="#7C6F96"
+                       FontSize="12"
+                       Margin="8 0 6 0"/>
+
+            <Slider x:Name="VolumeSlider"
+                    Width="120"
+                    Minimum="0"
+                    Maximum="100"
+                    Value="35"
+                    TickFrequency="5"
+                    VerticalAlignment="Center"
+                    ValueChanged="VolumeSlider_ValueChanged"/>
+
+            <TextBlock x:Name="VolumeLabel"
+                       Text="35%"
+                       Width="42"
+                       VerticalAlignment="Center"
+                       Foreground="#CDD6F4"
+                       FontSize="12"
+                       Margin="6 0 10 0"/>
+
+            <TextBlock Text="Скорость"
+                       VerticalAlignment="Center"
+                       Foreground="#7C6F96"
+                       FontSize="12"
+                       Margin="0 0 6 0"/>
+
+            <ComboBox x:Name="SpeedCombo"
+                      Width="86" Height="34"
+                      SelectedIndex="2"
+                      SelectionChanged="SpeedCombo_SelectionChanged">
+                <ComboBoxItem Content="50%" Tag="0.5"/>
+                <ComboBoxItem Content="75%" Tag="0.75"/>
+                <ComboBoxItem Content="100%" Tag="1.0"/>
+            </ComboBox>
 
             <TextBlock x:Name="StatusText"
                        Text="Откройте файл Guitar Pro или MusicXML"
                        VerticalAlignment="Center"
                        Foreground="#7C6F96"
-                       FontSize="13"/>
-        </DockPanel>
+                       FontSize="13"
+                       Margin="12 0 0 0"/>
+        </WrapPanel>
 
         <Border Grid.Row="1"
                 Background="#241B33"

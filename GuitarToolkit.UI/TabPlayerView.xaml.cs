@@ -19,6 +19,7 @@ public partial class TabPlayerView : UserControl
     {
         InitializeComponent();
         DataContext = this;
+        ApplyPlaybackSettings();
     }
 
     private void OpenFile_Click(object sender, RoutedEventArgs e)
@@ -46,6 +47,7 @@ public partial class TabPlayerView : UserControl
                 .Select((track, index) => new TabTrackItem(track, index + 1))
                 .ToList();
             TrackCombo.SelectedIndex = _score.Tracks.Count > 0 ? 0 : -1;
+            ApplyPlaybackSettings();
 
             StatusText.Text = $"{Path.GetFileName(path)}";
         }
@@ -70,6 +72,7 @@ public partial class TabPlayerView : UserControl
         {
             TracksToDisplay.Add(item.Track);
             AlphaTab.RenderTracks();
+            ApplyPlaybackSettings();
             StatusText.Text = $"Дорожка: {item}";
         }
     }
@@ -90,6 +93,51 @@ public partial class TabPlayerView : UserControl
     {
         if (_score == null) return;
         AlphaTab.Api?.Stop();
+    }
+
+    private void VolumeSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+    {
+        if (VolumeLabel != null)
+        {
+            VolumeLabel.Text = $"{Math.Round(e.NewValue)}%";
+        }
+
+        ApplyPlaybackSettings();
+    }
+
+    private void SpeedCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        ApplyPlaybackSettings();
+    }
+
+    private void ApplyPlaybackSettings()
+    {
+        var api = AlphaTab?.Api;
+        if (api == null)
+            return;
+
+        double volume = Math.Clamp((VolumeSlider?.Value ?? 35d) / 100d, 0d, 1d);
+        api.MasterVolume = volume;
+
+        if (TracksToDisplay.Count > 0)
+        {
+            api.ChangeTrackVolume(TracksToDisplay, volume);
+        }
+
+        api.PlaybackSpeed = GetSelectedPlaybackSpeed();
+    }
+
+    private double GetSelectedPlaybackSpeed()
+    {
+        if (SpeedCombo?.SelectedItem is ComboBoxItem item &&
+            item.Tag is string raw &&
+            double.TryParse(raw, System.Globalization.NumberStyles.Float,
+                System.Globalization.CultureInfo.InvariantCulture, out double speed))
+        {
+            return speed;
+        }
+
+        return 1.0;
     }
 
     private sealed class TabTrackItem
