@@ -12,6 +12,17 @@ It combines seven practice and theory tools in one interface: tuner, metronome, 
 
 [Русская версия](#guitartoolkit-ru)
 
+## Table of Contents
+
+- [Downloads](#downloads)
+- [Screenshots](#screenshots)
+- [Features](#features)
+- [Architecture](#architecture)
+- [Technology Stack](#technology-stack)
+- [Build From Source](#build-from-source)
+- [VST3 Deployment](#vst3-deployment)
+- [Русская версия](#guitartoolkit-ru)
+
 ## Downloads
 
 The latest release provides two separate archives:
@@ -188,9 +199,22 @@ Files:
 
 # GuitarToolkit RU
 
+[English version](#guitartoolkit)
+
 **GuitarToolkit** - набор инструментов для гитариста под Windows: VST3-плагин для DAW и самостоятельное WPF-приложение на C# / .NET 8.
 
 В одном интерфейсе собраны семь модулей: тюнер, метроном, справочник аккордов, визуализатор гамм на грифе, тренажер интервалов, построитель аккордовых прогрессий и круг квинт.
+
+## Содержание
+
+- [Загрузка](#загрузка)
+- [Скриншоты](#скриншоты)
+- [Возможности](#возможности)
+- [Архитектура](#архитектура)
+- [Стек технологий](#стек-технологий)
+- [Сборка](#сборка)
+- [Установка VST3](#установка-vst3)
+- [Хранение данных](#хранение-данных)
 
 ## Загрузка
 
@@ -202,6 +226,20 @@ Files:
 Страница релизов:
 
 [GitHub Releases](https://github.com/LuTiK1984/GuitarToolkitVST/releases)
+
+## Скриншоты
+
+### Тюнер
+
+![Тюнер GuitarToolkit](docs/images/tuner.png)
+
+### Справочник аккордов
+
+![Справочник аккордов GuitarToolkit](docs/images/chords.png)
+
+### Гриф и гаммы
+
+![Гриф и гаммы GuitarToolkit](docs/images/fretboard.png)
 
 ## Возможности
 
@@ -277,6 +315,25 @@ GuitarToolkit.sln
 ```
 
 `GuitarToolkit.Core` не зависит от WPF, NAudio и AudioPlugSharp. Различия между desktop-версией и VST3-плагином находятся только в платформенных проектах.
+
+## Стек технологий
+
+| Область | Технология |
+| --- | --- |
+| Язык | C# |
+| Runtime | .NET 8 |
+| UI | WPF |
+| Плагин | VST3 через AudioPlugSharp 0.7.9 |
+| Desktop-аудио | NAudio 2.2.1 |
+| Тесты | xUnit |
+| Тема | Темная тема в стиле Catppuccin Mocha |
+
+## Требования
+
+- Windows 10/11 x64.
+- .NET 8 runtime или SDK.
+- Visual Studio 2022 для разработки.
+- Для VST3: DAW с поддержкой VST3, например FL Studio, Reaper, Cubase, Ableton Live или другой совместимый хост.
 
 ## Сборка
 
