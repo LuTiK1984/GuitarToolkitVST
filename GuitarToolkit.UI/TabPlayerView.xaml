@@ -4,6 +4,44 @@
              xmlns:wpf="clr-namespace:AlphaTab.Wpf;assembly=AlphaTab.Windows"
              Background="#1A1525">
 
+    <UserControl.Resources>
+        <Style x:Key="TabModeToggleStyle" TargetType="{x:Type ToggleButton}">
+            <Setter Property="Background" Value="#4B3A64"/>
+            <Setter Property="Foreground" Value="#CDD6F4"/>
+            <Setter Property="BorderBrush" Value="#4B3A64"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type ToggleButton}">
+                        <Border x:Name="Chrome"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="4">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Chrome" Property="Background" Value="#5B4676"/>
+                                <Setter TargetName="Chrome" Property="BorderBrush" Value="#5B4676"/>
+                            </Trigger>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter Property="Background" Value="#CBA6F7"/>
+                                <Setter Property="Foreground" Value="#1A1525"/>
+                                <Setter Property="BorderBrush" Value="#CBA6F7"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Opacity" Value="0.55"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </UserControl.Resources>
+
     <Grid Margin="16">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -48,6 +86,7 @@
 
                 <ToggleButton x:Name="SoloToggle"
                               Content="Соло"
+                              Style="{StaticResource TabModeToggleStyle}"
                               Width="70" Height="34"
                               Margin="0 0 6 0"
                               ToolTip="Играть только выбранную дорожку"
@@ -56,6 +95,7 @@
 
                 <ToggleButton x:Name="MuteToggle"
                               Content="Не играть"
+                              Style="{StaticResource TabModeToggleStyle}"
                               Width="92" Height="34"
                               ToolTip="Отключить выбранную дорожку"
                               Checked="MuteToggle_Changed"
@@ -92,14 +132,66 @@
                            FontSize="12"
                            Margin="0 0 6 0"/>
 
-                <ComboBox x:Name="SpeedCombo"
-                          Width="86" Height="34"
-                          SelectedIndex="2"
-                          SelectionChanged="SpeedCombo_SelectionChanged">
-                    <ComboBoxItem Content="50%" Tag="0.5"/>
-                    <ComboBoxItem Content="75%" Tag="0.75"/>
-                    <ComboBoxItem Content="100%" Tag="1.0"/>
-                </ComboBox>
+                <Button Content="-"
+                        Width="34" Height="34"
+                        Margin="0 0 4 0"
+                        ToolTip="Уменьшить скорость на 5%"
+                        Click="SpeedDown_Click"/>
+
+                <TextBox x:Name="SpeedTextBox"
+                         Width="56" Height="34"
+                         Text="100"
+                         TextAlignment="Center"
+                         VerticalContentAlignment="Center"
+                         Background="#4B3A64"
+                         Foreground="#CDD6F4"
+                         BorderBrush="#4B3A64"
+                         FontWeight="Bold"
+                         LostFocus="SpeedTextBox_LostFocus"
+                         KeyDown="SpeedTextBox_KeyDown"/>
+
+                <Button Content="+"
+                        Width="34" Height="34"
+                        Margin="4 0 0 0"
+                        ToolTip="Увеличить скорость на 5%"
+                        Click="SpeedUp_Click"/>
+
+                <TextBlock Text="%"
+                           VerticalAlignment="Center"
+                           Foreground="#7C6F96"
+                           FontSize="12"
+                           Margin="4 0 12 0"/>
+
+                <CheckBox x:Name="AutoScrollCheckBox"
+                          Content="Следить"
+                          IsChecked="True"
+                          VerticalAlignment="Center"
+                          Foreground="#CDD6F4"
+                          FontWeight="Bold"
+                          Margin="0 0 14 0"/>
+
+                <TextBlock Text="Синхр."
+                           VerticalAlignment="Center"
+                           Foreground="#7C6F96"
+                           FontSize="12"
+                           Margin="0 0 6 0"/>
+
+                <Slider x:Name="SyncOffsetSlider"
+                        Width="110"
+                        Minimum="-200"
+                        Maximum="200"
+                        Value="0"
+                        TickFrequency="10"
+                        VerticalAlignment="Center"
+                        ValueChanged="SyncOffsetSlider_ValueChanged"/>
+
+                <TextBlock x:Name="SyncOffsetLabel"
+                           Text="0 мс"
+                           Width="52"
+                           VerticalAlignment="Center"
+                           Foreground="#CDD6F4"
+                           FontSize="12"
+                           Margin="6 0 12 0"/>
 
                 <TextBlock x:Name="StatusText"
                            Text="Откройте файл Guitar Pro или MusicXML"
@@ -125,8 +217,12 @@
                 Background="#F7F5FA"
                 CornerRadius="6"
                 Padding="8">
-            <ScrollViewer HorizontalScrollBarVisibility="Auto"
-                          VerticalScrollBarVisibility="Auto">
+            <ScrollViewer x:Name="TabScrollViewer"
+                          HorizontalScrollBarVisibility="Auto"
+                          VerticalScrollBarVisibility="Auto"
+                          CanContentScroll="False"
+                          PanningMode="Both"
+                          PreviewMouseWheel="TabScrollViewer_PreviewMouseWheel">
                 <wpf:AlphaTab x:Name="AlphaTab"
                               Tracks="{Binding TracksToDisplay}"/>
             </ScrollViewer>

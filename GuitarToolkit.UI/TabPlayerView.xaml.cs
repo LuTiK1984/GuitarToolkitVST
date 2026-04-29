@@ -1,10 +1,16 @@
 using System.Collections.ObjectModel;
+using System.Globalization;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
+using System.Windows.Threading;
 using AlphaTab;
 using AlphaTab.Importer;
+using AlphaTab.Midi;
 using AlphaTab.Model;
+using AlphaTab.Rendering.Utils;
+using AlphaTab.Synth;
 using Microsoft.Win32;
 
 namespace GuitarToolkit.UI;
@@ -13,14 +19,28 @@ public partial class TabPlayerView : UserControl
 {
     private Score? _score;
     private bool _isUpdatingTrackMode;
+    private readonly DispatcherTimer _volumeRampTimer;
+    private readonly DispatcherTimer _scrollToCursorTimer;
+    private double _currentMasterVolume = 0.35d;
+    private double _targetMasterVolume = 0.35d;
+    private bool _playbackEventsAttached;
+    private double _syncOffsetMilliseconds;
+    private double? _pendingTickAfterRender;
+    private bool _pendingScrollAfterRender;
+    private TabScrollHandler? _tabScrollHandler;
 
     public ObservableCollection<Track> TracksToDisplay { get; } = new();
 
     public TabPlayerView()
     {
         InitializeComponent();
+        _volumeRampTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(20) };
+        _volumeRampTimer.Tick += VolumeRampTimer_Tick;
+        _scrollToCursorTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(120) };
+        _scrollToCursorTimer.Tick += ScrollToCursorTimer_Tick;
         DataContext = this;
         ApplyPlaybackSettings();
+        Loaded += (_, _) => ConfigureAlphaTabPlayer();
     }
 
     private void OpenFile_Click(object sender, RoutedEventArgs e)
@@ -43,6 +63,7 @@ public partial class TabPlayerView : UserControl
         {
             byte[] data = File.ReadAllBytes(path);
             _score = ScoreLoader.LoadScoreFromBytes(data, new Settings());
+            ConfigureAlphaTabPlayer();
 
             TrackCombo.ItemsSource = _score.Tracks
                 .Select((track, index) => new TabTrackItem(track, index + 1))
@@ -72,7 +93,10 @@ public partial class TabPlayerView : UserControl
 
         if (TrackCombo.SelectedItem is TabTrackItem item)
         {
+            _pendingTickAfterRender = AlphaTab.Api?.TickPosition;
+            _pendingScrollAfterRender = true;
             TracksToDisplay.Add(item.Track);
+            ConfigureAlphaTabPlayer();
             AlphaTab.RenderTracks();
             ApplyPlaybackSettings();
             ApplyTrackPlaybackMode();
@@ -98,6 +122,12 @@ public partial class TabPlayerView : UserControl
         AlphaTab.Api?.Stop();
     }
 
+    private void TabScrollViewer_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
+    {
+        TabScrollViewer.ScrollToVerticalOffset(TabScrollViewer.VerticalOffset - e.Delta);
+        e.Handled = true;
+    }
+
     private void VolumeSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
     {
         if (VolumeLabel != null)
@@ -111,6 +141,43 @@ public partial class TabPlayerView : UserControl
     private void SpeedCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
         ApplyPlaybackSettings();
+    }
+
+    private void SyncOffsetSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+    {
+        _syncOffsetMilliseconds = Math.Round(e.NewValue);
+
+        if (SyncOffsetLabel != null)
+        {
+            SyncOffsetLabel.Text = $"{_syncOffsetMilliseconds:+0;-0;0} мс";
+        }
+
+        ConfigureAlphaTabPlayer();
+    }
+
+    private void SpeedDown_Click(object sender, RoutedEventArgs e)
+    {
+        SetPlaybackSpeedPercent(GetPlaybackSpeedPercent() - 5d);
+    }
+
+    private void SpeedUp_Click(object sender, RoutedEventArgs e)
+    {
+        SetPlaybackSpeedPercent(GetPlaybackSpeedPercent() + 5d);
+    }
+
+    private void SpeedTextBox_LostFocus(object sender, RoutedEventArgs e)
+    {
+        SetPlaybackSpeedPercent(GetPlaybackSpeedPercent());
+    }
+
+    private void SpeedTextBox_KeyDown(object sender, KeyEventArgs e)
+    {
+        if (e.Key != Key.Enter)
+            return;
+
+        SetPlaybackSpeedPercent(GetPlaybackSpeedPercent());
+        Keyboard.ClearFocus();
+        e.Handled = true;
     }
 
     private void SoloToggle_Changed(object sender, RoutedEventArgs e)
@@ -150,7 +217,7 @@ public partial class TabPlayerView : UserControl
             return;
 
         double volume = Math.Clamp((VolumeSlider?.Value ?? 35d) / 100d, 0d, 1d);
-        api.MasterVolume = volume;
+        SetMasterVolumeSmoothly(volume);
 
         api.PlaybackSpeed = GetSelectedPlaybackSpeed();
     }
@@ -179,17 +246,148 @@ public partial class TabPlayerView : UserControl
         }
     }
 
+    private void ConfigureAlphaTabPlayer()
+    {
+        var api = AlphaTab?.Api;
+        if (api == null)
+            return;
+
+        api.Settings.Player.EnableCursor = true;
+        api.Settings.Player.EnableAnimatedBeatCursor = true;
+        api.Settings.Player.ScrollMode = ScrollMode.Smooth;
+        api.Settings.Player.ScrollSpeed = 350d;
+        api.Settings.Player.ScrollOffsetY = 90d;
+
+        _tabScrollHandler ??= new TabScrollHandler(
+            TabScrollViewer,
+            () => AutoScrollCheckBox?.IsChecked == true,
+            () => _syncOffsetMilliseconds);
+        api.CustomScrollHandler = _tabScrollHandler;
+        api.UpdateSettings();
+
+        if (!_playbackEventsAttached)
+        {
+            api.PlayedBeatChanged.On(HandlePlayedBeatChanged);
+            api.PlayerPositionChanged.On(HandlePlayerPositionChanged);
+            api.PostRenderFinished.On(HandlePostRenderFinished);
+            _playbackEventsAttached = true;
+        }
+    }
+
+    private void HandlePlayedBeatChanged(Beat beat)
+    {
+        ScrollToCursorSoon();
+    }
+
+    private void HandlePlayerPositionChanged(PositionChangedEventArgs e)
+    {
+        _tabScrollHandler?.SetCurrentPosition(e.CurrentTime, e.CurrentTick);
+    }
+
+    private void HandlePostRenderFinished()
+    {
+        Dispatcher.BeginInvoke(() =>
+        {
+            var api = AlphaTab?.Api;
+            if (api == null)
+                return;
+
+            if (_pendingTickAfterRender.HasValue)
+            {
+                api.TickPosition = Math.Clamp(_pendingTickAfterRender.Value, 0d, api.EndTick);
+                _pendingTickAfterRender = null;
+            }
+
+            if (_pendingScrollAfterRender)
+            {
+                _pendingScrollAfterRender = false;
+                ScrollToCursorSoon();
+            }
+        }, DispatcherPriority.Background);
+    }
+
+    private void ScrollToCursorSoon()
+    {
+        if (AutoScrollCheckBox?.IsChecked != true)
+            return;
+
+        double delay = Math.Clamp(120d + _syncOffsetMilliseconds, 0d, 400d);
+        _scrollToCursorTimer.Interval = TimeSpan.FromMilliseconds(delay);
+
+        if (!_scrollToCursorTimer.IsEnabled)
+        {
+            _scrollToCursorTimer.Start();
+        }
+    }
+
+    private void ScrollToCursorTimer_Tick(object? sender, EventArgs e)
+    {
+        _scrollToCursorTimer.Stop();
+
+        if (AutoScrollCheckBox?.IsChecked == true)
+        {
+            AlphaTab?.Api?.ScrollToCursor();
+        }
+    }
+
     private double GetSelectedPlaybackSpeed()
     {
-        if (SpeedCombo?.SelectedItem is ComboBoxItem item &&
-            item.Tag is string raw &&
-            double.TryParse(raw, System.Globalization.NumberStyles.Float,
-                System.Globalization.CultureInfo.InvariantCulture, out double speed))
+        return GetPlaybackSpeedPercent() / 100d;
+    }
+
+    private double GetPlaybackSpeedPercent()
+    {
+        string raw = SpeedTextBox?.Text?.Trim().TrimEnd('%') ?? "100";
+        raw = raw.Replace(',', '.');
+
+        if (!double.TryParse(raw, NumberStyles.Float, CultureInfo.InvariantCulture, out double percent))
+            percent = 100d;
+
+        return Math.Clamp(percent, 25d, 200d);
+    }
+
+    private void SetPlaybackSpeedPercent(double percent)
+    {
+        percent = Math.Clamp(Math.Round(percent), 25d, 200d);
+
+        if (SpeedTextBox != null)
         {
-            return speed;
+            SpeedTextBox.Text = percent.ToString(CultureInfo.InvariantCulture);
         }
 
-        return 1.0;
+        ApplyPlaybackSettings();
+    }
+
+    private void SetMasterVolumeSmoothly(double volume)
+    {
+        _targetMasterVolume = volume;
+
+        if (!_volumeRampTimer.IsEnabled)
+        {
+            _volumeRampTimer.Start();
+        }
+    }
+
+    private void VolumeRampTimer_Tick(object? sender, EventArgs e)
+    {
+        var api = AlphaTab?.Api;
+        if (api == null)
+        {
+            _volumeRampTimer.Stop();
+            return;
+        }
+
+        double difference = _targetMasterVolume - _currentMasterVolume;
+        if (Math.Abs(difference) <= 0.005d)
+        {
+            _currentMasterVolume = _targetMasterVolume;
+            api.MasterVolume = _currentMasterVolume;
+            _volumeRampTimer.Stop();
+            return;
+        }
+
+        _currentMasterVolume += Math.Sign(difference) * Math.Min(Math.Abs(difference), 0.025d);
+        api.MasterVolume = _currentMasterVolume;
     }
 
     private sealed class TabTrackItem
@@ -208,6 +406,96 @@ public partial class TabPlayerView : UserControl
             return string.IsNullOrWhiteSpace(Track.Name)
                 ? $"Дорожка {Number}"
                 : Track.Name;
+        }
+    }
+
+    private sealed class TabScrollHandler : IScrollHandler
+    {
+        private readonly ScrollViewer _scrollViewer;
+        private readonly Func<bool> _isEnabled;
+        private readonly Func<double> _syncOffsetMilliseconds;
+        private double _currentTime;
+        private double _currentTick;
+        private DateTime _lastScrollUtc = DateTime.MinValue;
+
+        public TabScrollHandler(
+            ScrollViewer scrollViewer,
+            Func<bool> isEnabled,
+            Func<double> syncOffsetMilliseconds)
+        {
+            _scrollViewer = scrollViewer;
+            _isEnabled = isEnabled;
+            _syncOffsetMilliseconds = syncOffsetMilliseconds;
+        }
+
+        public void SetCurrentPosition(double currentTime, double currentTick)
+        {
+            _currentTime = currentTime;
+            _currentTick = currentTick;
+        }
+
+        public void ForceScrollTo(BeatBounds currentBeatBounds)
+        {
+            ScrollToBeat(currentBeatBounds, true);
+        }
+
+        public void OnBeatCursorUpdating(
+            BeatBounds startBeat,
+            BeatBounds? endBeat,
+            MidiTickLookupFindBeatResultCursorMode cursorMode,
+            double actualBeatCursorStartX,
+            double actualBeatCursorEndX,
+            double actualBeatCursorTransitionDuration)
+        {
+            double offset = _syncOffsetMilliseconds();
+            if (offset < 0 && endBeat != null)
+            {
+                ScrollToBeat(endBeat, false);
+                return;
+            }
+
+            ScrollToBeat(startBeat, false);
+        }
+
+        public void Dispose()
+        {
+        }
+
+        private void ScrollToBeat(BeatBounds? beatBounds, bool force)
+        {
+            if (beatBounds == null || !_isEnabled())
+                return;
+
+            if (!force && (DateTime.UtcNow - _lastScrollUtc).TotalMilliseconds < 140)
+                return;
+
+            _lastScrollUtc = DateTime.UtcNow;
+
+            _scrollViewer.Dispatcher.BeginInvoke(() =>
+            {
+                var bounds = beatBounds.VisualBounds;
+                double top = bounds.Y;
+                double bottom = bounds.Y + bounds.H;
+                double viewportTop = _scrollViewer.VerticalOffset;
+                double viewportBottom = viewportTop + _scrollViewer.ViewportHeight;
+
+                if (force || top < viewportTop + 80d || bottom > viewportBottom - 120d)
+                {
+                    double targetY = Math.Max(0d, top - 120d);
+                    _scrollViewer.ScrollToVerticalOffset(targetY);
+                }
+
+                double left = bounds.X;
+                double right = bounds.X + bounds.W;
+                double viewportLeft = _scrollViewer.HorizontalOffset;
+                double viewportRight = viewportLeft + _scrollViewer.ViewportWidth;
+
+                if (force || left < viewportLeft + 40d || right > viewportRight - 120d)
+                {
+                    double targetX = Math.Max(0d, left - 80d);
+                    _scrollViewer.ScrollToHorizontalOffset(targetX);
+                }
+            }, DispatcherPriority.Background);
         }
     }
 }
