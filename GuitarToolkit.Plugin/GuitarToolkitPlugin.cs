@@ -1,4 +1,5 @@
 using System.Windows.Controls;
+using System.Threading;
 using AudioPlugSharp;
 using AudioPlugSharpWPF;
 using GuitarToolkit.Core.Services;
@@ -37,13 +38,13 @@ public class GuitarToolkitPlugin : AudioPluginWPF, IAudioPlayback
 
     public void PlaySamples(float[] samples)
     {
-        _playbackBuffer = samples;
         _playbackPos = 0;
+        Volatile.Write(ref _playbackBuffer, samples);
     }
 
     public void StopPlayback()
     {
-        _playbackBuffer = null;
+        Volatile.Write(ref _playbackBuffer, null);
         _playbackPos = 0;
     }
 
@@ -129,7 +130,7 @@ public class GuitarToolkitPlugin : AudioPluginWPF, IAudioPlayback
 
         try
         {
-            var buf = _playbackBuffer;
+            var buf = Volatile.Read(ref _playbackBuffer);
             if (buf != null && _playbackPos < buf.Length)
             {
                 for (int i = 0; i < len && _playbackPos < buf.Length; i++, _playbackPos++)
@@ -141,7 +142,7 @@ public class GuitarToolkitPlugin : AudioPluginWPF, IAudioPlayback
 
                 if (_playbackPos >= buf.Length)
                 {
-                    _playbackBuffer = null;
+                    Volatile.Write(ref _playbackBuffer, null);
                     _playbackPos = 0;
                 }
             }
