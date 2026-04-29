@@ -33,7 +33,9 @@ public partial class ToolkitHostView : UserControl
     {
         if (e.Key == Key.Space)
         {
-            // Пробел — старт/стоп метронома (с любой вкладки)
+            if (ToolkitTabs.SelectedContent is TabPlayerView && TabPlayerTab.HandleShortcut(e))
+                return;
+
             MetronomeTab.ToggleStartStop();
             e.Handled = true;
         }

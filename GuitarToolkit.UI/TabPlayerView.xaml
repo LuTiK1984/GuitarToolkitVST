@@ -66,17 +66,14 @@
                           Margin="0 0 10 0"
                           SelectionChanged="TrackCombo_SelectionChanged"/>
 
-                <Button Content="▶ Играть"
-                        Width="92" Height="34"
-                        Margin="0 0 6 0"
-                        ToolTip="Играть"
-                        Click="Play_Click"/>
-
-                <Button Content="Пауза"
-                        Width="82" Height="34"
-                        Margin="0 0 6 0"
-                        ToolTip="Пауза"
-                        Click="Pause_Click"/>
+                <ToggleButton x:Name="PlayPauseToggle"
+                              Content="▶ Играть"
+                              Style="{StaticResource TabModeToggleStyle}"
+                              Width="104" Height="34"
+                              Margin="0 0 6 0"
+                              ToolTip="Играть / пауза"
+                              Checked="PlayPauseToggle_Changed"
+                              Unchecked="PlayPauseToggle_Changed"/>
 
                 <Button Content="Стоп"
                         Width="76" Height="34"

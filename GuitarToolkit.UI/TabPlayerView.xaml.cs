@@ -28,6 +28,7 @@ public partial class TabPlayerView : UserControl
     private double? _pendingTickAfterRender;
     private bool _pendingScrollAfterRender;
     private TabScrollHandler? _tabScrollHandler;
+    private bool _isUpdatingPlayButton;
 
     public ObservableCollection<Track> TracksToDisplay { get; } = new();
 
@@ -104,22 +105,119 @@ public partial class TabPlayerView : UserControl
         }
     }
 
-    private void Play_Click(object sender, RoutedEventArgs e)
+    public bool HandleShortcut(KeyEventArgs e)
     {
-        if (_score == null) return;
-        AlphaTab.Api?.Play();
+        if (Keyboard.FocusedElement is TextBox)
+            return false;
+
+        if (e.Key == Key.Space)
+        {
+            TogglePlayback();
+            e.Handled = true;
+            return true;
+        }
+
+        if (e.Key == Key.Escape)
+        {
+            StopPlayback();
+            e.Handled = true;
+            return true;
+        }
+
+        return false;
     }
 
-    private void Pause_Click(object sender, RoutedEventArgs e)
+    private void PlayPauseToggle_Changed(object sender, RoutedEventArgs e)
     {
-        if (_score == null) return;
-        AlphaTab.Api?.Pause();
+        if (_isUpdatingPlayButton)
+            return;
+
+        if (PlayPauseToggle.IsChecked == true)
+        {
+            StartPlayback();
+        }
+        else
+        {
+            PausePlayback();
+        }
     }
 
     private void Stop_Click(object sender, RoutedEventArgs e)
     {
-        if (_score == null) return;
+        StopPlayback();
+    }
+
+    private void TogglePlayback()
+    {
+        if (_score == null)
+            return;
+
+        if (AlphaTab.Api?.PlayerState == PlayerState.Playing)
+        {
+            SetPlayButtonState(false);
+            PausePlayback();
+        }
+        else
+        {
+            SetPlayButtonState(true);
+            StartPlayback();
+        }
+    }
+
+    private void StartPlayback()
+    {
+        if (_score == null)
+        {
+            SetPlayButtonState(false);
+            return;
+        }
+
+        bool started = AlphaTab.Api?.Play() == true;
+        if (!started)
+        {
+            SetPlayButtonState(false);
+        }
+        else
+        {
+            UpdatePlayButtonVisual(true);
+        }
+    }
+
+    private void PausePlayback()
+    {
+        if (_score == null)
+            return;
+
+        AlphaTab.Api?.Pause();
+        UpdatePlayButtonVisual(false);
+    }
+
+    private void StopPlayback()
+    {
+        if (_score == null)
+            return;
+
         AlphaTab.Api?.Stop();
+        SetPlayButtonState(false);
+    }
+
+    private void SetPlayButtonState(bool isPlaying)
+    {
+        if (PlayPauseToggle == null)
+            return;
+
+        _isUpdatingPlayButton = true;
+        PlayPauseToggle.IsChecked = isPlaying;
+        _isUpdatingPlayButton = false;
+        UpdatePlayButtonVisual(isPlaying);
+    }
+
+    private void UpdatePlayButtonVisual(bool isPlaying)
+    {
+        if (PlayPauseToggle != null)
+        {
+            PlayPauseToggle.Content = isPlaying ? "Пауза" : "▶ Играть";
+        }
     }
 
     private void TabScrollViewer_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
@@ -135,11 +233,6 @@ public partial class TabPlayerView : UserControl
             VolumeLabel.Text = $"{Math.Round(e.NewValue)}%";
         }
 
-        ApplyPlaybackSettings();
-    }
-
-    private void SpeedCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
-    {
         ApplyPlaybackSettings();
     }
 
@@ -269,6 +362,7 @@ public partial class TabPlayerView : UserControl
         {
             api.PlayedBeatChanged.On(HandlePlayedBeatChanged);
             api.PlayerPositionChanged.On(HandlePlayerPositionChanged);
+            api.PlayerStateChanged.On(HandlePlayerStateChanged);
             api.PostRenderFinished.On(HandlePostRenderFinished);
             _playbackEventsAttached = true;
         }
@@ -282,6 +376,14 @@ public partial class TabPlayerView : UserControl
     private void HandlePlayerPositionChanged(PositionChangedEventArgs e)
     {
         _tabScrollHandler?.SetCurrentPosition(e.CurrentTime, e.CurrentTick);
+    }
+
+    private void HandlePlayerStateChanged(PlayerStateChangedEventArgs e)
+    {
+        Dispatcher.BeginInvoke(() =>
+        {
+            SetPlayButtonState(e.State == PlayerState.Playing);
+        }, DispatcherPriority.Background);
     }
 
     private void HandlePostRenderFinished()

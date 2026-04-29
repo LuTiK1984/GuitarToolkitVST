@@ -170,7 +170,10 @@
 
     </UserControl.Resources>
 
-    <TabControl Background="#1A1525" BorderThickness="0" TabStripPlacement="Left">
+    <TabControl x:Name="ToolkitTabs"
+                Background="#1A1525"
+                BorderThickness="0"
+                TabStripPlacement="Left">
 
         <TabItem Header="🎸 Тюнер">
             <ScrollViewer>
