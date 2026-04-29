@@ -17,6 +17,16 @@ public class GuitarToolkitPlugin : AudioPluginWPF, IAudioPlayback
     private float[]? _playbackBuffer;
     private int _playbackPos;
 
+    private float[] _inputFloatBuffer = Array.Empty<float>();
+    private float[] _metronomeBuffer = Array.Empty<float>();
+
+    private static void EnsureBuffer(ref float[] buffer, int length)
+    {
+        if (buffer.Length < length)
+            buffer = new float[length];
+    }
+
+
     public int SampleRate
     {
         get
@@ -80,32 +90,42 @@ public class GuitarToolkitPlugin : AudioPluginWPF, IAudioPlayback
         Span<double> outR = _stereoOutput.GetAudioBuffer(1);
         int len = input.Length;
 
+        EnsureBuffer(ref _inputFloatBuffer, len);
+        EnsureBuffer(ref _metronomeBuffer, len);
+
         for (int i = 0; i < len; i++)
         {
-            outL[i] = input[i];
-            outR[i] = input[i];
+            double sample = input[i];
+            outL[i] = sample;
+            outR[i] = sample;
+            _inputFloatBuffer[i] = (float)sample;
         }
 
         try
         {
-            float[] floatBuf = new float[len];
-            for (int i = 0; i < len; i++)
-                floatBuf[i] = (float)input[i];
-            Tuner.ProcessSamples(floatBuf, len);
+            Tuner.ProcessSamples(_inputFloatBuffer, len);
         }
-        catch { }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Tuner processing error: {ex.Message}");
+        }
 
         try
         {
-            float[] metroBuf = new float[len];
-            Metronome.ProcessBlock(metroBuf, len);
+            Array.Clear(_metronomeBuffer, 0, len);
+            Metronome.ProcessBlock(_metronomeBuffer, len);
+
             for (int i = 0; i < len; i++)
             {
-                outL[i] += metroBuf[i];
-                outR[i] += metroBuf[i];
+                double click = _metronomeBuffer[i];
+                outL[i] += click;
+                outR[i] += click;
             }
         }
-        catch { }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Metronome processing error: {ex.Message}");
+        }
 
         try
         {
@@ -114,13 +134,24 @@ public class GuitarToolkitPlugin : AudioPluginWPF, IAudioPlayback
             {
                 for (int i = 0; i < len && _playbackPos < buf.Length; i++, _playbackPos++)
                 {
-                    outL[i] += buf[_playbackPos];
-                    outR[i] += buf[_playbackPos];
+                    double sample = buf[_playbackPos];
+                    outL[i] += sample;
+                    outR[i] += sample;
+                }
+
+                if (_playbackPos >= buf.Length)
+                {
+                    _playbackBuffer = null;
+                    _playbackPos = 0;
                 }
             }
         }
-        catch { }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Playback processing error: {ex.Message}");
+        }
     }
+
 
     public override UserControl GetEditorView()
     {
