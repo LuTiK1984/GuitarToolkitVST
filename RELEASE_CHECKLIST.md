@@ -17,7 +17,7 @@ Run:
 ```powershell
 dotnet build GuitarToolkit.sln --no-restore --configuration Debug
 dotnet test GuitarToolkit.sln --no-restore --configuration Debug
-powershell -ExecutionPolicy Bypass -File .\build-release.ps1 -Version 1.2.0 -Configuration Release
+powershell -ExecutionPolicy Bypass -File .\build-release.ps1 -Version 1.3.0 -Configuration Release
 ```
 
 Expected:
@@ -34,6 +34,8 @@ Expected:
 - Check tuner input.
 - Check metronome playback.
 - Check chord/scale playback.
+- Check the Tabs page: open a Guitar Pro file, switch tracks, play/pause/stop, solo/mute, resize maximize/restore, and verify auto-follow.
+- Known follow-up: while the Tabs page adapts after resize/maximize/restore, alphaTab can visibly re-render a few times before settling.
 
 ## 4. Manual VST3 Check
 

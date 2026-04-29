@@ -2,6 +2,33 @@
 
 All notable changes to GuitarToolkit are documented here.
 
+## [1.3.0] - 2026-04-30
+
+### Added
+
+- New Tabs page prototype powered by alphaTab.
+- Guitar Pro and MusicXML loading for desktop tab viewing.
+- Track selection, selected-track solo/mute, play/pause/stop controls, volume control, and flexible playback speed input.
+- Keyboard shortcuts on the active Tabs page: Space for play/pause and Esc for stop.
+- Automatic cursor following for long tablatures.
+
+### Changed
+
+- Improved Tabs page layout for smaller windows.
+- Removed prototype notice panel from the Tabs page to give more space to notation.
+- Added adaptive alphaTab rendering for window resize, maximize, and restore.
+- Updated project, desktop, and VST plugin version to `1.3.0`.
+- Updated release archive names for `v1.3.0`.
+
+### Known Follow-Up
+
+- The Tabs page can visibly re-render a few times while adapting notation size after window resize/maximize/restore.
+
+### Verified
+
+- Build passes with 0 errors and 0 warnings.
+- Test suite passes: 73/73.
+
 ## [1.2.0] - 2026-04-29
 
 ### Added
