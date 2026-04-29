@@ -23,8 +23,25 @@
             <ComboBox x:Name="TrackCombo"
                       Width="260" Height="34"
                       Margin="0 0 10 0"
-                      DisplayMemberPath="Name"
                       SelectionChanged="TrackCombo_SelectionChanged"/>
+
+            <Button Content="▶"
+                    Width="42" Height="34"
+                    Margin="0 0 6 0"
+                    ToolTip="Play"
+                    Click="Play_Click"/>
+
+            <Button Content="⏸"
+                    Width="42" Height="34"
+                    Margin="0 0 6 0"
+                    ToolTip="Pause"
+                    Click="Pause_Click"/>
+
+            <Button Content="■"
+                    Width="42" Height="34"
+                    Margin="0 0 10 0"
+                    ToolTip="Stop"
+                    Click="Stop_Click"/>
 
             <TextBlock x:Name="StatusText"
                        Text="Откройте файл Guitar Pro или MusicXML"

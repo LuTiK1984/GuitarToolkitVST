@@ -42,7 +42,9 @@ public partial class TabPlayerView : UserControl
             byte[] data = File.ReadAllBytes(path);
             _score = ScoreLoader.LoadScoreFromBytes(data, new Settings());
 
-            TrackCombo.ItemsSource = _score.Tracks;
+            TrackCombo.ItemsSource = _score.Tracks
+                .Select((track, index) => new TabTrackItem(track, index + 1))
+                .ToList();
             TrackCombo.SelectedIndex = _score.Tracks.Count > 0 ? 0 : -1;
 
             StatusText.Text = $"{Path.GetFileName(path)}";
@@ -64,10 +66,48 @@ public partial class TabPlayerView : UserControl
     {
         TracksToDisplay.Clear();
 
-        if (TrackCombo.SelectedItem is Track track)
+        if (TrackCombo.SelectedItem is TabTrackItem item)
         {
-            TracksToDisplay.Add(track);
+            TracksToDisplay.Add(item.Track);
             AlphaTab.RenderTracks();
+            StatusText.Text = $"Дорожка: {item}";
+        }
+    }
+
+    private void Play_Click(object sender, RoutedEventArgs e)
+    {
+        if (_score == null) return;
+        AlphaTab.Api?.Play();
+    }
+
+    private void Pause_Click(object sender, RoutedEventArgs e)
+    {
+        if (_score == null) return;
+        AlphaTab.Api?.Pause();
+    }
+
+    private void Stop_Click(object sender, RoutedEventArgs e)
+    {
+        if (_score == null) return;
+        AlphaTab.Api?.Stop();
+    }
+
+    private sealed class TabTrackItem
+    {
+        public TabTrackItem(Track track, int number)
+        {
+            Track = track;
+            Number = number;
+        }
+
+        public Track Track { get; }
+        public int Number { get; }
+
+        public override string ToString()
+        {
+            return string.IsNullOrWhiteSpace(Track.Name)
+                ? $"Дорожка {Number}"
+                : Track.Name;
         }
     }
 }
