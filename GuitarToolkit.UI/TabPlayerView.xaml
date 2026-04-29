@@ -11,85 +11,104 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <WrapPanel Grid.Row="0"
-                   Margin="0 0 0 12"
-                   VerticalAlignment="Center">
-            <Button Content="Открыть"
-                    Width="110" Height="34"
-                    Margin="0 0 10 0"
-                    FontWeight="Bold"
-                    Background="#CBA6F7"
-                    Foreground="#1A1525"
-                    Click="OpenFile_Click"/>
+        <StackPanel Grid.Row="0"
+                    Margin="0 0 0 12">
+            <WrapPanel Margin="0 0 0 8"
+                       VerticalAlignment="Center">
+                <Button Content="Открыть"
+                        Width="110" Height="34"
+                        Margin="0 0 10 0"
+                        FontWeight="Bold"
+                        Background="#CBA6F7"
+                        Foreground="#1A1525"
+                        Click="OpenFile_Click"/>
 
-            <ComboBox x:Name="TrackCombo"
-                      Width="260" Height="34"
-                      Margin="0 0 10 0"
-                      SelectionChanged="TrackCombo_SelectionChanged"/>
+                <ComboBox x:Name="TrackCombo"
+                          Width="260" Height="34"
+                          Margin="0 0 10 0"
+                          SelectionChanged="TrackCombo_SelectionChanged"/>
 
-            <Button Content="▶ Играть"
-                    Width="92" Height="34"
-                    Margin="0 0 6 0"
-                    ToolTip="Play"
-                    Click="Play_Click"/>
+                <Button Content="▶ Играть"
+                        Width="92" Height="34"
+                        Margin="0 0 6 0"
+                        ToolTip="Играть"
+                        Click="Play_Click"/>
 
-            <Button Content="⏸ Пауза"
-                    Width="82" Height="34"
-                    Margin="0 0 6 0"
-                    ToolTip="Pause"
-                    Click="Pause_Click"/>
+                <Button Content="Пауза"
+                        Width="82" Height="34"
+                        Margin="0 0 6 0"
+                        ToolTip="Пауза"
+                        Click="Pause_Click"/>
 
-            <Button Content="■ Стоп"
-                    Width="76" Height="34"
-                    Margin="0 0 10 0"
-                    ToolTip="Stop"
-                    Click="Stop_Click"/>
+                <Button Content="Стоп"
+                        Width="76" Height="34"
+                        Margin="0 0 10 0"
+                        ToolTip="Стоп"
+                        Click="Stop_Click"/>
 
-            <TextBlock Text="Громкость"
-                       VerticalAlignment="Center"
-                       Foreground="#7C6F96"
-                       FontSize="12"
-                       Margin="8 0 6 0"/>
+                <ToggleButton x:Name="SoloToggle"
+                              Content="Соло"
+                              Width="70" Height="34"
+                              Margin="0 0 6 0"
+                              ToolTip="Играть только выбранную дорожку"
+                              Checked="SoloToggle_Changed"
+                              Unchecked="SoloToggle_Changed"/>
 
-            <Slider x:Name="VolumeSlider"
-                    Width="120"
-                    Minimum="0"
-                    Maximum="100"
-                    Value="35"
-                    TickFrequency="5"
-                    VerticalAlignment="Center"
-                    ValueChanged="VolumeSlider_ValueChanged"/>
+                <ToggleButton x:Name="MuteToggle"
+                              Content="Не играть"
+                              Width="92" Height="34"
+                              ToolTip="Отключить выбранную дорожку"
+                              Checked="MuteToggle_Changed"
+                              Unchecked="MuteToggle_Changed"/>
+            </WrapPanel>
 
-            <TextBlock x:Name="VolumeLabel"
-                       Text="35%"
-                       Width="42"
-                       VerticalAlignment="Center"
-                       Foreground="#CDD6F4"
-                       FontSize="12"
-                       Margin="6 0 10 0"/>
+            <WrapPanel VerticalAlignment="Center">
+                <TextBlock Text="Громкость"
+                           VerticalAlignment="Center"
+                           Foreground="#7C6F96"
+                           FontSize="12"
+                           Margin="0 0 6 0"/>
 
-            <TextBlock Text="Скорость"
-                       VerticalAlignment="Center"
-                       Foreground="#7C6F96"
-                       FontSize="12"
-                       Margin="0 0 6 0"/>
+                <Slider x:Name="VolumeSlider"
+                        Width="120"
+                        Minimum="0"
+                        Maximum="100"
+                        Value="35"
+                        TickFrequency="5"
+                        VerticalAlignment="Center"
+                        ValueChanged="VolumeSlider_ValueChanged"/>
 
-            <ComboBox x:Name="SpeedCombo"
-                      Width="86" Height="34"
-                      SelectedIndex="2"
-                      SelectionChanged="SpeedCombo_SelectionChanged">
-                <ComboBoxItem Content="50%" Tag="0.5"/>
-                <ComboBoxItem Content="75%" Tag="0.75"/>
-                <ComboBoxItem Content="100%" Tag="1.0"/>
-            </ComboBox>
+                <TextBlock x:Name="VolumeLabel"
+                           Text="35%"
+                           Width="42"
+                           VerticalAlignment="Center"
+                           Foreground="#CDD6F4"
+                           FontSize="12"
+                           Margin="6 0 16 0"/>
 
-            <TextBlock x:Name="StatusText"
-                       Text="Откройте файл Guitar Pro или MusicXML"
-                       VerticalAlignment="Center"
-                       Foreground="#7C6F96"
-                       FontSize="13"
-                       Margin="12 0 0 0"/>
-        </WrapPanel>
+                <TextBlock Text="Скорость"
+                           VerticalAlignment="Center"
+                           Foreground="#7C6F96"
+                           FontSize="12"
+                           Margin="0 0 6 0"/>
+
+                <ComboBox x:Name="SpeedCombo"
+                          Width="86" Height="34"
+                          SelectedIndex="2"
+                          SelectionChanged="SpeedCombo_SelectionChanged">
+                    <ComboBoxItem Content="50%" Tag="0.5"/>
+                    <ComboBoxItem Content="75%" Tag="0.75"/>
+                    <ComboBoxItem Content="100%" Tag="1.0"/>
+                </ComboBox>
+
+                <TextBlock x:Name="StatusText"
+                           Text="Откройте файл Guitar Pro или MusicXML"
+                           VerticalAlignment="Center"
+                           Foreground="#7C6F96"
+                           FontSize="13"
+                           Margin="12 0 0 0"/>
+            </WrapPanel>
+        </StackPanel>
 
         <Border Grid.Row="1"
                 Background="#241B33"

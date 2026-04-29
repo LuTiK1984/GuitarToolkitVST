@@ -12,6 +12,7 @@ namespace GuitarToolkit.UI;
 public partial class TabPlayerView : UserControl
 {
     private Score? _score;
+    private bool _isUpdatingTrackMode;
 
     public ObservableCollection<Track> TracksToDisplay { get; } = new();
 
@@ -48,6 +49,7 @@ public partial class TabPlayerView : UserControl
                 .ToList();
             TrackCombo.SelectedIndex = _score.Tracks.Count > 0 ? 0 : -1;
             ApplyPlaybackSettings();
+            ApplyTrackPlaybackMode();
 
             StatusText.Text = $"{Path.GetFileName(path)}";
         }
@@ -73,6 +75,7 @@ public partial class TabPlayerView : UserControl
             TracksToDisplay.Add(item.Track);
             AlphaTab.RenderTracks();
             ApplyPlaybackSettings();
+            ApplyTrackPlaybackMode();
             StatusText.Text = $"Дорожка: {item}";
         }
     }
@@ -110,6 +113,36 @@ public partial class TabPlayerView : UserControl
         ApplyPlaybackSettings();
     }
 
+    private void SoloToggle_Changed(object sender, RoutedEventArgs e)
+    {
+        if (_isUpdatingTrackMode)
+            return;
+
+        if (SoloToggle.IsChecked == true && MuteToggle.IsChecked == true)
+        {
+            _isUpdatingTrackMode = true;
+            MuteToggle.IsChecked = false;
+            _isUpdatingTrackMode = false;
+        }
+
+        ApplyTrackPlaybackMode();
+    }
+
+    private void MuteToggle_Changed(object sender, RoutedEventArgs e)
+    {
+        if (_isUpdatingTrackMode)
+            return;
+
+        if (MuteToggle.IsChecked == true && SoloToggle.IsChecked == true)
+        {
+            _isUpdatingTrackMode = true;
+            SoloToggle.IsChecked = false;
+            _isUpdatingTrackMode = false;
+        }
+
+        ApplyTrackPlaybackMode();
+    }
+
     private void ApplyPlaybackSettings()
     {
         var api = AlphaTab?.Api;
@@ -119,12 +152,31 @@ public partial class TabPlayerView : UserControl
         double volume = Math.Clamp((VolumeSlider?.Value ?? 35d) / 100d, 0d, 1d);
         api.MasterVolume = volume;
 
-        if (TracksToDisplay.Count > 0)
-        {
-            api.ChangeTrackVolume(TracksToDisplay, volume);
-        }
-
         api.PlaybackSpeed = GetSelectedPlaybackSpeed();
+    }
+
+    private void ApplyTrackPlaybackMode()
+    {
+        var api = AlphaTab?.Api;
+        if (api == null || _score == null)
+            return;
+
+        api.ChangeTrackSolo(_score.Tracks, false);
+        api.ChangeTrackMute(_score.Tracks, false);
+
+        Track? selectedTrack = (TrackCombo?.SelectedItem as TabTrackItem)?.Track;
+        if (selectedTrack == null)
+            return;
+
+        var selectedTracks = new[] { selectedTrack };
+        if (SoloToggle?.IsChecked == true)
+        {
+            api.ChangeTrackSolo(selectedTracks, true);
+        }
+        else if (MuteToggle?.IsChecked == true)
+        {
+            api.ChangeTrackMute(selectedTracks, true);
+        }
     }
 
     private double GetSelectedPlaybackSpeed()
