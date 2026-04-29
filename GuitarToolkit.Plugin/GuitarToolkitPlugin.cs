@@ -45,7 +45,7 @@ public class GuitarToolkitPlugin : AudioPluginWPF, IAudioPlayback
         Contact = "";
         PluginName = "GuitarToolkit";
         PluginCategory = "Fx";
-        PluginVersion = "1.0.0";
+        PluginVersion = "1.1.0";
         PluginID = 0x47546B7401000001;
         HasUserInterface = true;
         EditorWidth = 950;
