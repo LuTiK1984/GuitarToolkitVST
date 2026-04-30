@@ -2,6 +2,24 @@
 
 All notable changes to GuitarToolkit are documented here.
 
+## [1.3.1] - 2026-04-30
+
+### Fixed
+
+- VST3 release package now includes transitive alphaTab/AlphaSkia dependencies required by the shared UI assembly.
+- The VST3 plugin no longer instantiates the Tabs page inside DAW hosts; the alphaTab-based Tabs page remains desktop-only for now.
+
+### Changed
+
+- Updated project, desktop, and VST plugin version to `1.3.1`.
+- Updated release archive names for `v1.3.1`.
+
+### Verified
+
+- Build passes with 0 errors and 0 warnings.
+- Test suite passes: 73/73.
+- VST3 Release output contains `AlphaTab.dll`, `AlphaTab.Windows.dll`, `AlphaSkia.dll`, and `AlphaSkia.Native.Windows.dll`.
+
 ## [1.3.0] - 2026-04-30
 
 ### Added

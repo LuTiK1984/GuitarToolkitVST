@@ -27,8 +27,8 @@ It combines seven practice and theory tools in one interface: tuner, metronome, 
 
 The latest release provides two separate archives:
 
-- `GuitarToolkit_VST3_v.1.3.0.zip` - VST3 plugin package for DAW hosts.
-- `GuitarToolkit_DESKTOP_v.1.3.0.zip` - standalone Windows desktop application.
+- `GuitarToolkit_VST3_v.1.3.1.zip` - VST3 plugin package for DAW hosts.
+- `GuitarToolkit_DESKTOP_v.1.3.1.zip` - standalone Windows desktop application.
 
 Open the project releases page:
 
@@ -220,8 +220,8 @@ Files:
 
 В релизе доступны два архива:
 
-- `GuitarToolkit_VST3_v.1.3.0.zip` - VST3-плагин для DAW.
-- `GuitarToolkit_DESKTOP_v.1.3.0.zip` - standalone-приложение для Windows.
+- `GuitarToolkit_VST3_v.1.3.1.zip` - VST3-плагин для DAW.
+- `GuitarToolkit_DESKTOP_v.1.3.1.zip` - standalone-приложение для Windows.
 
 Страница релизов:
 

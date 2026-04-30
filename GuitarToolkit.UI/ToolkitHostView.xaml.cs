@@ -8,8 +8,9 @@ namespace GuitarToolkit.UI;
 public partial class ToolkitHostView : UserControl
 {
     private readonly UserSettings _settings;
+    private readonly TabPlayerView? _tabPlayerTab;
 
-    public ToolkitHostView(TunerEngine tuner, MetronomeEngine metronome, IAudioPlayback audioHost)
+    public ToolkitHostView(TunerEngine tuner, MetronomeEngine metronome, IAudioPlayback audioHost, bool enableTabs = true)
     {
         InitializeComponent();
 
@@ -23,6 +24,16 @@ public partial class ToolkitHostView : UserControl
         CircleTab.Initialize(audioHost);
         FretboardTab.Initialize(audioHost, _settings);
 
+        if (enableTabs)
+        {
+            _tabPlayerTab = new TabPlayerView();
+            TabPlayerTabItem.Content = _tabPlayerTab;
+        }
+        else
+        {
+            ToolkitTabs.Items.Remove(TabPlayerTabItem);
+        }
+
         // Горячие клавиши
         Focusable = true;
         Loaded += (s, e) => Focus();
@@ -33,7 +44,7 @@ public partial class ToolkitHostView : UserControl
     {
         if (e.Key == Key.Space)
         {
-            if (ToolkitTabs.SelectedContent is TabPlayerView && TabPlayerTab.HandleShortcut(e))
+            if (ToolkitTabs.SelectedContent is TabPlayerView && _tabPlayerTab?.HandleShortcut(e) == true)
                 return;
 
             MetronomeTab.ToggleStartStop();
