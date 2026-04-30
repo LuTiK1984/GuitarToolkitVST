@@ -171,19 +171,29 @@ Current verification status:
 
 ## VST3 Deployment
 
-Build the plugin project in `x64`, then run:
+Use the release ZIP or build the plugin project in `x64`, then run:
 
 ```powershell
 deploy-vst.bat
 ```
 
-The script copies the required plugin files to:
+The script copies the full plugin output folder to:
 
 ```text
 C:\Program Files\Common Files\VST3\GuitarToolkit\
 ```
 
 Run the script as Administrator if Windows blocks access to the VST3 folder. Close your DAW before redeploying, then rescan plugins after copying.
+
+Important: copy the whole `GuitarToolkit` plugin folder, not only `GuitarToolkit.PluginBridge.vst3`. The plugin needs its DLL dependencies and the `runtimes` folder, especially for the tab viewer.
+
+For FL Studio: open `Options -> Manage plugins`, make sure the common VST3 folder is scanned, then click `Find installed plugins`.
+
+Diagnostic logs are written to:
+
+```text
+%AppData%\GuitarToolkit\logs
+```
 
 The repository intentionally includes several NuGet-sourced VST bridge/runtime files used for deployment and DAW loading:
 
@@ -379,19 +389,29 @@ dotnet test GuitarToolkit.sln --configuration Debug
 
 ## Установка VST3
 
-Соберите проект плагина в `x64`, затем запустите:
+Используйте ZIP из релиза или соберите проект плагина в `x64`, затем запустите:
 
 ```powershell
 deploy-vst.bat
 ```
 
-Скрипт копирует файлы в:
+Скрипт копирует всю папку output плагина в:
 
 ```text
 C:\Program Files\Common Files\VST3\GuitarToolkit\
 ```
 
 Если Windows запрещает запись в папку VST3, запустите скрипт от имени администратора. Перед повторным деплоем закройте DAW, затем выполните пересканирование плагинов.
+
+Важно: копируйте всю папку `GuitarToolkit`, а не только `GuitarToolkit.PluginBridge.vst3`. Плагину нужны DLL-зависимости и папка `runtimes`, особенно для просмотра табов.
+
+Для FL Studio: откройте `Options -> Manage plugins`, проверьте путь к общей VST3-папке и нажмите `Find installed plugins`.
+
+Диагностические логи пишутся в:
+
+```text
+%AppData%\GuitarToolkit\logs
+```
 
 В репозитории намеренно лежат bridge/runtime-файлы из NuGet, необходимые для загрузки VST3-плагина:
 

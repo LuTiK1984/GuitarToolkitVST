@@ -2,6 +2,19 @@
 
 All notable changes to GuitarToolkit are documented here.
 
+## [Unreleased]
+
+### Added
+
+- Basic application/plugin logging to `%AppData%\GuitarToolkit\logs`.
+- About page with version, GitHub link, log folder shortcut, feature summary, and third-party library notes.
+- Roadmap for product direction, near-term priorities, bughunting, and commercial-readiness work.
+
+### Changed
+
+- VST install documentation now emphasizes copying the complete plugin folder, including dependencies and `runtimes`.
+- README installation notes now mention diagnostics and the log folder.
+
 ## [1.3.2] - 2026-04-30
 
 ### Added

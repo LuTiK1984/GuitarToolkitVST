@@ -140,7 +140,7 @@ public class AudioBridge : IAudioPlayback, IDisposable
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"Input error: {ex.Message}");
+            AppLogger.Error("Audio input startup failed.", ex);
         }
     }
 

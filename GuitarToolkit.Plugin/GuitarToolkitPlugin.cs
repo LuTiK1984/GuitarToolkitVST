@@ -22,7 +22,12 @@ public class GuitarToolkitPlugin : AudioPluginWPF, IAudioPlayback
     {
         get
         {
-            try { return (int)Host.SampleRate; } catch { return 44100; }
+            try { return (int)Host.SampleRate; }
+            catch (Exception ex)
+            {
+                AppLogger.Warning("Plugin host sample rate is unavailable; falling back to 44100 Hz.", ex);
+                return 44100;
+            }
         }
     }
 
@@ -66,12 +71,17 @@ public class GuitarToolkitPlugin : AudioPluginWPF, IAudioPlayback
         };
 
         int sr = 44100;
-        try { sr = (int)Host.SampleRate; } catch { }
+        try { sr = (int)Host.SampleRate; }
+        catch (Exception ex)
+        {
+            AppLogger.Warning("Plugin initialize could not read host sample rate; using fallback.", ex);
+        }
         if (sr <= 0) sr = 44100;
 
         Tuner = new TunerEngine(sampleRate: sr);
         Metronome = new MetronomeEngine();
         Metronome.Initialize(sr);
+        AppLogger.Info($"Plugin initialized. SampleRate={sr}");
     }
 
     public override void Process()
@@ -96,7 +106,10 @@ public class GuitarToolkitPlugin : AudioPluginWPF, IAudioPlayback
                     floatBuf[i] = (float)input[i];
                 Tuner.ProcessSamples(floatBuf, len);
             }
-            catch { }
+            catch (Exception ex)
+            {
+                AppLogger.Warning("Plugin tuner processing failed.", ex);
+            }
 
             try
             {
@@ -108,7 +121,10 @@ public class GuitarToolkitPlugin : AudioPluginWPF, IAudioPlayback
                     outR[i] += metroBuf[i];
                 }
             }
-            catch { }
+            catch (Exception ex)
+            {
+                AppLogger.Warning("Plugin metronome processing failed.", ex);
+            }
 
             var buf = _playbackBuffer;
             if (buf != null && _playbackPos < buf.Length)
@@ -126,14 +142,24 @@ public class GuitarToolkitPlugin : AudioPluginWPF, IAudioPlayback
                 }
             }
         }
-        catch
+        catch (Exception ex)
         {
+            AppLogger.Error("Plugin audio process failed.", ex);
         }
     }
 
 
     public override UserControl GetEditorView()
     {
-        return new ToolkitHostView(Tuner, Metronome, this, enableTabs: true);
+        try
+        {
+            AppLogger.Info("Creating plugin editor view.");
+            return new ToolkitHostView(Tuner, Metronome, this, enableTabs: true);
+        }
+        catch (Exception ex)
+        {
+            AppLogger.Error("Failed to create plugin editor view.", ex);
+            throw;
+        }
     }
 }

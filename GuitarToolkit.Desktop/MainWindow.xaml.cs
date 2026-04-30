@@ -36,6 +36,7 @@ public partial class MainWindow : Window
         }
         catch (Exception ex)
         {
+            AppLogger.Error("Desktop startup failed.", ex);
             MessageBox.Show(ex.ToString(), "Ошибка запуска");
             _audio = new AudioBridge();
         }

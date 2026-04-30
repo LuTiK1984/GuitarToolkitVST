@@ -213,5 +213,9 @@
 
         <TabItem x:Name="TabPlayerTabItem" Header="📄 Табы"/>
 
+        <TabItem Header="ℹ О проекте">
+            <local:AboutView/>
+        </TabItem>
+
     </TabControl>
 </UserControl>

@@ -1,5 +1,4 @@
 using System.Text.Json;
-using System.Diagnostics;
 
 namespace GuitarToolkit.Core.Services;
 
@@ -51,7 +50,7 @@ public class UserSettings
         }
         catch (Exception ex)
         {
-            Debug.WriteLine($"Failed to load GuitarToolkit settings: {ex.Message}");
+            AppLogger.Warning("Failed to load user settings.", ex);
             return new UserSettings();
         }
     }
@@ -70,7 +69,7 @@ public class UserSettings
         }
         catch (Exception ex)
         {
-            Debug.WriteLine($"Failed to save GuitarToolkit settings: {ex.Message}");
+            AppLogger.Warning("Failed to save user settings.", ex);
         }
     }
 }
