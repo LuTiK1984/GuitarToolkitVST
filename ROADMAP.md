@@ -28,6 +28,10 @@ GuitarToolkit is a personal, idea-driven guitar toolkit for Windows, available a
   - reduce visible re-render jitter after resize/maximize/restore;
   - save last tab file, selected track, volume, speed, and auto-follow state;
   - keep testing tab playback inside FL Studio.
+- Rebuild the interface layout as a dedicated design pass:
+  - introduce consistent spacing, sizing, and panel structure;
+  - reduce the current feeling of scattered controls;
+  - improve visual hierarchy across Desktop and VST without breaking workflows.
 - Improve first-run clarity:
   - short quick-start guidance in README;
   - clearer “select input device first” flow;
@@ -44,7 +48,6 @@ GuitarToolkit is a personal, idea-driven guitar toolkit for Windows, available a
   - explore transport sync for metronome/tab playback;
   - avoid global hotkey conflicts inside DAW hosts.
 - Better tab workflow:
-  - recent files;
   - favorites/library folder;
   - per-track volume/mute/solo state;
   - export or print later if alphaTab supports it well.
@@ -66,6 +69,7 @@ GuitarToolkit is a personal, idea-driven guitar toolkit for Windows, available a
 - Test tab loading with GP3, GP4, GP5/GPX, and MusicXML files.
 - Check scroll/auto-follow behavior on small windows, maximized windows, and restored windows.
 - Check that Desktop and VST3 do not diverge unexpectedly in shared UI behavior.
+- Restoring the saved tab cursor tick does not currently move alphaTab from the beginning after app restart.
 
 ## Commercial Readiness Notes
 

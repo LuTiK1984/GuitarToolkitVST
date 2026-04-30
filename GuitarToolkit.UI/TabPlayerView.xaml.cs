@@ -11,14 +11,20 @@ using AlphaTab.Midi;
 using AlphaTab.Model;
 using AlphaTab.Rendering.Utils;
 using AlphaTab.Synth;
+using GuitarToolkit.Core.Services;
 using Microsoft.Win32;
 
 namespace GuitarToolkit.UI;
 
 public partial class TabPlayerView : UserControl
 {
+    private const int MaxRecentTabFiles = 10;
+
+    private readonly UserSettings? _settings;
     private Score? _score;
     private bool _isUpdatingTrackMode;
+    private bool _isInitializingSettings;
+    private bool _restoredLastFile;
     private readonly DispatcherTimer _volumeRampTimer;
     private readonly DispatcherTimer _scrollToCursorTimer;
     private readonly DispatcherTimer _resizeRenderTimer;
@@ -30,12 +36,22 @@ public partial class TabPlayerView : UserControl
     private bool _pendingScrollAfterRender;
     private TabScrollHandler? _tabScrollHandler;
     private bool _isUpdatingPlayButton;
+    private bool _isUpdatingRecentFiles;
     private int _pendingResizeRenderPasses;
+    private string? _loadedFilePath;
+    private double _lastKnownTickPosition;
 
     public ObservableCollection<Track> TracksToDisplay { get; } = new();
+    public ObservableCollection<RecentTabFileItem> RecentTabFiles { get; } = new();
 
     public TabPlayerView()
+        : this(null)
     {
+    }
+
+    public TabPlayerView(UserSettings? settings)
+    {
+        _settings = settings;
         InitializeComponent();
         _volumeRampTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(20) };
         _volumeRampTimer.Tick += VolumeRampTimer_Tick;
@@ -44,8 +60,14 @@ public partial class TabPlayerView : UserControl
         _resizeRenderTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(260) };
         _resizeRenderTimer.Tick += ResizeRenderTimer_Tick;
         DataContext = this;
+        RestoreRecentFiles(settings);
+        RestorePlaybackSettings(settings);
         ApplyPlaybackSettings();
-        Loaded += (_, _) => ConfigureAlphaTabPlayer();
+        Loaded += (_, _) =>
+        {
+            ConfigureAlphaTabPlayer();
+            RestoreLastFile();
+        };
     }
 
     private void OpenFile_Click(object sender, RoutedEventArgs e)
@@ -62,34 +84,75 @@ public partial class TabPlayerView : UserControl
         LoadTab(dialog.FileName);
     }
 
-    private void LoadTab(string path)
+    private void LoadTab(string path, int? selectedTrackIndex = null, bool showError = true)
     {
         try
         {
+            double restoreTick = path.Equals(_settings?.LastTabFilePath, StringComparison.OrdinalIgnoreCase)
+                ? Math.Max(0d, _settings.LastTabTickPosition)
+                : 0d;
+
             byte[] data = File.ReadAllBytes(path);
             _score = ScoreLoader.LoadScoreFromBytes(data, new Settings());
+            _loadedFilePath = path;
+            _lastKnownTickPosition = restoreTick;
             ConfigureAlphaTabPlayer();
 
             TrackCombo.ItemsSource = _score.Tracks
                 .Select((track, index) => new TabTrackItem(track, index + 1))
                 .ToList();
-            TrackCombo.SelectedIndex = _score.Tracks.Count > 0 ? 0 : -1;
+
+            if (_score.Tracks.Count > 0)
+            {
+                int index = Math.Clamp(selectedTrackIndex ?? 0, 0, _score.Tracks.Count - 1);
+                TrackCombo.SelectedIndex = index;
+            }
+            else
+            {
+                TrackCombo.SelectedIndex = -1;
+            }
+
             ApplyPlaybackSettings();
             ApplyTrackPlaybackMode();
+            QueueCursorRestore(restoreTick);
+            AddRecentTabFile(path);
 
             StatusText.Text = $"{Path.GetFileName(path)}";
         }
         catch (Exception ex)
         {
+            AppLogger.Warning($"Failed to load tab file '{path}'.", ex);
             TracksToDisplay.Clear();
             TrackCombo.ItemsSource = null;
             StatusText.Text = "Файл не загружен";
-            MessageBox.Show(
-                $"Не удалось открыть табулатуру.\n\n{ex.Message}",
-                "GuitarToolkit",
-                MessageBoxButton.OK,
-                MessageBoxImage.Warning);
+
+            if (showError)
+            {
+                MessageBox.Show(
+                    $"Не удалось открыть табулатуру.\n\n{ex.Message}",
+                    "GuitarToolkit",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Warning);
+            }
         }
+    }
+
+    private void RecentFilesCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        if (_isUpdatingRecentFiles)
+            return;
+
+        if (RecentFilesCombo.SelectedItem is not RecentTabFileItem item)
+            return;
+
+        if (!File.Exists(item.Path))
+        {
+            RemoveRecentTabFile(item.Path);
+            StatusText.Text = "Файл из списка последних не найден";
+            return;
+        }
+
+        LoadTab(item.Path);
     }
 
     private void TrackCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -202,6 +265,7 @@ public partial class TabPlayerView : UserControl
             return;
 
         AlphaTab.Api?.Stop();
+        _lastKnownTickPosition = 0d;
         SetPlayButtonState(false);
     }
 
@@ -249,6 +313,9 @@ public partial class TabPlayerView : UserControl
             VolumeLabel.Text = $"{Math.Round(e.NewValue)}%";
         }
 
+        if (_isInitializingSettings)
+            return;
+
         ApplyPlaybackSettings();
     }
 
@@ -260,6 +327,9 @@ public partial class TabPlayerView : UserControl
         {
             SyncOffsetLabel.Text = $"{_syncOffsetMilliseconds:+0;-0;0} мс";
         }
+
+        if (_isInitializingSettings)
+            return;
 
         ConfigureAlphaTabPlayer();
     }
@@ -397,6 +467,7 @@ public partial class TabPlayerView : UserControl
 
     private void HandlePlayerPositionChanged(PositionChangedEventArgs e)
     {
+        _lastKnownTickPosition = Math.Max(0d, e.CurrentTick);
         _tabScrollHandler?.SetCurrentPosition(e.CurrentTime, e.CurrentTick);
     }
 
@@ -540,6 +611,140 @@ public partial class TabPlayerView : UserControl
         ApplyPlaybackSettings();
     }
 
+    public void SaveTo(UserSettings settings)
+    {
+        settings.LastTabFilePath = _loadedFilePath ?? "";
+        settings.RecentTabFilePaths = RecentTabFiles
+            .Select(item => item.Path)
+            .ToList();
+        settings.LastTabTrackIndex = Math.Max(0, TrackCombo?.SelectedIndex ?? 0);
+        settings.LastTabTickPosition = GetCurrentTickPosition();
+        settings.TabVolumePercent = Math.Clamp(VolumeSlider?.Value ?? 35d, 0d, 100d);
+        settings.TabSpeedPercent = GetPlaybackSpeedPercent();
+        settings.TabAutoScroll = AutoScrollCheckBox?.IsChecked == true;
+        settings.TabSyncOffsetMilliseconds = Math.Clamp(SyncOffsetSlider?.Value ?? 0d, -200d, 200d);
+        settings.TabSoloSelectedTrack = SoloToggle?.IsChecked == true;
+        settings.TabMuteSelectedTrack = MuteToggle?.IsChecked == true;
+    }
+
+    private void RestorePlaybackSettings(UserSettings? settings)
+    {
+        if (settings == null)
+            return;
+
+        _isInitializingSettings = true;
+
+        VolumeSlider.Value = Math.Clamp(settings.TabVolumePercent, 0d, 100d);
+        VolumeLabel.Text = $"{Math.Round(VolumeSlider.Value)}%";
+        SetPlaybackSpeedPercent(settings.TabSpeedPercent);
+        AutoScrollCheckBox.IsChecked = settings.TabAutoScroll;
+        SyncOffsetSlider.Value = Math.Clamp(settings.TabSyncOffsetMilliseconds, -200d, 200d);
+        _syncOffsetMilliseconds = Math.Round(SyncOffsetSlider.Value);
+        SyncOffsetLabel.Text = $"{_syncOffsetMilliseconds:+0;-0;0} мс";
+        SoloToggle.IsChecked = settings.TabSoloSelectedTrack;
+        MuteToggle.IsChecked = !settings.TabSoloSelectedTrack && settings.TabMuteSelectedTrack;
+
+        _isInitializingSettings = false;
+    }
+
+    private void RestoreLastFile()
+    {
+        if (_restoredLastFile)
+            return;
+
+        _restoredLastFile = true;
+
+        if (_settings == null || string.IsNullOrWhiteSpace(_settings.LastTabFilePath))
+            return;
+
+        if (!File.Exists(_settings.LastTabFilePath))
+        {
+            StatusText.Text = "Последний файл табулатуры не найден";
+            return;
+        }
+
+        LoadTab(_settings.LastTabFilePath, _settings.LastTabTrackIndex, showError: false);
+    }
+
+    private void RestoreRecentFiles(UserSettings? settings)
+    {
+        if (settings == null)
+            return;
+
+        _isUpdatingRecentFiles = true;
+        RecentTabFiles.Clear();
+
+        foreach (string path in settings.RecentTabFilePaths
+                     .Where(path => !string.IsNullOrWhiteSpace(path))
+                     .Distinct(StringComparer.OrdinalIgnoreCase)
+                     .Take(MaxRecentTabFiles))
+        {
+            RecentTabFiles.Add(new RecentTabFileItem(path));
+        }
+
+        _isUpdatingRecentFiles = false;
+    }
+
+    private void AddRecentTabFile(string path)
+    {
+        if (string.IsNullOrWhiteSpace(path))
+            return;
+
+        _isUpdatingRecentFiles = true;
+
+        var existing = RecentTabFiles
+            .FirstOrDefault(item => item.Path.Equals(path, StringComparison.OrdinalIgnoreCase));
+        if (existing != null)
+        {
+            RecentTabFiles.Remove(existing);
+        }
+
+        RecentTabFiles.Insert(0, new RecentTabFileItem(path));
+
+        while (RecentTabFiles.Count > MaxRecentTabFiles)
+        {
+            RecentTabFiles.RemoveAt(RecentTabFiles.Count - 1);
+        }
+
+        RecentFilesCombo.SelectedIndex = 0;
+        _isUpdatingRecentFiles = false;
+    }
+
+    private void RemoveRecentTabFile(string path)
+    {
+        _isUpdatingRecentFiles = true;
+
+        var existing = RecentTabFiles
+            .FirstOrDefault(item => item.Path.Equals(path, StringComparison.OrdinalIgnoreCase));
+        if (existing != null)
+        {
+            RecentTabFiles.Remove(existing);
+        }
+
+        RecentFilesCombo.SelectedIndex = -1;
+        _isUpdatingRecentFiles = false;
+    }
+
+    private void QueueCursorRestore(double tickPosition)
+    {
+        if (tickPosition <= 0d)
+            return;
+
+        _pendingTickAfterRender = tickPosition;
+        _pendingScrollAfterRender = AutoScrollCheckBox?.IsChecked == true;
+    }
+
+    private double GetCurrentTickPosition()
+    {
+        var api = AlphaTab?.Api;
+        if (api != null)
+        {
+            return Math.Max(0d, api.TickPosition);
+        }
+
+        return Math.Max(0d, _lastKnownTickPosition);
+    }
+
     private void SetMasterVolumeSmoothly(double volume)
     {
         _targetMasterVolume = volume;
@@ -588,6 +793,21 @@ public partial class TabPlayerView : UserControl
             return string.IsNullOrWhiteSpace(Track.Name)
                 ? $"Дорожка {Number}"
                 : Track.Name;
+        }
+    }
+
+    public sealed class RecentTabFileItem
+    {
+        public RecentTabFileItem(string path)
+        {
+            Path = path;
+        }
+
+        public string Path { get; }
+
+        public override string ToString()
+        {
+            return System.IO.Path.GetFileName(Path);
         }
     }
 

@@ -33,6 +33,18 @@ public class UserSettings
     // Desktop
     public int LastInputDevice { get; set; } = 0;
 
+    // Табы
+    public string LastTabFilePath { get; set; } = "";
+    public List<string> RecentTabFilePaths { get; set; } = new();
+    public int LastTabTrackIndex { get; set; } = 0;
+    public double LastTabTickPosition { get; set; } = 0d;
+    public double TabVolumePercent { get; set; } = 35d;
+    public double TabSpeedPercent { get; set; } = 100d;
+    public bool TabAutoScroll { get; set; } = true;
+    public double TabSyncOffsetMilliseconds { get; set; } = 0d;
+    public bool TabSoloSelectedTrack { get; set; }
+    public bool TabMuteSelectedTrack { get; set; }
+
     // ── Файл ─────────────────────────────────────────────────
 
     private static string FilePath =>

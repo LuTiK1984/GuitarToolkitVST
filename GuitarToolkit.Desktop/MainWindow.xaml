@@ -4,7 +4,7 @@
         Title="GuitarToolkit v1.3.2" 
         Icon="Assets/GuitarToolkit.ico"
         Width="1050" Height="720"
-        MinWidth="850" MinHeight="600"
+        MinWidth="1050" MinHeight="720"
         Background="#1A1525" 
         WindowStartupLocation="CenterScreen"
         Closing="Window_Closing">

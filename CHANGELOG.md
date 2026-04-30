@@ -9,11 +9,17 @@ All notable changes to GuitarToolkit are documented here.
 - Basic application/plugin logging to `%AppData%\GuitarToolkit\logs`.
 - About page with version, GitHub link, log folder shortcut, feature summary, and third-party library notes.
 - Roadmap for product direction, near-term priorities, bughunting, and commercial-readiness work.
+- Tabs page now remembers the last file, selected track, volume, speed, auto-follow, sync offset, and solo/mute state.
+- Tabs page now restores the last playback cursor position for the remembered file.
+- Tabs page now keeps a recent files list for faster reopening.
+- Added `THIRD_PARTY_NOTICES.md` with dependency/license notes.
 
 ### Changed
 
 - VST install documentation now emphasizes copying the complete plugin folder, including dependencies and `runtimes`.
 - README installation notes now mention diagnostics and the log folder.
+- Desktop window minimum size now matches the startup size to protect the UI layout.
+- Tabs toolbar spacing was improved when controls wrap to a second row.
 
 ## [1.3.2] - 2026-04-30
 

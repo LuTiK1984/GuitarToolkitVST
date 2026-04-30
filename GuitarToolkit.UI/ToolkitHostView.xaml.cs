@@ -26,7 +26,7 @@ public partial class ToolkitHostView : UserControl
 
         if (enableTabs)
         {
-            _tabPlayerTab = new TabPlayerView();
+            _tabPlayerTab = new TabPlayerView(_settings);
             TabPlayerTabItem.Content = _tabPlayerTab;
         }
         else
@@ -37,6 +37,7 @@ public partial class ToolkitHostView : UserControl
         // Горячие клавиши
         Focusable = true;
         Loaded += (s, e) => Focus();
+        Unloaded += (s, e) => SaveSettings();
         PreviewKeyDown += OnKeyDown;
     }
 
@@ -62,6 +63,7 @@ public partial class ToolkitHostView : UserControl
         ChordTab.SaveTo(_settings);
         ProgressionTab.SaveTo(_settings);
         FretboardTab.SaveTo(_settings);
+        _tabPlayerTab?.SaveTo(_settings);
         _settings.Save();
     }
 }

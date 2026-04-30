@@ -9,6 +9,7 @@ Use this checklist before publishing a GuitarToolkit release.
 - Update desktop window title if the version is visible in UI.
 - Update `CHANGELOG.md`.
 - Update README release archive names if needed.
+- Check `THIRD_PARTY_NOTICES.md` when dependencies change.
 
 ## 2. Build
 

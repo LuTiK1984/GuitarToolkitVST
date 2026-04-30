@@ -54,29 +54,36 @@
                        VerticalAlignment="Center">
                 <Button Content="Открыть"
                         Width="110" Height="34"
-                        Margin="0 0 10 0"
+                        Margin="0 0 10 6"
                         FontWeight="Bold"
                         Background="#CBA6F7"
                         Foreground="#1A1525"
                         Click="OpenFile_Click"/>
 
+                <ComboBox x:Name="RecentFilesCombo"
+                          Width="220" Height="34"
+                          Margin="0 0 10 6"
+                          ToolTip="Последние табулатуры"
+                          ItemsSource="{Binding RecentTabFiles}"
+                          SelectionChanged="RecentFilesCombo_SelectionChanged"/>
+
                 <ComboBox x:Name="TrackCombo"
                           Width="260" Height="34"
-                          Margin="0 0 10 0"
+                          Margin="0 0 10 6"
                           SelectionChanged="TrackCombo_SelectionChanged"/>
 
                 <ToggleButton x:Name="PlayPauseToggle"
                               Content="▶ Играть"
                               Style="{StaticResource TabModeToggleStyle}"
                               Width="104" Height="34"
-                              Margin="0 0 6 0"
+                              Margin="0 0 6 6"
                               ToolTip="Играть / пауза"
                               Checked="PlayPauseToggle_Changed"
                               Unchecked="PlayPauseToggle_Changed"/>
 
                 <Button Content="Стоп"
                         Width="76" Height="34"
-                        Margin="0 0 10 0"
+                        Margin="0 0 10 6"
                         ToolTip="Стоп"
                         Click="Stop_Click"/>
 
@@ -84,7 +91,7 @@
                               Content="Соло"
                               Style="{StaticResource TabModeToggleStyle}"
                               Width="70" Height="34"
-                              Margin="0 0 6 0"
+                              Margin="0 0 6 6"
                               ToolTip="Играть только выбранную дорожку"
                               Checked="SoloToggle_Changed"
                               Unchecked="SoloToggle_Changed"/>
@@ -93,6 +100,7 @@
                               Content="Не играть"
                               Style="{StaticResource TabModeToggleStyle}"
                               Width="92" Height="34"
+                              Margin="0 0 0 6"
                               ToolTip="Отключить выбранную дорожку"
                               Checked="MuteToggle_Changed"
                               Unchecked="MuteToggle_Changed"/>

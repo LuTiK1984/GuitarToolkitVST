@@ -34,6 +34,8 @@ Open the project releases page:
 
 [GitHub Releases](https://github.com/LuTiK1984/GuitarToolkitVST/releases)
 
+Third-party dependency notes: [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)
+
 ## Screenshots
 
 ### Tuner
@@ -250,6 +252,8 @@ Files:
 
 [GitHub Releases](https://github.com/LuTiK1984/GuitarToolkitVST/releases)
 
+Сведения о сторонних библиотеках: [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)
+
 ## Скриншоты
 
 ### Тюнер
@@ -437,3 +441,5 @@ C:\Program Files\Common Files\VST3\GuitarToolkit\
 ## License
 
 Personal passion project. VST is a trademark of Steinberg Media Technologies GmbH.
+
+Third-party dependency notes are listed in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
