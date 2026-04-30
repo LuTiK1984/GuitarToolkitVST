@@ -43,14 +43,11 @@ public partial class TabPlayerView : UserControl
     private double _currentMasterVolume = 0.35d;
     private double _targetMasterVolume = 0.35d;
     private bool _playbackEventsAttached;
-    private double _syncOffsetMilliseconds;
     private double? _pendingTickAfterRender;
     private bool _pendingScrollAfterRender;
     private TabScrollHandler? _tabScrollHandler;
     private bool _isUpdatingPlayButton;
-    private bool _isUpdatingRecentFiles;
-    private bool _isUpdatingFavoriteFiles;
-    private bool _isUpdatingLibraryFiles;
+    private bool _isUpdatingCurrentFiles;
     private int _pendingResizeRenderPasses;
     private string? _loadedFilePath;
     private string? _libraryFolderPath;
@@ -60,6 +57,7 @@ public partial class TabPlayerView : UserControl
     public ObservableCollection<TabFileItem> LibraryTabFiles { get; } = new();
     public ObservableCollection<RecentTabFileItem> RecentTabFiles { get; } = new();
     public ObservableCollection<TabFileItem> FavoriteTabFiles { get; } = new();
+    public ObservableCollection<TabFileItem> CurrentTabFiles { get; } = new();
 
     public TabPlayerView()
         : this(null)
@@ -80,6 +78,7 @@ public partial class TabPlayerView : UserControl
         RestoreLibraryFolder(settings);
         RestoreRecentFiles(settings);
         RestoreFavoriteFiles(settings);
+        RebuildCurrentTabFiles();
         RestorePlaybackSettings(settings);
         ApplyPlaybackSettings();
         Loaded += (_, _) =>
@@ -190,54 +189,23 @@ public partial class TabPlayerView : UserControl
         }
     }
 
-    private void RecentFilesCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    private void FileSourceCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
-        if (_isUpdatingRecentFiles)
-            return;
-
-        if (RecentFilesCombo.SelectedItem is not RecentTabFileItem item)
-            return;
-
-        if (!File.Exists(item.Path))
-        {
-            RemoveRecentTabFile(item.Path);
-            StatusText.Text = "Файл из списка последних не найден";
-            return;
-        }
-
-        LoadTab(item.Path);
+        RebuildCurrentTabFiles();
     }
 
-    private void LibraryFilesCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    private void FileChoiceCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
-        if (_isUpdatingLibraryFiles)
+        if (_isUpdatingCurrentFiles)
             return;
 
-        if (LibraryFilesCombo.SelectedItem is not TabFileItem item)
+        if (FileChoiceCombo.SelectedItem is not TabFileItem item)
             return;
 
         if (!File.Exists(item.Path))
         {
-            ScanLibraryFolder();
-            StatusText.Text = "Файл библиотеки не найден";
-            return;
-        }
-
-        LoadTab(item.Path);
-    }
-
-    private void FavoriteFilesCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
-    {
-        if (_isUpdatingFavoriteFiles)
-            return;
-
-        if (FavoriteFilesCombo.SelectedItem is not TabFileItem item)
-            return;
-
-        if (!File.Exists(item.Path))
-        {
-            RemoveFavoriteTabFile(item.Path);
-            StatusText.Text = "Файл из избранного не найден";
+            RemoveMissingTabFile(item.Path);
+            StatusText.Text = "Файл из выбранного списка не найден";
             return;
         }
 
@@ -433,21 +401,6 @@ public partial class TabPlayerView : UserControl
         ApplyPlaybackSettings();
     }
 
-    private void SyncOffsetSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
-    {
-        _syncOffsetMilliseconds = Math.Round(e.NewValue);
-
-        if (SyncOffsetLabel != null)
-        {
-            SyncOffsetLabel.Text = $"{_syncOffsetMilliseconds:+0;-0;0} мс";
-        }
-
-        if (_isInitializingSettings)
-            return;
-
-        ConfigureAlphaTabPlayer();
-    }
-
     private void SpeedDown_Click(object sender, RoutedEventArgs e)
     {
         SetPlaybackSpeedPercent(GetPlaybackSpeedPercent() - 5d);
@@ -560,7 +513,7 @@ public partial class TabPlayerView : UserControl
         _tabScrollHandler ??= new TabScrollHandler(
             TabScrollViewer,
             () => AutoScrollCheckBox?.IsChecked == true,
-            () => _syncOffsetMilliseconds);
+            () => 0d);
         api.CustomScrollHandler = _tabScrollHandler;
         api.UpdateSettings();
 
@@ -620,7 +573,7 @@ public partial class TabPlayerView : UserControl
         if (AutoScrollCheckBox?.IsChecked != true)
             return;
 
-        double delay = Math.Clamp(120d + _syncOffsetMilliseconds, 0d, 400d);
+        double delay = 120d;
         _scrollToCursorTimer.Interval = TimeSpan.FromMilliseconds(delay);
 
         if (!_scrollToCursorTimer.IsEnabled)
@@ -740,7 +693,7 @@ public partial class TabPlayerView : UserControl
         settings.TabVolumePercent = Math.Clamp(VolumeSlider?.Value ?? 35d, 0d, 100d);
         settings.TabSpeedPercent = GetPlaybackSpeedPercent();
         settings.TabAutoScroll = AutoScrollCheckBox?.IsChecked == true;
-        settings.TabSyncOffsetMilliseconds = Math.Clamp(SyncOffsetSlider?.Value ?? 0d, -200d, 200d);
+        settings.TabSyncOffsetMilliseconds = 0d;
         settings.TabSoloSelectedTrack = SoloToggle?.IsChecked == true;
         settings.TabMuteSelectedTrack = MuteToggle?.IsChecked == true;
     }
@@ -756,9 +709,6 @@ public partial class TabPlayerView : UserControl
         VolumeLabel.Text = $"{Math.Round(VolumeSlider.Value)}%";
         SetPlaybackSpeedPercent(settings.TabSpeedPercent);
         AutoScrollCheckBox.IsChecked = settings.TabAutoScroll;
-        SyncOffsetSlider.Value = Math.Clamp(settings.TabSyncOffsetMilliseconds, -200d, 200d);
-        _syncOffsetMilliseconds = Math.Round(SyncOffsetSlider.Value);
-        SyncOffsetLabel.Text = $"{_syncOffsetMilliseconds:+0;-0;0} мс";
         SoloToggle.IsChecked = settings.TabSoloSelectedTrack;
         MuteToggle.IsChecked = !settings.TabSoloSelectedTrack && settings.TabMuteSelectedTrack;
 
@@ -807,12 +757,10 @@ public partial class TabPlayerView : UserControl
 
     private void ScanLibraryFolder()
     {
-        _isUpdatingLibraryFiles = true;
         LibraryTabFiles.Clear();
 
         if (string.IsNullOrWhiteSpace(_libraryFolderPath) || !Directory.Exists(_libraryFolderPath))
         {
-            _isUpdatingLibraryFiles = false;
             return;
         }
 
@@ -833,8 +781,7 @@ public partial class TabPlayerView : UserControl
         }
         finally
         {
-            LibraryFilesCombo.SelectedIndex = -1;
-            _isUpdatingLibraryFiles = false;
+            RebuildCurrentTabFiles();
         }
     }
 
@@ -849,7 +796,6 @@ public partial class TabPlayerView : UserControl
         if (settings == null)
             return;
 
-        _isUpdatingRecentFiles = true;
         RecentTabFiles.Clear();
 
         foreach (string path in settings.RecentTabFilePaths
@@ -860,7 +806,7 @@ public partial class TabPlayerView : UserControl
             RecentTabFiles.Add(new RecentTabFileItem(path));
         }
 
-        _isUpdatingRecentFiles = false;
+        RebuildCurrentTabFiles();
     }
 
     private void RestoreFavoriteFiles(UserSettings? settings)
@@ -868,7 +814,6 @@ public partial class TabPlayerView : UserControl
         if (settings == null)
             return;
 
-        _isUpdatingFavoriteFiles = true;
         FavoriteTabFiles.Clear();
 
         foreach (string path in settings.FavoriteTabFilePaths
@@ -879,15 +824,60 @@ public partial class TabPlayerView : UserControl
             FavoriteTabFiles.Add(new TabFileItem(path));
         }
 
-        _isUpdatingFavoriteFiles = false;
+        RebuildCurrentTabFiles();
+    }
+
+    private void RebuildCurrentTabFiles()
+    {
+        if (CurrentTabFiles == null)
+            return;
+
+        _isUpdatingCurrentFiles = true;
+        CurrentTabFiles.Clear();
+
+        IEnumerable<TabFileItem> source = GetSelectedFileSourceIndex() switch
+        {
+            1 => RecentTabFiles,
+            2 => FavoriteTabFiles,
+            _ => LibraryTabFiles
+        };
+
+        foreach (var item in source)
+        {
+            CurrentTabFiles.Add(item);
+        }
+
+        if (FileChoiceCombo != null)
+        {
+            FileChoiceCombo.SelectedIndex = -1;
+        }
+        _isUpdatingCurrentFiles = false;
+    }
+
+    private int GetSelectedFileSourceIndex()
+    {
+        return FileSourceCombo?.SelectedIndex >= 0
+            ? FileSourceCombo.SelectedIndex
+            : 0;
+    }
+
+    private void RemoveMissingTabFile(string path)
+    {
+        RemoveRecentTabFile(path);
+        RemoveFavoriteTabFile(path);
+
+        if (_libraryFolderPath != null && path.StartsWith(_libraryFolderPath, StringComparison.OrdinalIgnoreCase))
+        {
+            ScanLibraryFolder();
+        }
+
+        RebuildCurrentTabFiles();
     }
 
     private void AddRecentTabFile(string path)
     {
         if (string.IsNullOrWhiteSpace(path))
             return;
-
-        _isUpdatingRecentFiles = true;
 
         var existing = RecentTabFiles
             .FirstOrDefault(item => item.Path.Equals(path, StringComparison.OrdinalIgnoreCase));
@@ -903,16 +893,13 @@ public partial class TabPlayerView : UserControl
             RecentTabFiles.RemoveAt(RecentTabFiles.Count - 1);
         }
 
-        RecentFilesCombo.SelectedIndex = 0;
-        _isUpdatingRecentFiles = false;
+        RebuildCurrentTabFiles();
     }
 
     private void AddFavoriteTabFile(string path)
     {
         if (string.IsNullOrWhiteSpace(path))
             return;
-
-        _isUpdatingFavoriteFiles = true;
 
         var existing = FavoriteTabFiles
             .FirstOrDefault(item => item.Path.Equals(path, StringComparison.OrdinalIgnoreCase));
@@ -928,14 +915,11 @@ public partial class TabPlayerView : UserControl
             FavoriteTabFiles.RemoveAt(FavoriteTabFiles.Count - 1);
         }
 
-        FavoriteFilesCombo.SelectedIndex = 0;
-        _isUpdatingFavoriteFiles = false;
+        RebuildCurrentTabFiles();
     }
 
     private void RemoveFavoriteTabFile(string path)
     {
-        _isUpdatingFavoriteFiles = true;
-
         var existing = FavoriteTabFiles
             .FirstOrDefault(item => item.Path.Equals(path, StringComparison.OrdinalIgnoreCase));
         if (existing != null)
@@ -943,8 +927,7 @@ public partial class TabPlayerView : UserControl
             FavoriteTabFiles.Remove(existing);
         }
 
-        FavoriteFilesCombo.SelectedIndex = -1;
-        _isUpdatingFavoriteFiles = false;
+        RebuildCurrentTabFiles();
     }
 
     private void UpdateFavoriteToggleState()
@@ -966,8 +949,6 @@ public partial class TabPlayerView : UserControl
 
     private void RemoveRecentTabFile(string path)
     {
-        _isUpdatingRecentFiles = true;
-
         var existing = RecentTabFiles
             .FirstOrDefault(item => item.Path.Equals(path, StringComparison.OrdinalIgnoreCase));
         if (existing != null)
@@ -975,8 +956,7 @@ public partial class TabPlayerView : UserControl
             RecentTabFiles.Remove(existing);
         }
 
-        RecentFilesCombo.SelectedIndex = -1;
-        _isUpdatingRecentFiles = false;
+        RebuildCurrentTabFiles();
     }
 
     private void QueueCursorRestore(double tickPosition)

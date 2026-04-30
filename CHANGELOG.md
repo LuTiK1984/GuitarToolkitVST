@@ -2,6 +2,15 @@
 
 All notable changes to GuitarToolkit are documented here.
 
+## [Unreleased]
+
+### Changed
+
+- Started interface redesign with refreshed About and Tabs layouts.
+- Tabs file selection now uses one explicit source selector and one file selector instead of parallel library/recent/favorites lists.
+- Removed the non-working visual sync control from the Tabs toolbar.
+- Updated Tabs checkbox and slider styling to better match the dark purple theme.
+
 ## [1.3.3] - 2026-04-30
 
 ### Added

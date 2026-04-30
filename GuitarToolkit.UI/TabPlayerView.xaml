@@ -5,12 +5,57 @@
              Background="#1A1525">
 
     <UserControl.Resources>
+        <Style x:Key="Panel" TargetType="Border">
+            <Setter Property="Background" Value="#241B33"/>
+            <Setter Property="BorderBrush" Value="#352847"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="6"/>
+            <Setter Property="Padding" Value="14"/>
+        </Style>
+
+        <Style x:Key="GroupLabel" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="#9B8BB8"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Margin" Value="0 0 0 5"/>
+        </Style>
+
+        <Style x:Key="FieldLabel" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="#9B8BB8"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="Margin" Value="0 0 7 8"/>
+        </Style>
+
+        <Style x:Key="StatusTextStyle" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="#9B8BB8"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="TextTrimming" Value="CharacterEllipsis"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+
+        <Style x:Key="TabActionButton" TargetType="Button">
+            <Setter Property="Height" Value="34"/>
+            <Setter Property="Padding" Value="14 0"/>
+            <Setter Property="Background" Value="#4B3A64"/>
+            <Setter Property="Foreground" Value="#CDD6F4"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Cursor" Value="Hand"/>
+        </Style>
+
+        <Style x:Key="PrimaryActionButton" TargetType="Button" BasedOn="{StaticResource TabActionButton}">
+            <Setter Property="Background" Value="#CBA6F7"/>
+            <Setter Property="Foreground" Value="#1A1525"/>
+        </Style>
+
         <Style x:Key="TabModeToggleStyle" TargetType="{x:Type ToggleButton}">
             <Setter Property="Background" Value="#4B3A64"/>
             <Setter Property="Foreground" Value="#CDD6F4"/>
             <Setter Property="BorderBrush" Value="#4B3A64"/>
             <Setter Property="BorderThickness" Value="1"/>
             <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Cursor" Value="Hand"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type ToggleButton}">
@@ -40,6 +85,82 @@
                 </Setter.Value>
             </Setter>
         </Style>
+
+        <Style TargetType="CheckBox">
+            <Setter Property="Foreground" Value="#CDD6F4"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type CheckBox}">
+                        <StackPanel Orientation="Horizontal">
+                            <Border x:Name="Box"
+                                    Width="16"
+                                    Height="16"
+                                    Background="#1A1525"
+                                    BorderBrush="#4B3A64"
+                                    BorderThickness="1"
+                                    CornerRadius="3"
+                                    Margin="0 0 6 0">
+                                <TextBlock x:Name="Mark"
+                                           Text="✓"
+                                           Foreground="#1A1525"
+                                           FontSize="12"
+                                           FontWeight="Bold"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center"
+                                           Visibility="Collapsed"/>
+                            </Border>
+                            <ContentPresenter VerticalAlignment="Center"/>
+                        </StackPanel>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="Box" Property="Background" Value="#A6E3A1"/>
+                                <Setter TargetName="Box" Property="BorderBrush" Value="#A6E3A1"/>
+                                <Setter TargetName="Mark" Property="Visibility" Value="Visible"/>
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Box" Property="BorderBrush" Value="#CBA6F7"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style TargetType="Slider">
+            <Setter Property="Height" Value="20"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Slider}">
+                        <Grid VerticalAlignment="Center">
+                            <Border Height="4"
+                                    Background="#4B3A64"
+                                    CornerRadius="2"
+                                    VerticalAlignment="Center"/>
+                            <Track x:Name="PART_Track">
+                                <Track.DecreaseRepeatButton>
+                                    <RepeatButton Command="{x:Static Slider.DecreaseLarge}"
+                                                  Background="#CBA6F7"
+                                                  BorderThickness="0"
+                                                  Height="4"
+                                                  Opacity="0.95"/>
+                                </Track.DecreaseRepeatButton>
+                                <Track.IncreaseRepeatButton>
+                                    <RepeatButton Command="{x:Static Slider.IncreaseLarge}"
+                                                  Background="Transparent"
+                                                  BorderThickness="0"
+                                                  Height="4"/>
+                                </Track.IncreaseRepeatButton>
+                                <Track.Thumb>
+                                    <Thumb Width="12" Height="22" Background="#CDD6F4"/>
+                                </Track.Thumb>
+                            </Track>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
     </UserControl.Resources>
 
     <Grid Margin="16">
@@ -48,198 +169,223 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <StackPanel Grid.Row="0"
-                    Margin="0 0 0 12">
-            <WrapPanel Margin="0 0 0 8"
-                       VerticalAlignment="Center">
-                <Button Content="Открыть"
-                        Width="110" Height="34"
-                        Margin="0 0 10 6"
-                        FontWeight="Bold"
-                        Background="#CBA6F7"
-                        Foreground="#1A1525"
-                        Click="OpenFile_Click"/>
+        <Border Grid.Row="0"
+                Style="{StaticResource Panel}"
+                Margin="0 0 0 12">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
 
-                <Button Content="Папка"
-                        Width="82" Height="34"
-                        Margin="0 0 10 6"
-                        ToolTip="Выбрать папку библиотеки табов"
-                        Click="ChooseLibraryFolder_Click"/>
+                <Grid Grid.Row="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
 
-                <Button Content="⟳"
-                        Width="42" Height="34"
-                        Margin="0 0 6 6"
-                        ToolTip="Обновить библиотеку табов"
-                        Click="RefreshLibrary_Click"/>
+                    <StackPanel Grid.Column="0" Margin="0 0 18 0">
+                        <TextBlock Text="Файлы"
+                                   Style="{StaticResource GroupLabel}"/>
+                        <WrapPanel>
+                            <Button Content="Открыть"
+                                    Style="{StaticResource PrimaryActionButton}"
+                                    Width="110"
+                                    Margin="0 0 8 8"
+                                    Click="OpenFile_Click"/>
 
-                <ComboBox x:Name="LibraryFilesCombo"
-                          Width="200" Height="34"
-                          Margin="0 0 10 6"
-                          ToolTip="Библиотека табулатур"
-                          ItemsSource="{Binding LibraryTabFiles}"
-                          SelectionChanged="LibraryFilesCombo_SelectionChanged"/>
+                            <Button Content="Папка"
+                                    Style="{StaticResource TabActionButton}"
+                                    Width="82"
+                                    Margin="0 0 8 8"
+                                    ToolTip="Выбрать папку библиотеки табов"
+                                    Click="ChooseLibraryFolder_Click"/>
 
-                <ComboBox x:Name="RecentFilesCombo"
-                          Width="200" Height="34"
-                          Margin="0 0 10 6"
-                          ToolTip="Последние табулатуры"
-                          ItemsSource="{Binding RecentTabFiles}"
-                          SelectionChanged="RecentFilesCombo_SelectionChanged"/>
+                            <Button Content="⟳"
+                                    Style="{StaticResource TabActionButton}"
+                                    Width="42"
+                                    Margin="0 0 16 8"
+                                    ToolTip="Обновить библиотеку табов"
+                                    Click="RefreshLibrary_Click"/>
 
-                <ToggleButton x:Name="FavoriteToggle"
-                              Content="☆"
-                              Style="{StaticResource TabModeToggleStyle}"
-                              Width="42" Height="34"
-                              Margin="0 0 6 6"
-                              ToolTip="Добавить текущий файл в избранное"
-                              Checked="FavoriteToggle_Changed"
-                              Unchecked="FavoriteToggle_Changed"/>
+                            <TextBlock Text="Источник"
+                                       Style="{StaticResource FieldLabel}"/>
 
-                <ComboBox x:Name="FavoriteFilesCombo"
-                          Width="190" Height="34"
-                          Margin="0 0 10 6"
-                          ToolTip="Избранные табулатуры"
-                          ItemsSource="{Binding FavoriteTabFiles}"
-                          SelectionChanged="FavoriteFilesCombo_SelectionChanged"/>
+                            <ComboBox x:Name="FileSourceCombo"
+                                      Width="132" Height="34"
+                                      Margin="0 0 8 8"
+                                      SelectedIndex="0"
+                                      SelectionChanged="FileSourceCombo_SelectionChanged">
+                                <ComboBoxItem Content="Библиотека"/>
+                                <ComboBoxItem Content="Недавние"/>
+                                <ComboBoxItem Content="Избранное"/>
+                            </ComboBox>
 
-                <ComboBox x:Name="TrackCombo"
-                          Width="220" Height="34"
-                          Margin="0 0 10 6"
-                          SelectionChanged="TrackCombo_SelectionChanged"/>
+                            <TextBlock Text="Файл"
+                                       Style="{StaticResource FieldLabel}"
+                                       Margin="8 0 7 8"/>
 
-                <ToggleButton x:Name="PlayPauseToggle"
-                              Content="▶ Играть"
-                              Style="{StaticResource TabModeToggleStyle}"
-                              Width="104" Height="34"
-                              Margin="0 0 6 6"
-                              ToolTip="Играть / пауза"
-                              Checked="PlayPauseToggle_Changed"
-                              Unchecked="PlayPauseToggle_Changed"/>
+                            <ComboBox x:Name="FileChoiceCombo"
+                                      Width="330" Height="34"
+                                      Margin="0 0 8 8"
+                                      ToolTip="Выбранный источник файлов"
+                                      ItemsSource="{Binding CurrentTabFiles}"
+                                      SelectionChanged="FileChoiceCombo_SelectionChanged"/>
 
-                <Button Content="Стоп"
-                        Width="76" Height="34"
-                        Margin="0 0 10 6"
-                        ToolTip="Стоп"
-                        Click="Stop_Click"/>
+                            <ToggleButton x:Name="FavoriteToggle"
+                                          Content="☆"
+                                          Style="{StaticResource TabModeToggleStyle}"
+                                          Width="42" Height="34"
+                                          Margin="0 0 0 8"
+                                          ToolTip="Добавить текущий файл в избранное"
+                                          Checked="FavoriteToggle_Changed"
+                                          Unchecked="FavoriteToggle_Changed"/>
+                        </WrapPanel>
+                    </StackPanel>
 
-                <ToggleButton x:Name="SoloToggle"
-                              Content="Соло"
-                              Style="{StaticResource TabModeToggleStyle}"
-                              Width="70" Height="34"
-                              Margin="0 0 6 6"
-                              ToolTip="Играть только выбранную дорожку"
-                              Checked="SoloToggle_Changed"
-                              Unchecked="SoloToggle_Changed"/>
+                    <StackPanel Grid.Column="1" MinWidth="420">
+                        <TextBlock Text="Воспроизведение"
+                                   Style="{StaticResource GroupLabel}"/>
+                        <WrapPanel>
+                            <ToggleButton x:Name="PlayPauseToggle"
+                                          Content="▶ Играть"
+                                          Style="{StaticResource TabModeToggleStyle}"
+                                          Width="112" Height="34"
+                                          Margin="0 0 8 8"
+                                          ToolTip="Играть / пауза"
+                                          Checked="PlayPauseToggle_Changed"
+                                          Unchecked="PlayPauseToggle_Changed"/>
 
-                <ToggleButton x:Name="MuteToggle"
-                              Content="Не играть"
-                              Style="{StaticResource TabModeToggleStyle}"
-                              Width="92" Height="34"
-                              Margin="0 0 0 6"
-                              ToolTip="Отключить выбранную дорожку"
-                              Checked="MuteToggle_Changed"
-                              Unchecked="MuteToggle_Changed"/>
-            </WrapPanel>
+                            <Button Content="Стоп"
+                                    Style="{StaticResource TabActionButton}"
+                                    Width="76"
+                                    Margin="0 0 14 8"
+                                    ToolTip="Стоп"
+                                    Click="Stop_Click"/>
 
-            <WrapPanel VerticalAlignment="Center">
-                <TextBlock Text="Громкость"
-                           VerticalAlignment="Center"
-                           Foreground="#7C6F96"
-                           FontSize="12"
-                           Margin="0 0 6 0"/>
+                            <TextBlock Text="Громкость"
+                                       Style="{StaticResource FieldLabel}"/>
 
-                <Slider x:Name="VolumeSlider"
-                        Width="120"
-                        Minimum="0"
-                        Maximum="100"
-                        Value="35"
-                        TickFrequency="5"
-                        VerticalAlignment="Center"
-                        ValueChanged="VolumeSlider_ValueChanged"/>
+                            <Slider x:Name="VolumeSlider"
+                                    Width="130"
+                                    Minimum="0"
+                                    Maximum="100"
+                                    Value="35"
+                                    TickFrequency="5"
+                                    VerticalAlignment="Center"
+                                    Margin="0 0 6 8"
+                                    ValueChanged="VolumeSlider_ValueChanged"/>
 
-                <TextBlock x:Name="VolumeLabel"
-                           Text="35%"
-                           Width="42"
-                           VerticalAlignment="Center"
-                           Foreground="#CDD6F4"
-                           FontSize="12"
-                           Margin="6 0 16 0"/>
+                            <TextBlock x:Name="VolumeLabel"
+                                       Text="35%"
+                                       Width="42"
+                                       VerticalAlignment="Center"
+                                       Foreground="#CDD6F4"
+                                       FontSize="12"
+                                       FontWeight="Bold"
+                                       Margin="0 0 0 8"/>
+                        </WrapPanel>
+                    </StackPanel>
+                </Grid>
 
-                <TextBlock Text="Скорость"
-                           VerticalAlignment="Center"
-                           Foreground="#7C6F96"
-                           FontSize="12"
-                           Margin="0 0 6 0"/>
+                <Grid Grid.Row="1" Margin="0 4 0 0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
 
-                <Button Content="-"
-                        Width="34" Height="34"
-                        Margin="0 0 4 0"
-                        ToolTip="Уменьшить скорость на 5%"
-                        Click="SpeedDown_Click"/>
+                    <StackPanel Grid.Column="0" Margin="0 0 18 0">
+                        <TextBlock Text="Дорожка"
+                                   Style="{StaticResource GroupLabel}"/>
+                        <WrapPanel>
+                            <ComboBox x:Name="TrackCombo"
+                                      Width="250" Height="34"
+                                      Margin="0 0 8 8"
+                                      SelectionChanged="TrackCombo_SelectionChanged"/>
 
-                <TextBox x:Name="SpeedTextBox"
-                         Width="56" Height="34"
-                         Text="100"
-                         TextAlignment="Center"
-                         VerticalContentAlignment="Center"
-                         Background="#4B3A64"
-                         Foreground="#CDD6F4"
-                         BorderBrush="#4B3A64"
-                         FontWeight="Bold"
-                         LostFocus="SpeedTextBox_LostFocus"
-                         KeyDown="SpeedTextBox_KeyDown"/>
+                            <ToggleButton x:Name="SoloToggle"
+                                          Content="Соло"
+                                          Style="{StaticResource TabModeToggleStyle}"
+                                          Width="70" Height="34"
+                                          Margin="0 0 8 8"
+                                          ToolTip="Играть только выбранную дорожку"
+                                          Checked="SoloToggle_Changed"
+                                          Unchecked="SoloToggle_Changed"/>
 
-                <Button Content="+"
-                        Width="34" Height="34"
-                        Margin="4 0 0 0"
-                        ToolTip="Увеличить скорость на 5%"
-                        Click="SpeedUp_Click"/>
+                            <ToggleButton x:Name="MuteToggle"
+                                          Content="Не играть"
+                                          Style="{StaticResource TabModeToggleStyle}"
+                                          Width="92" Height="34"
+                                          Margin="0 0 0 8"
+                                          ToolTip="Отключить выбранную дорожку"
+                                          Checked="MuteToggle_Changed"
+                                          Unchecked="MuteToggle_Changed"/>
+                        </WrapPanel>
+                    </StackPanel>
 
-                <TextBlock Text="%"
-                           VerticalAlignment="Center"
-                           Foreground="#7C6F96"
-                           FontSize="12"
-                           Margin="4 0 12 0"/>
+                    <StackPanel Grid.Column="1">
+                        <TextBlock Text="Параметры"
+                                   Style="{StaticResource GroupLabel}"/>
+                        <WrapPanel>
+                            <TextBlock Text="Скорость"
+                                       Style="{StaticResource FieldLabel}"/>
 
-                <CheckBox x:Name="AutoScrollCheckBox"
-                          Content="Следить"
-                          IsChecked="True"
-                          VerticalAlignment="Center"
-                          Foreground="#CDD6F4"
-                          FontWeight="Bold"
-                          Margin="0 0 14 0"/>
+                            <Button Content="-"
+                                    Style="{StaticResource TabActionButton}"
+                                    Width="34"
+                                    Margin="0 0 4 8"
+                                    ToolTip="Уменьшить скорость на 5%"
+                                    Click="SpeedDown_Click"/>
 
-                <TextBlock Text="Синхр."
-                           VerticalAlignment="Center"
-                           Foreground="#7C6F96"
-                           FontSize="12"
-                           Margin="0 0 6 0"/>
+                            <TextBox x:Name="SpeedTextBox"
+                                     Width="56" Height="34"
+                                     Text="100"
+                                     TextAlignment="Center"
+                                     VerticalContentAlignment="Center"
+                                     Background="#4B3A64"
+                                     Foreground="#CDD6F4"
+                                     BorderBrush="#4B3A64"
+                                     FontWeight="Bold"
+                                     Margin="0 0 4 8"
+                                     LostFocus="SpeedTextBox_LostFocus"
+                                     KeyDown="SpeedTextBox_KeyDown"/>
 
-                <Slider x:Name="SyncOffsetSlider"
-                        Width="110"
-                        Minimum="-200"
-                        Maximum="200"
-                        Value="0"
-                        TickFrequency="10"
-                        VerticalAlignment="Center"
-                        ValueChanged="SyncOffsetSlider_ValueChanged"/>
+                            <Button Content="+"
+                                    Style="{StaticResource TabActionButton}"
+                                    Width="34"
+                                    Margin="0 0 4 8"
+                                    ToolTip="Увеличить скорость на 5%"
+                                    Click="SpeedUp_Click"/>
 
-                <TextBlock x:Name="SyncOffsetLabel"
-                           Text="0 мс"
-                           Width="52"
-                           VerticalAlignment="Center"
-                           Foreground="#CDD6F4"
-                           FontSize="12"
-                           Margin="6 0 12 0"/>
+                            <TextBlock Text="%"
+                                       VerticalAlignment="Center"
+                                       Foreground="#9B8BB8"
+                                       FontSize="12"
+                                       Margin="0 0 16 8"/>
 
-                <TextBlock x:Name="StatusText"
-                           Text="Откройте файл Guitar Pro или MusicXML"
-                           VerticalAlignment="Center"
-                           Foreground="#7C6F96"
-                           FontSize="13"
-                           Margin="12 0 0 0"/>
-            </WrapPanel>
-        </StackPanel>
+                            <CheckBox x:Name="AutoScrollCheckBox"
+                                      Content="Следить за курсором"
+                                      IsChecked="True"
+                                      VerticalAlignment="Center"
+                                      Margin="0 0 0 8"/>
+                        </WrapPanel>
+                    </StackPanel>
+                </Grid>
+
+                <Border Grid.Row="2"
+                        Background="#1A1525"
+                        BorderBrush="#352847"
+                        BorderThickness="1"
+                        CornerRadius="4"
+                        Padding="10 7"
+                        Margin="0 4 0 0">
+                    <TextBlock x:Name="StatusText"
+                               Text="Откройте файл Guitar Pro или MusicXML"
+                               Style="{StaticResource StatusTextStyle}"/>
+                </Border>
+            </Grid>
+        </Border>
 
         <Border Grid.Row="1"
                 Background="#F7F5FA"
