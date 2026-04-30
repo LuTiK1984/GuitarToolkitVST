@@ -31,6 +31,7 @@ GuitarToolkit is a personal, idea-driven guitar toolkit for Windows, available a
 - Rebuild the interface layout as a dedicated design pass:
   - introduce consistent spacing, sizing, and panel structure;
   - reduce the current feeling of scattered controls;
+  - make tabs, buttons, and mode controls clearly named and visually distinguishable;
   - improve visual hierarchy across Desktop and VST without breaking workflows.
 - Improve first-run clarity:
   - short quick-start guidance in README;
@@ -48,7 +49,8 @@ GuitarToolkit is a personal, idea-driven guitar toolkit for Windows, available a
   - explore transport sync for metronome/tab playback;
   - avoid global hotkey conflicts inside DAW hosts.
 - Better tab workflow:
-  - favorites/library folder;
+  - polish the dedicated tab library folder UI;
+  - add refresh/search/sort controls for library files;
   - per-track volume/mute/solo state;
   - export or print later if alphaTab supports it well.
 - Improve audio UX:

@@ -35,7 +35,9 @@ public class UserSettings
 
     // Табы
     public string LastTabFilePath { get; set; } = "";
+    public string TabLibraryFolderPath { get; set; } = "";
     public List<string> RecentTabFilePaths { get; set; } = new();
+    public List<string> FavoriteTabFilePaths { get; set; } = new();
     public int LastTabTrackIndex { get; set; } = 0;
     public double LastTabTickPosition { get; set; } = 0d;
     public double TabVolumePercent { get; set; } = 35d;

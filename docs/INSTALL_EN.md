@@ -2,14 +2,14 @@
 
 ## Desktop Version
 
-1. Download `GuitarToolkit_DESKTOP_v.1.3.2.zip` from GitHub Releases.
+1. Download `GuitarToolkit_DESKTOP_v.1.3.3.zip` from GitHub Releases.
 2. Extract the archive to any folder.
 3. Run `GuitarToolkit.Desktop.exe`.
 4. Select an input device in the top panel: microphone, line input, or audio interface.
 
 ## VST3 Plugin
 
-1. Download `GuitarToolkit_VST3_v.1.3.2.zip` from GitHub Releases.
+1. Download `GuitarToolkit_VST3_v.1.3.3.zip` from GitHub Releases.
 2. Close your DAW if it is running.
 3. Extract the archive into one folder named `GuitarToolkit`.
 4. Copy the whole `GuitarToolkit` folder to:

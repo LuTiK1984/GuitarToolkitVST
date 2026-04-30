@@ -60,15 +60,50 @@
                         Foreground="#1A1525"
                         Click="OpenFile_Click"/>
 
+                <Button Content="Папка"
+                        Width="82" Height="34"
+                        Margin="0 0 10 6"
+                        ToolTip="Выбрать папку библиотеки табов"
+                        Click="ChooseLibraryFolder_Click"/>
+
+                <Button Content="⟳"
+                        Width="42" Height="34"
+                        Margin="0 0 6 6"
+                        ToolTip="Обновить библиотеку табов"
+                        Click="RefreshLibrary_Click"/>
+
+                <ComboBox x:Name="LibraryFilesCombo"
+                          Width="200" Height="34"
+                          Margin="0 0 10 6"
+                          ToolTip="Библиотека табулатур"
+                          ItemsSource="{Binding LibraryTabFiles}"
+                          SelectionChanged="LibraryFilesCombo_SelectionChanged"/>
+
                 <ComboBox x:Name="RecentFilesCombo"
-                          Width="220" Height="34"
+                          Width="200" Height="34"
                           Margin="0 0 10 6"
                           ToolTip="Последние табулатуры"
                           ItemsSource="{Binding RecentTabFiles}"
                           SelectionChanged="RecentFilesCombo_SelectionChanged"/>
 
+                <ToggleButton x:Name="FavoriteToggle"
+                              Content="☆"
+                              Style="{StaticResource TabModeToggleStyle}"
+                              Width="42" Height="34"
+                              Margin="0 0 6 6"
+                              ToolTip="Добавить текущий файл в избранное"
+                              Checked="FavoriteToggle_Changed"
+                              Unchecked="FavoriteToggle_Changed"/>
+
+                <ComboBox x:Name="FavoriteFilesCombo"
+                          Width="190" Height="34"
+                          Margin="0 0 10 6"
+                          ToolTip="Избранные табулатуры"
+                          ItemsSource="{Binding FavoriteTabFiles}"
+                          SelectionChanged="FavoriteFilesCombo_SelectionChanged"/>
+
                 <ComboBox x:Name="TrackCombo"
-                          Width="260" Height="34"
+                          Width="220" Height="34"
                           Margin="0 0 10 6"
                           SelectionChanged="TrackCombo_SelectionChanged"/>
 

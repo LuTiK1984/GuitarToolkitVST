@@ -36,6 +36,7 @@ Expected:
 - Check metronome playback.
 - Check chord/scale playback.
 - Check the Tabs page: open a Guitar Pro file, switch tracks, play/pause/stop, solo/mute, resize maximize/restore, and verify auto-follow.
+- Check Tabs recent files, favorites, library folder loading, and library refresh.
 - Known follow-up: while the Tabs page adapts after resize/maximize/restore, alphaTab can visibly re-render a few times before settling.
 
 ## 4. Manual VST3 Check
@@ -46,6 +47,7 @@ Expected:
 - Add GuitarToolkit to an audio track.
 - Assign or change the recording input after the plugin is loaded.
 - Check tuner input, metronome playback, and chord/scale playback.
+- Check Tabs page loading, playback, recent files, favorites, and library folder if the DAW can open the editor reliably.
 
 ## 5. GitHub Release
 

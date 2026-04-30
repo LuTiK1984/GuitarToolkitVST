@@ -2,7 +2,7 @@
 
 All notable changes to GuitarToolkit are documented here.
 
-## [Unreleased]
+## [1.3.3] - 2026-04-30
 
 ### Added
 
@@ -12,6 +12,9 @@ All notable changes to GuitarToolkit are documented here.
 - Tabs page now remembers the last file, selected track, volume, speed, auto-follow, sync offset, and solo/mute state.
 - Tabs page now restores the last playback cursor position for the remembered file.
 - Tabs page now keeps a recent files list for faster reopening.
+- Tabs page now supports a simple favorites list for frequently used tab files.
+- Tabs page now supports a simple library folder scan for Guitar Pro and MusicXML files.
+- Tabs library can now be refreshed without selecting the folder again.
 - Added `THIRD_PARTY_NOTICES.md` with dependency/license notes.
 
 ### Changed

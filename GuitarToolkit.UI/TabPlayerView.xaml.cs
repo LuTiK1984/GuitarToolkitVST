@@ -19,11 +19,23 @@ namespace GuitarToolkit.UI;
 public partial class TabPlayerView : UserControl
 {
     private const int MaxRecentTabFiles = 10;
+    private const int MaxFavoriteTabFiles = 50;
+    private static readonly string[] SupportedTabExtensions =
+    [
+        ".gp",
+        ".gpx",
+        ".gp5",
+        ".gp4",
+        ".gp3",
+        ".musicxml",
+        ".xml"
+    ];
 
     private readonly UserSettings? _settings;
     private Score? _score;
     private bool _isUpdatingTrackMode;
     private bool _isInitializingSettings;
+    private bool _isUpdatingFavoriteToggle;
     private bool _restoredLastFile;
     private readonly DispatcherTimer _volumeRampTimer;
     private readonly DispatcherTimer _scrollToCursorTimer;
@@ -37,12 +49,17 @@ public partial class TabPlayerView : UserControl
     private TabScrollHandler? _tabScrollHandler;
     private bool _isUpdatingPlayButton;
     private bool _isUpdatingRecentFiles;
+    private bool _isUpdatingFavoriteFiles;
+    private bool _isUpdatingLibraryFiles;
     private int _pendingResizeRenderPasses;
     private string? _loadedFilePath;
+    private string? _libraryFolderPath;
     private double _lastKnownTickPosition;
 
     public ObservableCollection<Track> TracksToDisplay { get; } = new();
+    public ObservableCollection<TabFileItem> LibraryTabFiles { get; } = new();
     public ObservableCollection<RecentTabFileItem> RecentTabFiles { get; } = new();
+    public ObservableCollection<TabFileItem> FavoriteTabFiles { get; } = new();
 
     public TabPlayerView()
         : this(null)
@@ -60,7 +77,9 @@ public partial class TabPlayerView : UserControl
         _resizeRenderTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(260) };
         _resizeRenderTimer.Tick += ResizeRenderTimer_Tick;
         DataContext = this;
+        RestoreLibraryFolder(settings);
         RestoreRecentFiles(settings);
+        RestoreFavoriteFiles(settings);
         RestorePlaybackSettings(settings);
         ApplyPlaybackSettings();
         Loaded += (_, _) =>
@@ -82,6 +101,39 @@ public partial class TabPlayerView : UserControl
             return;
 
         LoadTab(dialog.FileName);
+    }
+
+    private void ChooseLibraryFolder_Click(object sender, RoutedEventArgs e)
+    {
+        var dialog = new OpenFolderDialog
+        {
+            Title = "Выбрать папку библиотеки табулатур",
+            Multiselect = false
+        };
+
+        if (!string.IsNullOrWhiteSpace(_libraryFolderPath) && Directory.Exists(_libraryFolderPath))
+        {
+            dialog.InitialDirectory = _libraryFolderPath;
+        }
+
+        if (dialog.ShowDialog() != true)
+            return;
+
+        SetLibraryFolder(dialog.FolderName);
+    }
+
+    private void RefreshLibrary_Click(object sender, RoutedEventArgs e)
+    {
+        if (string.IsNullOrWhiteSpace(_libraryFolderPath))
+        {
+            StatusText.Text = "Папка библиотеки не выбрана";
+            return;
+        }
+
+        ScanLibraryFolder();
+        StatusText.Text = LibraryTabFiles.Count > 0
+            ? $"Библиотека обновлена: {LibraryTabFiles.Count} файлов"
+            : "В папке библиотеки табы не найдены";
     }
 
     private void LoadTab(string path, int? selectedTrackIndex = null, bool showError = true)
@@ -116,6 +168,7 @@ public partial class TabPlayerView : UserControl
             ApplyTrackPlaybackMode();
             QueueCursorRestore(restoreTick);
             AddRecentTabFile(path);
+            UpdateFavoriteToggleState();
 
             StatusText.Text = $"{Path.GetFileName(path)}";
         }
@@ -153,6 +206,67 @@ public partial class TabPlayerView : UserControl
         }
 
         LoadTab(item.Path);
+    }
+
+    private void LibraryFilesCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        if (_isUpdatingLibraryFiles)
+            return;
+
+        if (LibraryFilesCombo.SelectedItem is not TabFileItem item)
+            return;
+
+        if (!File.Exists(item.Path))
+        {
+            ScanLibraryFolder();
+            StatusText.Text = "Файл библиотеки не найден";
+            return;
+        }
+
+        LoadTab(item.Path);
+    }
+
+    private void FavoriteFilesCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        if (_isUpdatingFavoriteFiles)
+            return;
+
+        if (FavoriteFilesCombo.SelectedItem is not TabFileItem item)
+            return;
+
+        if (!File.Exists(item.Path))
+        {
+            RemoveFavoriteTabFile(item.Path);
+            StatusText.Text = "Файл из избранного не найден";
+            return;
+        }
+
+        LoadTab(item.Path);
+    }
+
+    private void FavoriteToggle_Changed(object sender, RoutedEventArgs e)
+    {
+        if (_isUpdatingFavoriteToggle)
+            return;
+
+        if (string.IsNullOrWhiteSpace(_loadedFilePath))
+        {
+            UpdateFavoriteToggleState();
+            return;
+        }
+
+        if (FavoriteToggle.IsChecked == true)
+        {
+            AddFavoriteTabFile(_loadedFilePath);
+            StatusText.Text = $"Добавлено в избранное: {Path.GetFileName(_loadedFilePath)}";
+        }
+        else
+        {
+            RemoveFavoriteTabFile(_loadedFilePath);
+            StatusText.Text = $"Удалено из избранного: {Path.GetFileName(_loadedFilePath)}";
+        }
+
+        UpdateFavoriteToggleState();
     }
 
     private void TrackCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -614,7 +728,11 @@ public partial class TabPlayerView : UserControl
     public void SaveTo(UserSettings settings)
     {
         settings.LastTabFilePath = _loadedFilePath ?? "";
+        settings.TabLibraryFolderPath = _libraryFolderPath ?? "";
         settings.RecentTabFilePaths = RecentTabFiles
+            .Select(item => item.Path)
+            .ToList();
+        settings.FavoriteTabFilePaths = FavoriteTabFiles
             .Select(item => item.Path)
             .ToList();
         settings.LastTabTrackIndex = Math.Max(0, TrackCombo?.SelectedIndex ?? 0);
@@ -666,6 +784,66 @@ public partial class TabPlayerView : UserControl
         LoadTab(_settings.LastTabFilePath, _settings.LastTabTrackIndex, showError: false);
     }
 
+    private void RestoreLibraryFolder(UserSettings? settings)
+    {
+        if (settings == null || string.IsNullOrWhiteSpace(settings.TabLibraryFolderPath))
+            return;
+
+        SetLibraryFolder(settings.TabLibraryFolderPath, updateStatus: false);
+    }
+
+    private void SetLibraryFolder(string folderPath, bool updateStatus = true)
+    {
+        _libraryFolderPath = folderPath;
+        ScanLibraryFolder();
+
+        if (updateStatus)
+        {
+            StatusText.Text = LibraryTabFiles.Count > 0
+                ? $"Библиотека: {LibraryTabFiles.Count} файлов"
+                : "В папке библиотеки табы не найдены";
+        }
+    }
+
+    private void ScanLibraryFolder()
+    {
+        _isUpdatingLibraryFiles = true;
+        LibraryTabFiles.Clear();
+
+        if (string.IsNullOrWhiteSpace(_libraryFolderPath) || !Directory.Exists(_libraryFolderPath))
+        {
+            _isUpdatingLibraryFiles = false;
+            return;
+        }
+
+        try
+        {
+            foreach (string path in Directory.EnumerateFiles(_libraryFolderPath, "*.*", SearchOption.AllDirectories)
+                         .Where(IsSupportedTabFile)
+                         .OrderBy(Path.GetFileName, StringComparer.CurrentCultureIgnoreCase)
+                         .Take(500))
+            {
+                LibraryTabFiles.Add(new TabFileItem(path, _libraryFolderPath));
+            }
+        }
+        catch (Exception ex)
+        {
+            AppLogger.Warning($"Failed to scan tab library folder '{_libraryFolderPath}'.", ex);
+            StatusText.Text = "Не удалось прочитать папку библиотеки";
+        }
+        finally
+        {
+            LibraryFilesCombo.SelectedIndex = -1;
+            _isUpdatingLibraryFiles = false;
+        }
+    }
+
+    private static bool IsSupportedTabFile(string path)
+    {
+        string extension = Path.GetExtension(path);
+        return SupportedTabExtensions.Contains(extension, StringComparer.OrdinalIgnoreCase);
+    }
+
     private void RestoreRecentFiles(UserSettings? settings)
     {
         if (settings == null)
@@ -683,6 +861,25 @@ public partial class TabPlayerView : UserControl
         }
 
         _isUpdatingRecentFiles = false;
+    }
+
+    private void RestoreFavoriteFiles(UserSettings? settings)
+    {
+        if (settings == null)
+            return;
+
+        _isUpdatingFavoriteFiles = true;
+        FavoriteTabFiles.Clear();
+
+        foreach (string path in settings.FavoriteTabFilePaths
+                     .Where(path => !string.IsNullOrWhiteSpace(path))
+                     .Distinct(StringComparer.OrdinalIgnoreCase)
+                     .Take(MaxFavoriteTabFiles))
+        {
+            FavoriteTabFiles.Add(new TabFileItem(path));
+        }
+
+        _isUpdatingFavoriteFiles = false;
     }
 
     private void AddRecentTabFile(string path)
@@ -708,6 +905,63 @@ public partial class TabPlayerView : UserControl
 
         RecentFilesCombo.SelectedIndex = 0;
         _isUpdatingRecentFiles = false;
+    }
+
+    private void AddFavoriteTabFile(string path)
+    {
+        if (string.IsNullOrWhiteSpace(path))
+            return;
+
+        _isUpdatingFavoriteFiles = true;
+
+        var existing = FavoriteTabFiles
+            .FirstOrDefault(item => item.Path.Equals(path, StringComparison.OrdinalIgnoreCase));
+        if (existing != null)
+        {
+            FavoriteTabFiles.Remove(existing);
+        }
+
+        FavoriteTabFiles.Insert(0, new TabFileItem(path));
+
+        while (FavoriteTabFiles.Count > MaxFavoriteTabFiles)
+        {
+            FavoriteTabFiles.RemoveAt(FavoriteTabFiles.Count - 1);
+        }
+
+        FavoriteFilesCombo.SelectedIndex = 0;
+        _isUpdatingFavoriteFiles = false;
+    }
+
+    private void RemoveFavoriteTabFile(string path)
+    {
+        _isUpdatingFavoriteFiles = true;
+
+        var existing = FavoriteTabFiles
+            .FirstOrDefault(item => item.Path.Equals(path, StringComparison.OrdinalIgnoreCase));
+        if (existing != null)
+        {
+            FavoriteTabFiles.Remove(existing);
+        }
+
+        FavoriteFilesCombo.SelectedIndex = -1;
+        _isUpdatingFavoriteFiles = false;
+    }
+
+    private void UpdateFavoriteToggleState()
+    {
+        if (FavoriteToggle == null)
+            return;
+
+        bool isFavorite = !string.IsNullOrWhiteSpace(_loadedFilePath)
+            && FavoriteTabFiles.Any(item => item.Path.Equals(_loadedFilePath, StringComparison.OrdinalIgnoreCase));
+
+        _isUpdatingFavoriteToggle = true;
+        FavoriteToggle.IsChecked = isFavorite;
+        FavoriteToggle.Content = isFavorite ? "★" : "☆";
+        FavoriteToggle.ToolTip = isFavorite
+            ? "Удалить текущий файл из избранного"
+            : "Добавить текущий файл в избранное";
+        _isUpdatingFavoriteToggle = false;
     }
 
     private void RemoveRecentTabFile(string path)
@@ -796,18 +1050,46 @@ public partial class TabPlayerView : UserControl
         }
     }
 
-    public sealed class RecentTabFileItem
+    public sealed class RecentTabFileItem : TabFileItem
     {
         public RecentTabFileItem(string path)
+            : base(path)
+        {
+        }
+    }
+
+    public class TabFileItem
+    {
+        public TabFileItem(string path, string? baseFolder = null)
         {
             Path = path;
+            DisplayName = GetDisplayName(path, baseFolder);
         }
 
         public string Path { get; }
+        public string DisplayName { get; }
 
         public override string ToString()
         {
-            return System.IO.Path.GetFileName(Path);
+            return DisplayName;
+        }
+
+        private static string GetDisplayName(string path, string? baseFolder)
+        {
+            if (string.IsNullOrWhiteSpace(baseFolder))
+                return System.IO.Path.GetFileName(path);
+
+            try
+            {
+                string relative = System.IO.Path.GetRelativePath(baseFolder, path);
+                return relative == "."
+                    ? System.IO.Path.GetFileName(path)
+                    : relative;
+            }
+            catch
+            {
+                return System.IO.Path.GetFileName(path);
+            }
         }
     }
 
