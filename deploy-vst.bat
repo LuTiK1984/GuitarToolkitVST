@@ -24,9 +24,14 @@ call :require "GuitarToolkit.Core.dll"
 call :require "GuitarToolkit.UI.dll"
 call :require "AudioPlugSharp.dll"
 call :require "AudioPlugSharpWPF.dll"
+call :require "AlphaSkia.dll"
+call :require "AlphaSkia.Native.Windows.dll"
+call :require "AlphaTab.dll"
+call :require "AlphaTab.Windows.dll"
 call :require "GuitarToolkit.PluginBridge.vst3"
 call :require "GuitarToolkit.PluginBridge.runtimeconfig.json"
 call :require "Ijwhost.dll"
+call :require "runtimes"
 
 if "%MISSING%"=="1" (
     echo.
@@ -46,14 +51,8 @@ if not exist "%DEST%" (
 )
 
 echo Copying files...
-call :copyfile "GuitarToolkit.Plugin.dll" || goto copy_failed
-call :copyfile "GuitarToolkit.Core.dll" || goto copy_failed
-call :copyfile "GuitarToolkit.UI.dll" || goto copy_failed
-call :copyfile "AudioPlugSharp.dll" || goto copy_failed
-call :copyfile "AudioPlugSharpWPF.dll" || goto copy_failed
-call :copyfile "GuitarToolkit.PluginBridge.vst3" || goto copy_failed
-call :copyfile "GuitarToolkit.PluginBridge.runtimeconfig.json" || goto copy_failed
-call :copyfile "Ijwhost.dll" || goto copy_failed
+xcopy "%SOURCE%\*" "%DEST%\" /E /I /Y >nul
+if errorlevel 1 goto copy_failed
 
 echo.
 echo Done. Restart or rescan plugins in your DAW.
@@ -67,15 +66,6 @@ if not exist "%SOURCE%\%~1" (
 ) else (
     echo Found:   %~1
 )
-exit /b 0
-
-:copyfile
-copy /Y "%SOURCE%\%~1" "%DEST%\" >nul
-if errorlevel 1 (
-    echo ERROR: Could not copy %~1
-    exit /b 1
-)
-echo Copied:  %~1
 exit /b 0
 
 :copy_failed

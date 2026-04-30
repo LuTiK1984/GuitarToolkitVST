@@ -45,7 +45,7 @@ public class GuitarToolkitPlugin : AudioPluginWPF, IAudioPlayback
         Contact = "";
         PluginName = "GuitarToolkit";
         PluginCategory = "Fx";
-        PluginVersion = "1.3.1";
+        PluginVersion = "1.3.2";
         PluginID = 0x47546B7401000001;
         HasUserInterface = true;
         EditorWidth = 950;
@@ -134,6 +134,6 @@ public class GuitarToolkitPlugin : AudioPluginWPF, IAudioPlayback
 
     public override UserControl GetEditorView()
     {
-        return new ToolkitHostView(Tuner, Metronome, this, enableTabs: false);
+        return new ToolkitHostView(Tuner, Metronome, this, enableTabs: true);
     }
 }

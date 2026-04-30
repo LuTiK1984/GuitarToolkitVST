@@ -2,6 +2,26 @@
 
 All notable changes to GuitarToolkit are documented here.
 
+## [1.3.2] - 2026-04-30
+
+### Added
+
+- Tabs page is now enabled in the VST3 plugin after FL Studio testing with the complete dependency set.
+- README screenshots and feature descriptions now include the Tabs page.
+
+### Changed
+
+- VST deployment now copies the full plugin output folder, including transitive dependencies and runtime folders.
+- README positioning was updated from an educational project to a personal passion project.
+- Updated project, desktop, and VST plugin version to `1.3.2`.
+- Updated release archive names for `v1.3.2`.
+
+### Verified
+
+- Build passes with 0 errors and 0 warnings.
+- Test suite passes: 73/73.
+- FL Studio loads the VST3 plugin with the Tabs page when the complete dependency set is deployed.
+
 ## [1.3.1] - 2026-04-30
 
 ### Fixed

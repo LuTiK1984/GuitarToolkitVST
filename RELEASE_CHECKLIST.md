@@ -17,7 +17,7 @@ Run:
 ```powershell
 dotnet build GuitarToolkit.sln --no-restore --configuration Debug
 dotnet test GuitarToolkit.sln --no-restore --configuration Debug
-powershell -ExecutionPolicy Bypass -File .\build-release.ps1 -Version 1.3.1 -Configuration Release
+powershell -ExecutionPolicy Bypass -File .\build-release.ps1 -Version 1.3.2 -Configuration Release
 ```
 
 Expected:

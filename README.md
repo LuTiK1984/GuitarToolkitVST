@@ -8,7 +8,7 @@
 
 **GuitarToolkit** is a guitar-focused toolkit for Windows: a VST3 plugin for DAW hosts and a standalone WPF desktop application built on C# / .NET 8.
 
-It combines seven practice and theory tools in one interface: tuner, metronome, chord library, fretboard scale visualizer, interval ear trainer, chord progression builder, and circle of fifths.
+It is a personal, idea-driven project for guitar practice, writing, and everyday musical experiments. The app combines tuner, metronome, chord library, fretboard scale visualizer, interval ear trainer, chord progression builder, circle of fifths, and Guitar Pro / MusicXML tab viewing in one interface.
 
 [Русская версия](#guitartoolkit-ru)
 
@@ -27,8 +27,8 @@ It combines seven practice and theory tools in one interface: tuner, metronome, 
 
 The latest release provides two separate archives:
 
-- `GuitarToolkit_VST3_v.1.3.1.zip` - VST3 plugin package for DAW hosts.
-- `GuitarToolkit_DESKTOP_v.1.3.1.zip` - standalone Windows desktop application.
+- `GuitarToolkit_VST3_v.1.3.2.zip` - VST3 plugin package for DAW hosts.
+- `GuitarToolkit_DESKTOP_v.1.3.2.zip` - standalone Windows desktop application.
 
 Open the project releases page:
 
@@ -47,6 +47,10 @@ Open the project releases page:
 ### Fretboard & Scales
 
 ![GuitarToolkit fretboard and scales](docs/images/fretboard.png)
+
+### Tabs
+
+![GuitarToolkit tabs](docs/images/tabs.png)
 
 ## Features
 
@@ -107,6 +111,15 @@ Open the project releases page:
 - Interactive major/minor circle of fifths.
 - Displays key signatures, scale notes, diatonic chords, common progressions, related keys, and enharmonic equivalents.
 - Plays the selected major or minor scale.
+
+### Tabs
+
+- Opens Guitar Pro and MusicXML files through alphaTab.
+- Displays notation and tablature with track selection.
+- Plays tabs with play/pause, stop, volume, and flexible speed controls.
+- Selected-track solo and mute modes.
+- Automatic following of the current playback position.
+- Available in both the standalone desktop app and the VST3 plugin.
 
 ## Architecture
 
@@ -203,7 +216,7 @@ Files:
 
 **GuitarToolkit** - набор инструментов для гитариста под Windows: VST3-плагин для DAW и самостоятельное WPF-приложение на C# / .NET 8.
 
-В одном интерфейсе собраны семь модулей: тюнер, метроном, справочник аккордов, визуализатор гамм на грифе, тренажер интервалов, построитель аккордовых прогрессий и круг квинт.
+Это личный идейный проект для гитарной практики, набросков и музыкальных экспериментов. В одном интерфейсе собраны тюнер, метроном, справочник аккордов, визуализатор гамм на грифе, тренажер интервалов, построитель аккордовых прогрессий, круг квинт и просмотр табулатур Guitar Pro / MusicXML.
 
 ## Содержание
 
@@ -220,8 +233,8 @@ Files:
 
 В релизе доступны два архива:
 
-- `GuitarToolkit_VST3_v.1.3.1.zip` - VST3-плагин для DAW.
-- `GuitarToolkit_DESKTOP_v.1.3.1.zip` - standalone-приложение для Windows.
+- `GuitarToolkit_VST3_v.1.3.2.zip` - VST3-плагин для DAW.
+- `GuitarToolkit_DESKTOP_v.1.3.2.zip` - standalone-приложение для Windows.
 
 Страница релизов:
 
@@ -240,6 +253,10 @@ Files:
 ### Гриф и гаммы
 
 ![Гриф и гаммы GuitarToolkit](docs/images/fretboard.png)
+
+### Табы
+
+![Табы GuitarToolkit](docs/images/tabs.png)
 
 ## Возможности
 
@@ -302,6 +319,15 @@ Files:
 - Мажорные и параллельные минорные тональности.
 - Ключевые знаки, ноты гаммы, диатонические аккорды, популярные прогрессии и родственные тональности.
 - Воспроизведение выбранной мажорной или минорной гаммы.
+
+### Табы
+
+- Открытие файлов Guitar Pro и MusicXML через alphaTab.
+- Отображение нотной записи и табулатуры с выбором дорожки.
+- Воспроизведение табов: играть/пауза, стоп, громкость и гибкая скорость.
+- Режимы соло и отключения выбранной дорожки.
+- Автоматическое следование за текущей позицией воспроизведения.
+- Работает и в standalone-приложении, и в VST3-плагине.
 
 ## Архитектура
 
@@ -390,4 +416,4 @@ C:\Program Files\Common Files\VST3\GuitarToolkit\
 
 ## License
 
-Educational project. VST is a trademark of Steinberg Media Technologies GmbH.
+Personal passion project. VST is a trademark of Steinberg Media Technologies GmbH.
