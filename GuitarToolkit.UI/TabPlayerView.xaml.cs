@@ -36,7 +36,9 @@ public partial class TabPlayerView : UserControl
     private bool _isUpdatingTrackMode;
     private bool _isInitializingSettings;
     private bool _isUpdatingFavoriteToggle;
+    private bool _isUpdatingTrackSelection;
     private bool _restoredLastFile;
+    private readonly HashSet<string> _failedTabFilePaths = new(StringComparer.OrdinalIgnoreCase);
     private readonly DispatcherTimer _volumeRampTimer;
     private readonly DispatcherTimer _scrollToCursorTimer;
     private readonly DispatcherTimer _resizeRenderTimer;
@@ -129,6 +131,7 @@ public partial class TabPlayerView : UserControl
             return;
         }
 
+        _failedTabFilePaths.Clear();
         ScanLibraryFolder();
         StatusText.Text = LibraryTabFiles.Count > 0
             ? $"Библиотека обновлена: {LibraryTabFiles.Count} файлов"
@@ -147,8 +150,8 @@ public partial class TabPlayerView : UserControl
             _score = ScoreLoader.LoadScoreFromBytes(data, new Settings());
             _loadedFilePath = path;
             _lastKnownTickPosition = restoreTick;
-            ConfigureAlphaTabPlayer();
 
+            _isUpdatingTrackSelection = true;
             TrackCombo.ItemsSource = _score.Tracks
                 .Select((track, index) => new TabTrackItem(track, index + 1))
                 .ToList();
@@ -162,6 +165,15 @@ public partial class TabPlayerView : UserControl
             {
                 TrackCombo.SelectedIndex = -1;
             }
+            _isUpdatingTrackSelection = false;
+
+            TracksToDisplay.Clear();
+            if (TrackCombo.SelectedItem is TabTrackItem selectedTrack)
+            {
+                TracksToDisplay.Add(selectedTrack.Track);
+                ConfigureAlphaTabPlayer();
+                SafeRenderTracks();
+            }
 
             ApplyPlaybackSettings();
             ApplyTrackPlaybackMode();
@@ -173,7 +185,9 @@ public partial class TabPlayerView : UserControl
         }
         catch (Exception ex)
         {
+            _isUpdatingTrackSelection = false;
             AppLogger.Warning($"Failed to load tab file '{path}'.", ex);
+            MarkFailedTabFile(path);
             TracksToDisplay.Clear();
             TrackCombo.ItemsSource = null;
             StatusText.Text = "Файл не загружен";
@@ -239,6 +253,9 @@ public partial class TabPlayerView : UserControl
 
     private void TrackCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
+        if (_isUpdatingTrackSelection)
+            return;
+
         TracksToDisplay.Clear();
 
         if (TrackCombo.SelectedItem is TabTrackItem item)
@@ -247,7 +264,7 @@ public partial class TabPlayerView : UserControl
             _pendingScrollAfterRender = true;
             TracksToDisplay.Add(item.Track);
             ConfigureAlphaTabPlayer();
-            AlphaTab.RenderTracks();
+            SafeRenderTracks();
             ApplyPlaybackSettings();
             ApplyTrackPlaybackMode();
             StatusText.Text = $"Дорожка: {item}";
@@ -474,21 +491,41 @@ public partial class TabPlayerView : UserControl
         if (api == null || _score == null)
             return;
 
-        api.ChangeTrackSolo(_score.Tracks, false);
-        api.ChangeTrackMute(_score.Tracks, false);
-
-        Track? selectedTrack = (TrackCombo?.SelectedItem as TabTrackItem)?.Track;
-        if (selectedTrack == null)
-            return;
-
-        var selectedTracks = new[] { selectedTrack };
-        if (SoloToggle?.IsChecked == true)
+        try
         {
-            api.ChangeTrackSolo(selectedTracks, true);
+            api.ChangeTrackSolo(_score.Tracks, false);
+            api.ChangeTrackMute(_score.Tracks, false);
+
+            Track? selectedTrack = (TrackCombo?.SelectedItem as TabTrackItem)?.Track;
+            if (selectedTrack == null)
+                return;
+
+            var selectedTracks = new[] { selectedTrack };
+            if (SoloToggle?.IsChecked == true)
+            {
+                api.ChangeTrackSolo(selectedTracks, true);
+            }
+            else if (MuteToggle?.IsChecked == true)
+            {
+                api.ChangeTrackMute(selectedTracks, true);
+            }
         }
-        else if (MuteToggle?.IsChecked == true)
+        catch (Exception ex)
         {
-            api.ChangeTrackMute(selectedTracks, true);
+            AppLogger.Warning("Failed to apply tab track playback mode.", ex);
+        }
+    }
+
+    private void SafeRenderTracks()
+    {
+        try
+        {
+            AlphaTab.RenderTracks();
+        }
+        catch (Exception ex)
+        {
+            AppLogger.Warning("Failed to render selected tab track.", ex);
+            StatusText.Text = "Р”РѕСЂРѕР¶РєР° РЅРµ СЃРјРѕРіР»Р° РѕС‚СЂРёСЃРѕРІР°С‚СЊСЃСЏ";
         }
     }
 
@@ -607,7 +644,7 @@ public partial class TabPlayerView : UserControl
         FitAlphaTabToViewport();
         AlphaTab?.InvalidateMeasure();
         AlphaTab?.UpdateLayout();
-        AlphaTab?.RenderTracks();
+        SafeRenderTracks();
 
         _pendingResizeRenderPasses--;
         if (_pendingResizeRenderPasses <= 0)
@@ -745,6 +782,7 @@ public partial class TabPlayerView : UserControl
     private void SetLibraryFolder(string folderPath, bool updateStatus = true)
     {
         _libraryFolderPath = folderPath;
+        _failedTabFilePaths.Clear();
         ScanLibraryFolder();
 
         if (updateStatus)
@@ -844,6 +882,9 @@ public partial class TabPlayerView : UserControl
 
         foreach (var item in source)
         {
+            if (_failedTabFilePaths.Contains(item.Path))
+                continue;
+
             CurrentTabFiles.Add(item);
         }
 
@@ -872,6 +913,21 @@ public partial class TabPlayerView : UserControl
         }
 
         RebuildCurrentTabFiles();
+    }
+
+    private void MarkFailedTabFile(string path)
+    {
+        if (string.IsNullOrWhiteSpace(path))
+            return;
+
+        _failedTabFilePaths.Add(path);
+        RemoveRecentTabFile(path);
+        RemoveFavoriteTabFile(path);
+
+        if (_libraryFolderPath != null && path.StartsWith(_libraryFolderPath, StringComparison.OrdinalIgnoreCase))
+        {
+            RebuildCurrentTabFiles();
+        }
     }
 
     private void AddRecentTabFile(string path)

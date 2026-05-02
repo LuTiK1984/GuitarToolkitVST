@@ -3,84 +3,415 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              Background="#1A1525">
 
-    <Grid>
+    <UserControl.Resources>
+        <SolidColorBrush x:Key="PanelBrush" Color="#241B33"/>
+        <SolidColorBrush x:Key="PanelBorderBrush" Color="#352847"/>
+        <SolidColorBrush x:Key="ControlBrush" Color="#4B3A64"/>
+        <SolidColorBrush x:Key="ControlHoverBrush" Color="#5B4676"/>
+        <SolidColorBrush x:Key="AccentBrush" Color="#CBA6F7"/>
+        <SolidColorBrush x:Key="StartBrush" Color="#A6E3A1"/>
+        <SolidColorBrush x:Key="DangerBrush" Color="#F38BA8"/>
+        <SolidColorBrush x:Key="TextBrush" Color="#CDD6F4"/>
+        <SolidColorBrush x:Key="MutedTextBrush" Color="#9B8BB8"/>
+        <SolidColorBrush x:Key="DarkBrush" Color="#1A1525"/>
+
+        <Style x:Key="Panel" TargetType="{x:Type Border}">
+            <Setter Property="Background" Value="{StaticResource PanelBrush}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource PanelBorderBrush}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="6"/>
+            <Setter Property="Padding" Value="10"/>
+        </Style>
+
+        <Style x:Key="SectionPanel" TargetType="{x:Type Border}" BasedOn="{StaticResource Panel}">
+            <Setter Property="Background" Value="{StaticResource DarkBrush}"/>
+            <Setter Property="Padding" Value="10 8"/>
+        </Style>
+
+        <Style x:Key="GroupLabel" TargetType="{x:Type TextBlock}">
+            <Setter Property="Foreground" Value="{StaticResource MutedTextBrush}"/>
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Margin" Value="0 0 0 4"/>
+        </Style>
+
+        <Style x:Key="MutedText" TargetType="{x:Type TextBlock}">
+            <Setter Property="Foreground" Value="{StaticResource MutedTextBrush}"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="TextWrapping" Value="Wrap"/>
+        </Style>
+
+        <Style x:Key="MetroButton" TargetType="{x:Type Button}">
+            <Setter Property="Height" Value="26"/>
+            <Setter Property="MinWidth" Value="30"/>
+            <Setter Property="Padding" Value="8 0"/>
+            <Setter Property="Background" Value="{StaticResource ControlBrush}"/>
+            <Setter Property="Foreground" Value="{StaticResource TextBrush}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource ControlBrush}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <Border x:Name="Chrome"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="4">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"
+                                              RecognizesAccessKey="True"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Chrome" Property="Background" Value="{StaticResource ControlHoverBrush}"/>
+                                <Setter TargetName="Chrome" Property="BorderBrush" Value="{StaticResource ControlHoverBrush}"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="Chrome" Property="Background" Value="{StaticResource AccentBrush}"/>
+                                <Setter Property="Foreground" Value="{StaticResource DarkBrush}"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Opacity" Value="0.55"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="PrimaryButton" TargetType="{x:Type Button}" BasedOn="{StaticResource MetroButton}">
+            <Setter Property="Background" Value="{StaticResource StartBrush}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource StartBrush}"/>
+            <Setter Property="Foreground" Value="{StaticResource DarkBrush}"/>
+        </Style>
+
+        <Style TargetType="{x:Type Slider}">
+            <Setter Property="Height" Value="18"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Slider}">
+                        <Grid VerticalAlignment="Center">
+                            <Border Height="4"
+                                    Background="{StaticResource ControlBrush}"
+                                    CornerRadius="2"
+                                    VerticalAlignment="Center"/>
+                            <Track x:Name="PART_Track">
+                                <Track.DecreaseRepeatButton>
+                                    <RepeatButton Command="{x:Static Slider.DecreaseLarge}"
+                                                  Background="{StaticResource AccentBrush}"
+                                                  BorderThickness="0"
+                                                  Height="4"/>
+                                </Track.DecreaseRepeatButton>
+                                <Track.IncreaseRepeatButton>
+                                    <RepeatButton Command="{x:Static Slider.IncreaseLarge}"
+                                                  Background="Transparent"
+                                                  BorderThickness="0"
+                                                  Height="4"/>
+                                </Track.IncreaseRepeatButton>
+                                <Track.Thumb>
+                                    <Thumb Width="12"
+                                           Height="20"
+                                           Background="{StaticResource TextBrush}"/>
+                                </Track.Thumb>
+                            </Track>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </UserControl.Resources>
+
+    <Grid Margin="8">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="42*"/>
+            <ColumnDefinition Width="8"/>
+            <ColumnDefinition Width="58*"/>
         </Grid.ColumnDefinitions>
 
-        <!-- ЛЕВАЯ — BPM + индикаторы -->
-        <StackPanel Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center">
+        <Border Grid.Column="0"
+                Style="{StaticResource Panel}">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="8"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="8"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="8"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
 
-            <TextBlock x:Name="BpmDisplay" Text="120"
-                       FontSize="72" FontWeight="Bold" Foreground="#CDD6F4"
-                       HorizontalAlignment="Center" Margin="0 0 0 8"
-                       RenderTransformOrigin="0.5,0.5">
-                <TextBlock.RenderTransform>
-                    <ScaleTransform x:Name="BpmScale" ScaleX="1" ScaleY="1"/>
-                </TextBlock.RenderTransform>
-            </TextBlock>
-            <TextBlock Text="BPM" FontSize="14" Foreground="#7C6F96"
-                       HorizontalAlignment="Center" Margin="0 0 0 24"/>
+                <TextBlock Grid.Row="0"
+                           Text="Темп"
+                           Style="{StaticResource GroupLabel}"/>
 
-            <ItemsControl x:Name="BeatIndicators" HorizontalAlignment="Center">
-                <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <StackPanel Orientation="Horizontal"/>
-                    </ItemsPanelTemplate>
-                </ItemsControl.ItemsPanel>
-            </ItemsControl>
-        </StackPanel>
+                <Border Grid.Row="2"
+                        Style="{StaticResource SectionPanel}">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="130"/>
+                        </Grid.ColumnDefinitions>
 
-        <!-- ПРАВАЯ — Управление -->
-        <StackPanel Grid.Column="1" VerticalAlignment="Center" Width="300">
+                        <StackPanel Grid.Column="0"
+                                    VerticalAlignment="Center">
+                            <TextBlock x:Name="BpmDisplay"
+                                       Text="120"
+                                       FontSize="60"
+                                       FontWeight="Bold"
+                                       Foreground="{StaticResource TextBrush}"
+                                       HorizontalAlignment="Left"
+                                       RenderTransformOrigin="0.5,0.5">
+                                <TextBlock.RenderTransform>
+                                    <ScaleTransform x:Name="BpmScale" ScaleX="1" ScaleY="1"/>
+                                </TextBlock.RenderTransform>
+                            </TextBlock>
+                            <TextBlock Text="BPM"
+                                       Style="{StaticResource MutedText}"
+                                       Margin="2 -6 0 0"/>
+                        </StackPanel>
 
-            <TextBlock Text="Темп" FontSize="14" Foreground="#7C6F96"
-                       HorizontalAlignment="Center" Margin="0 0 0 4"/>
-            <Slider x:Name="BpmSlider"
-                    Minimum="30" Maximum="300" Value="120"
-                    TickFrequency="1" IsSnapToTickEnabled="True"
-                    ValueChanged="BpmSlider_ValueChanged"
-                    ToolTip="Темп в ударах в минуту"
-                    Margin="0 0 0 4"/>
-            <Grid Margin="0 0 0 20">
-                <TextBlock Text="30" Foreground="#7C6F96" FontSize="11" HorizontalAlignment="Left"/>
-                <TextBlock Text="300" Foreground="#7C6F96" FontSize="11" HorizontalAlignment="Right"/>
+                        <Canvas Grid.Column="1"
+                                Width="120"
+                                Height="150"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center">
+                            <Canvas Width="120"
+                                    Height="150">
+                                <Canvas.RenderTransform>
+                                    <RotateTransform x:Name="PendulumRotate"
+                                                     Angle="0"
+                                                     CenterX="60"
+                                                     CenterY="18"/>
+                                </Canvas.RenderTransform>
+                                <Line X1="60"
+                                      Y1="18"
+                                      X2="60"
+                                      Y2="116"
+                                      Stroke="{StaticResource AccentBrush}"
+                                      StrokeThickness="5"
+                                      StrokeStartLineCap="Round"
+                                      StrokeEndLineCap="Round"/>
+                                <Ellipse Width="30"
+                                         Height="30"
+                                         Fill="{StaticResource AccentBrush}"
+                                         Canvas.Left="45"
+                                         Canvas.Top="101"
+                                         RenderTransformOrigin="0.5,0.5">
+                                    <Ellipse.RenderTransform>
+                                        <ScaleTransform x:Name="PendulumBobScale"
+                                                        ScaleX="1"
+                                                        ScaleY="1"/>
+                                    </Ellipse.RenderTransform>
+                                </Ellipse>
+                            </Canvas>
+                        </Canvas>
+                    </Grid>
+                </Border>
+
+                <TextBlock Grid.Row="4"
+                           Text="Доли"
+                           Style="{StaticResource GroupLabel}"/>
+
+                <ItemsControl x:Name="BeatIndicators"
+                              Grid.Row="6"
+                              HorizontalAlignment="Left">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                </ItemsControl>
             </Grid>
+        </Border>
 
-            <TextBlock Text="Громкость" FontSize="14" Foreground="#7C6F96"
-                       HorizontalAlignment="Center" Margin="0 0 0 4"/>
-            <Slider x:Name="VolumeSlider"
-                    Minimum="0" Maximum="1" Value="0.8"
-                    ValueChanged="VolumeSlider_ValueChanged"
-                    ToolTip="Громкость щелчка"
-                    Margin="0 0 0 20"/>
+        <Grid Grid.Column="2">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="8"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="8"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
 
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center"
-                        Margin="0 0 0 20">
-                <TextBlock Text="Долей в такте:" Foreground="#CDD6F4"
-                           VerticalAlignment="Center" Margin="0 0 12 0"/>
-                <Button Content="−" Width="36" Height="36" Click="DecrBeats_Click"
-                        FontSize="18" ToolTip="Уменьшить количество долей"/>
-                <TextBlock x:Name="BeatsLabel" Text="4"
-                           FontSize="22" FontWeight="Bold" Foreground="#CBA6F7"
-                           VerticalAlignment="Center" Margin="16 0"/>
-                <Button Content="+" Width="36" Height="36" Click="IncrBeats_Click"
-                        FontSize="18" ToolTip="Увеличить количество долей"/>
-            </StackPanel>
+            <Border Grid.Row="0"
+                    Style="{StaticResource Panel}">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="8"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="10"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
 
-            <Button x:Name="TapButton" Content="TAP TEMPO"
-                    Height="48" FontSize="16" FontWeight="Bold"
-                    Foreground="#1A1525" Background="#CBA6F7"
-                    BorderThickness="0" Cursor="Hand"
-                    Margin="0 0 0 12" Click="TapButton_Click"
-                    ToolTip="Нажимай в ритме — темп определится автоматически"/>
+                    <Grid Grid.Row="0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="Настройки"
+                                   Style="{StaticResource GroupLabel}"/>
+                        <TextBlock x:Name="VolumeLabel"
+                                   Grid.Column="1"
+                                   Text="80%"
+                                   Style="{StaticResource MutedText}"/>
+                    </Grid>
 
-            <Button x:Name="StartStopButton" Content="▶  СТАРТ"
-                    Height="48" FontSize="16" FontWeight="Bold"
-                    Foreground="#1A1525" Background="#A6E3A1"
-                    BorderThickness="0" Cursor="Hand"
-                    Click="StartStop_Click"/>
-        </StackPanel>
+                    <StackPanel Grid.Row="2">
+                        <TextBlock Text="Темп"
+                                   Style="{StaticResource GroupLabel}"/>
+                        <Slider x:Name="BpmSlider"
+                                Minimum="30"
+                                Maximum="300"
+                                Value="120"
+                                TickFrequency="1"
+                                IsSnapToTickEnabled="True"
+                                ValueChanged="BpmSlider_ValueChanged"
+                                ToolTip="Темп в ударах в минуту"/>
+                        <Grid Margin="0 3 0 0">
+                            <TextBlock Text="30"
+                                       Style="{StaticResource MutedText}"
+                                       HorizontalAlignment="Left"/>
+                            <TextBlock Text="300"
+                                       Style="{StaticResource MutedText}"
+                                       HorizontalAlignment="Right"/>
+                        </Grid>
+                    </StackPanel>
+
+                    <Grid Grid.Row="4">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="10"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <StackPanel Grid.Column="0">
+                            <TextBlock Text="Громкость"
+                                       Style="{StaticResource GroupLabel}"/>
+                            <Slider x:Name="VolumeSlider"
+                                    Minimum="0"
+                                    Maximum="1"
+                                    Value="0.8"
+                                    ValueChanged="VolumeSlider_ValueChanged"
+                                    ToolTip="Громкость щелчка"/>
+                        </StackPanel>
+
+                        <StackPanel Grid.Column="2">
+                            <TextBlock Text="Размер"
+                                       Style="{StaticResource GroupLabel}"
+                                       TextAlignment="Center"/>
+                            <StackPanel Orientation="Horizontal">
+                                <Button Content="-"
+                                        Style="{StaticResource MetroButton}"
+                                        Width="30"
+                                        Click="DecrBeats_Click"/>
+                                <TextBlock x:Name="BeatsLabel"
+                                           Text="4"
+                                           Foreground="{StaticResource AccentBrush}"
+                                           FontSize="18"
+                                           FontWeight="Bold"
+                                           VerticalAlignment="Center"
+                                           Width="32"
+                                           TextAlignment="Center"/>
+                                <Button Content="+"
+                                        Style="{StaticResource MetroButton}"
+                                        Width="30"
+                                        Click="IncrBeats_Click"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </Grid>
+                </Grid>
+            </Border>
+
+            <Border Grid.Row="2"
+                    Style="{StaticResource Panel}">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="8"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Button x:Name="TapButton"
+                            Grid.Column="0"
+                            Content="TAP TEMPO"
+                            Style="{StaticResource MetroButton}"
+                            Height="34"
+                            Click="TapButton_Click"
+                            ToolTip="Нажимай в ритме, чтобы определить темп"/>
+
+                    <Button x:Name="StartStopButton"
+                            Grid.Column="2"
+                            Content="▶ Старт"
+                            Style="{StaticResource PrimaryButton}"
+                            Height="34"
+                            Click="StartStop_Click"/>
+                </Grid>
+            </Border>
+
+            <Border Grid.Row="4"
+                    Style="{StaticResource Panel}">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="8"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="12"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Grid.Row="0"
+                               Text="Быстрые темпы"
+                               Style="{StaticResource GroupLabel}"/>
+                    <WrapPanel Grid.Row="2">
+                        <Button Content="60"
+                                Tag="60"
+                                Style="{StaticResource MetroButton}"
+                                Width="46"
+                                Margin="0 0 6 6"
+                                Click="TempoPreset_Click"/>
+                        <Button Content="80"
+                                Tag="80"
+                                Style="{StaticResource MetroButton}"
+                                Width="46"
+                                Margin="0 0 6 6"
+                                Click="TempoPreset_Click"/>
+                        <Button Content="100"
+                                Tag="100"
+                                Style="{StaticResource MetroButton}"
+                                Width="52"
+                                Margin="0 0 6 6"
+                                Click="TempoPreset_Click"/>
+                        <Button Content="120"
+                                Tag="120"
+                                Style="{StaticResource MetroButton}"
+                                Width="52"
+                                Margin="0 0 6 6"
+                                Click="TempoPreset_Click"/>
+                        <Button Content="140"
+                                Tag="140"
+                                Style="{StaticResource MetroButton}"
+                                Width="52"
+                                Margin="0 0 6 6"
+                                Click="TempoPreset_Click"/>
+                        <Button Content="160"
+                                Tag="160"
+                                Style="{StaticResource MetroButton}"
+                                Width="52"
+                                Margin="0 0 6 6"
+                                Click="TempoPreset_Click"/>
+                    </WrapPanel>
+
+                    <TextBlock Grid.Row="4"
+                               Text="Дальше сюда просится count-in, смена звука клика, тренировка постепенного ускорения и режимы акцента."
+                               Style="{StaticResource MutedText}"/>
+                </Grid>
+            </Border>
+        </Grid>
     </Grid>
 </UserControl>

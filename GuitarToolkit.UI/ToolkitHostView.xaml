@@ -21,13 +21,13 @@
                                               VerticalAlignment="Center"/>
                         </Border>
                         <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseDirectlyOver" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="#4A3860"/>
+                            </Trigger>
                             <Trigger Property="IsSelected" Value="True">
                                 <Setter TargetName="Bd" Property="Background" Value="#CBA6F7"/>
                                 <Setter Property="Foreground" Value="#1A1525"/>
                                 <Setter Property="FontWeight" Value="Bold"/>
-                            </Trigger>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="Bd" Property="Background" Value="#4A3860"/>
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>

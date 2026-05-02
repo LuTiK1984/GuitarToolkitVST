@@ -80,12 +80,16 @@ public partial class ChordView : UserControl
     {
         _filter = filter;
         FilterAllBtn.Background = new SolidColorBrush(filter == "all" ? AccentColor : InactiveBg);
+        FilterAllBtn.BorderBrush = new SolidColorBrush(filter == "all" ? AccentColor : InactiveBg);
         FilterAllBtn.Foreground = new SolidColorBrush(filter == "all" ? TextDark : TextLight);
         FilterEasyBtn.Background = new SolidColorBrush(filter == "easy" ? AccentColor : InactiveBg);
+        FilterEasyBtn.BorderBrush = new SolidColorBrush(filter == "easy" ? AccentColor : InactiveBg);
         FilterEasyBtn.Foreground = new SolidColorBrush(filter == "easy" ? TextDark : TextLight);
         FilterBarreBtn.Background = new SolidColorBrush(filter == "barre" ? AccentColor : InactiveBg);
+        FilterBarreBtn.BorderBrush = new SolidColorBrush(filter == "barre" ? AccentColor : InactiveBg);
         FilterBarreBtn.Foreground = new SolidColorBrush(filter == "barre" ? TextDark : TextLight);
         FilterFavBtn.Background = new SolidColorBrush(filter == "fav" ? FavColor : InactiveBg);
+        FilterFavBtn.BorderBrush = new SolidColorBrush(filter == "fav" ? FavColor : InactiveBg);
         FilterFavBtn.Foreground = new SolidColorBrush(filter == "fav" ? TextDark : TextLight);
         UpdateChord();
     }
@@ -99,7 +103,7 @@ public partial class ChordView : UserControl
 
         foreach (string root in ChordLibrary.AllRoots)
         {
-            var btn = MakeButton(root, 48, 38);
+            var btn = MakeButton(root, 40, 26);
             btn.Click += (s, e) =>
             {
                 _selectedRoot = root;
@@ -120,9 +124,9 @@ public partial class ChordView : UserControl
         foreach (string type in ChordLibrary.AllTypes)
         {
             string label = TypeLabels.GetValueOrDefault(type, type);
-            var btn = MakeButton(label, 0, 38);
+            var btn = MakeButton(label, 0, 26);
             btn.Tag = type;
-            btn.Padding = new Thickness(14, 0, 14, 0);
+            btn.Padding = new Thickness(10, 0, 10, 0);
             btn.Click += (s, e) =>
             {
                 _selectedType = type;
@@ -140,12 +144,15 @@ public partial class ChordView : UserControl
         var btn = new Button
         {
             Content = text, Height = height,
-            FontSize = 14, FontWeight = FontWeights.Bold,
+            FontSize = 12, FontWeight = FontWeights.Bold,
             Background = new SolidColorBrush(InactiveBg),
             Foreground = new SolidColorBrush(TextLight),
-            BorderThickness = new Thickness(0),
+            BorderBrush = new SolidColorBrush(InactiveBg),
+            BorderThickness = new Thickness(1),
             Cursor = System.Windows.Input.Cursors.Hand,
-            Margin = new Thickness(3)
+            Margin = new Thickness(0, 0, 6, 6),
+            Padding = new Thickness(8, 0, 8, 0),
+            Style = (Style)FindResource("ChordButton")
         };
         if (width > 0) btn.Width = width;
         return btn;
@@ -157,6 +164,7 @@ public partial class ChordView : UserControl
         {
             bool active = btn.Content.ToString() == selectedText;
             btn.Background = new SolidColorBrush(active ? AccentColor : InactiveBg);
+            btn.BorderBrush = new SolidColorBrush(active ? AccentColor : InactiveBg);
             btn.Foreground = new SolidColorBrush(active ? TextDark : TextLight);
         }
     }
@@ -167,6 +175,7 @@ public partial class ChordView : UserControl
         {
             bool active = btn.Tag?.ToString() == _selectedType;
             btn.Background = new SolidColorBrush(active ? AccentColor : InactiveBg);
+            btn.BorderBrush = new SolidColorBrush(active ? AccentColor : InactiveBg);
             btn.Foreground = new SolidColorBrush(active ? TextDark : TextLight);
         }
     }
@@ -281,10 +290,10 @@ public partial class ChordView : UserControl
         double canvasW = DiagramCanvas.Width;
         double canvasH = DiagramCanvas.Height;
 
-        double leftPad = 30;
+        double leftPad = 32;
         double topPad = 30;
         double gridW = canvasW - leftPad - 20;
-        double gridH = canvasH - topPad - 20;
+        double gridH = canvasH - topPad - 28;
         int fretCount = 5;
 
         double stringSpacing = gridW / 5.0;
@@ -324,7 +333,7 @@ public partial class ChordView : UserControl
             DiagramCanvas.Children.Add(new Line
             {
                 X1 = leftPad, Y1 = y, X2 = leftPad + gridW, Y2 = y,
-                Stroke = new SolidColorBrush(Color.FromRgb(90, 72, 110)),
+                Stroke = new SolidColorBrush(Color.FromRgb(116, 93, 142)),
                 StrokeThickness = f == 0 && chord.BaseFret > 1 ? 2 : 1
             });
         }
@@ -337,7 +346,8 @@ public partial class ChordView : UserControl
             {
                 X1 = x, Y1 = topPad, X2 = x, Y2 = topPad + gridH,
                 Stroke = new SolidColorBrush(StringColor),
-                StrokeThickness = 1.5 - s * 0.1
+                StrokeThickness = 1.6 - s * 0.1,
+                Opacity = 0.86
             });
         }
 
@@ -367,7 +377,7 @@ public partial class ChordView : UserControl
                     X2 = leftPad + lastStr * stringSpacing,
                     Y2 = y,
                     Stroke = new SolidColorBrush(DotColor),
-                    StrokeThickness = 8,
+                    StrokeThickness = 9,
                     StrokeStartLineCap = PenLineCap.Round,
                     StrokeEndLineCap = PenLineCap.Round,
                     Opacity = 0.8
@@ -411,7 +421,7 @@ public partial class ChordView : UserControl
                 int relativeFret = fret - chord.BaseFret + 1;
                 relativeFret = Math.Clamp(relativeFret, 1, fretCount);
                 double y = topPad + (relativeFret - 0.5) * fretSpacing;
-                double dotSize = 18;
+                double dotSize = 19;
 
                 DiagramCanvas.Children.Add(new Ellipse
                 {

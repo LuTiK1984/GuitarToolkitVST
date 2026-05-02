@@ -78,6 +78,21 @@ GuitarToolkit is a personal, idea-driven guitar toolkit for Windows, available a
   - add exercises such as find the next note, name the degree, and play through a position;
   - compare two scales or modes on the same fretboard;
   - export or copy scale fingering diagrams for practice notes.
+- Better chord workflow:
+  - add quick chord search by name and type;
+  - turn favorites into a fuller saved-chords list with rename/remove actions;
+  - compare multiple voicings side by side;
+  - add optional fingering hints for common shapes;
+  - add transpose-shape controls for moving a voicing across the fretboard;
+  - suggest related substitutions such as sus, add9, seventh, and relative minor/major options;
+  - add a chord-change trainer with timed practice and accuracy tracking.
+- Better metronome workflow:
+  - add count-in before playback or practice takes;
+  - support multiple click sounds and accent patterns;
+  - add tap-tempo averaging feedback and reset;
+  - add tempo-ramp practice for gradual speed increases;
+  - add saved tempo presets by song or exercise;
+  - explore host-tempo sync for the VST when AudioPlugSharp exposes reliable transport data.
 - Improve audio UX:
   - safer volume defaults;
   - smoother tab playback volume changes;

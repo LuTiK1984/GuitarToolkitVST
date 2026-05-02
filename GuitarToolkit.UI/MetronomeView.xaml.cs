@@ -11,6 +11,7 @@ public partial class MetronomeView : UserControl
 {
     private MetronomeEngine? _metronome;
     private bool _isRunning;
+    private bool _pendulumRight;
     private readonly List<DateTime> _taps = new();
     private readonly List<Ellipse> _dots = new();
 
@@ -116,9 +117,28 @@ public partial class MetronomeView : UserControl
                 var pulse = new DoubleAnimation(1.08, 1.0, TimeSpan.FromMilliseconds(150));
                 BpmScale.BeginAnimation(ScaleTransform.ScaleXProperty, pulse);
                 BpmScale.BeginAnimation(ScaleTransform.ScaleYProperty, pulse);
+
+                _pendulumRight = !_pendulumRight;
+                var swing = new DoubleAnimation(
+                    _pendulumRight ? 18d : -18d,
+                    TimeSpan.FromMilliseconds(GetBeatAnimationMilliseconds()))
+                {
+                    EasingFunction = new SineEase { EasingMode = EasingMode.EaseInOut }
+                };
+                PendulumRotate.BeginAnimation(RotateTransform.AngleProperty, swing);
+
+                var bobPulse = new DoubleAnimation(1.12, 1.0, TimeSpan.FromMilliseconds(140));
+                PendulumBobScale.BeginAnimation(ScaleTransform.ScaleXProperty, bobPulse);
+                PendulumBobScale.BeginAnimation(ScaleTransform.ScaleYProperty, bobPulse);
             });
         }
         catch { }
+    }
+
+    private int GetBeatAnimationMilliseconds()
+    {
+        int bpm = _metronome?.BPM ?? (int)(BpmSlider?.Value ?? 120d);
+        return Math.Clamp((int)(60000d / Math.Max(30, bpm) * 0.92d), 140, 620);
     }
 
     private void BpmSlider_ValueChanged(object s, RoutedPropertyChangedEventArgs<double> e)
@@ -131,6 +151,7 @@ public partial class MetronomeView : UserControl
     private void VolumeSlider_ValueChanged(object s, RoutedPropertyChangedEventArgs<double> e)
     {
         if (_metronome != null) _metronome.Volume = (float)e.NewValue;
+        if (VolumeLabel != null) VolumeLabel.Text = $"{(int)Math.Round(e.NewValue * 100d)}%";
     }
 
     private void IncrBeats_Click(object s, RoutedEventArgs e) => SetBeats((_metronome?.BeatsPerMeasure ?? 4) + 1);
@@ -190,5 +211,31 @@ public partial class MetronomeView : UserControl
         }
 
         _isRunning = !_isRunning;
+        UpdateStartStopVisual();
+    }
+
+    private void UpdateStartStopVisual()
+    {
+        if (_isRunning)
+        {
+            StartStopButton.Content = "■ Стоп";
+            StartStopButton.Background = new SolidColorBrush(Color.FromRgb(243, 139, 168));
+            StartStopButton.BorderBrush = new SolidColorBrush(Color.FromRgb(243, 139, 168));
+        }
+        else
+        {
+            StartStopButton.Content = "▶ Старт";
+            StartStopButton.Background = new SolidColorBrush(Color.FromRgb(166, 227, 161));
+            StartStopButton.BorderBrush = new SolidColorBrush(Color.FromRgb(166, 227, 161));
+            PendulumRotate.BeginAnimation(RotateTransform.AngleProperty, new DoubleAnimation(0d, TimeSpan.FromMilliseconds(160)));
+        }
+    }
+
+    private void TempoPreset_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is Button { Tag: string value } && int.TryParse(value, out int bpm))
+        {
+            BpmSlider.Value = Math.Clamp(bpm, (int)BpmSlider.Minimum, (int)BpmSlider.Maximum);
+        }
     }
 }

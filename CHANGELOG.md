@@ -30,6 +30,11 @@ All notable changes to GuitarToolkit are documented here.
 - Aligned the Progressions mode selector to the left and replaced preset button clouds with built-in and saved preset dropdowns.
 - Redesigned the Interval Trainer tab with the same compact dark panel style, clearer answer grid, and stronger result highlighting.
 - Redesigned the Scales tab with compact controls, info panels, and a controlled-height fretboard instead of the old oversized layout.
+- Added the 17th-fret scale marker and redesigned the Chords tab with compact panels, cleaner filters, and a refreshed diagram area.
+- Fixed a Chords filter crash, stabilized left navigation hover highlighting, and guarded Tabs track rendering/playback-mode errors.
+- Quarantined tab files that fail during alphaTab import and documented the known GP4 import crash.
+- Redesigned the Metronome tab with compact controls, animated pendulum feedback, beat indicators, and quick tempo presets.
+- Fixed the Metronome pendulum so the rod and bob swing together from the same pivot.
 
 ## [1.3.3] - 2026-04-30
 
