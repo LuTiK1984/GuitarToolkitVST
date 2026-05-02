@@ -3,75 +3,350 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              Background="#1A1525">
 
-    <Grid Margin="24">
+    <UserControl.Resources>
+        <SolidColorBrush x:Key="PanelBrush" Color="#241B33"/>
+        <SolidColorBrush x:Key="PanelBorderBrush" Color="#352847"/>
+        <SolidColorBrush x:Key="ControlBrush" Color="#4B3A64"/>
+        <SolidColorBrush x:Key="ControlHoverBrush" Color="#5B4676"/>
+        <SolidColorBrush x:Key="AccentBrush" Color="#CBA6F7"/>
+        <SolidColorBrush x:Key="DangerBrush" Color="#F38BA8"/>
+        <SolidColorBrush x:Key="TextBrush" Color="#CDD6F4"/>
+        <SolidColorBrush x:Key="MutedTextBrush" Color="#9B8BB8"/>
+        <SolidColorBrush x:Key="DarkBrush" Color="#1A1525"/>
+
+        <Style x:Key="Panel" TargetType="{x:Type Border}">
+            <Setter Property="Background" Value="{StaticResource PanelBrush}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource PanelBorderBrush}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="6"/>
+            <Setter Property="Padding" Value="10"/>
+        </Style>
+
+        <Style x:Key="SectionPanel" TargetType="{x:Type Border}" BasedOn="{StaticResource Panel}">
+            <Setter Property="Background" Value="{StaticResource DarkBrush}"/>
+            <Setter Property="Padding" Value="10 8"/>
+        </Style>
+
+        <Style x:Key="GroupLabel" TargetType="{x:Type TextBlock}">
+            <Setter Property="Foreground" Value="{StaticResource MutedTextBrush}"/>
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Margin" Value="0 0 0 4"/>
+        </Style>
+
+        <Style x:Key="MutedText" TargetType="{x:Type TextBlock}">
+            <Setter Property="Foreground" Value="{StaticResource MutedTextBrush}"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="TextWrapping" Value="Wrap"/>
+        </Style>
+
+        <Style x:Key="ProgressionButton" TargetType="{x:Type Button}">
+            <Setter Property="Height" Value="26"/>
+            <Setter Property="MinWidth" Value="30"/>
+            <Setter Property="Padding" Value="8 0"/>
+            <Setter Property="Background" Value="{StaticResource ControlBrush}"/>
+            <Setter Property="Foreground" Value="{StaticResource TextBrush}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource ControlBrush}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <Border x:Name="Chrome"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="4">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"
+                                              RecognizesAccessKey="True"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Chrome" Property="Background" Value="{StaticResource ControlHoverBrush}"/>
+                                <Setter TargetName="Chrome" Property="BorderBrush" Value="{StaticResource ControlHoverBrush}"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="Chrome" Property="Background" Value="{StaticResource AccentBrush}"/>
+                                <Setter Property="Foreground" Value="{StaticResource DarkBrush}"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Opacity" Value="0.55"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="PrimaryButton" TargetType="{x:Type Button}" BasedOn="{StaticResource ProgressionButton}">
+            <Setter Property="Background" Value="{StaticResource AccentBrush}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource AccentBrush}"/>
+            <Setter Property="Foreground" Value="{StaticResource DarkBrush}"/>
+        </Style>
+
+        <Style x:Key="DangerButton" TargetType="{x:Type Button}" BasedOn="{StaticResource ProgressionButton}">
+            <Setter Property="Background" Value="{StaticResource DangerBrush}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource DangerBrush}"/>
+            <Setter Property="Foreground" Value="{StaticResource DarkBrush}"/>
+        </Style>
+
+        <Style x:Key="ProgressionTextBox" TargetType="{x:Type TextBox}">
+            <Setter Property="Height" Value="26"/>
+            <Setter Property="Background" Value="{StaticResource ControlBrush}"/>
+            <Setter Property="Foreground" Value="{StaticResource TextBrush}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource ControlBrush}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Padding" Value="8 0"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type TextBox}">
+                        <Border x:Name="Chrome"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="4">
+                            <ScrollViewer x:Name="PART_ContentHost"
+                                          Margin="{TemplateBinding Padding}"
+                                          VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsKeyboardFocused" Value="True">
+                                <Setter TargetName="Chrome" Property="BorderBrush" Value="{StaticResource AccentBrush}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <ControlTemplate x:Key="ProgressionComboToggleTemplate" TargetType="{x:Type ToggleButton}">
+            <Border x:Name="Chrome"
+                    Background="{StaticResource ControlBrush}"
+                    BorderBrush="{StaticResource ControlBrush}"
+                    BorderThickness="1"
+                    CornerRadius="4">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="24"/>
+                    </Grid.ColumnDefinitions>
+                    <ContentPresenter Grid.Column="0"
+                                      Margin="8 0 4 0"
+                                      HorizontalAlignment="Left"
+                                      VerticalAlignment="Center"/>
+                    <Path Grid.Column="1"
+                          Data="M 0 0 L 4 4 L 8 0 Z"
+                          Fill="{StaticResource TextBrush}"
+                          Width="8"
+                          Height="4"
+                          HorizontalAlignment="Center"
+                          VerticalAlignment="Center"/>
+                </Grid>
+            </Border>
+            <ControlTemplate.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter TargetName="Chrome" Property="Background" Value="{StaticResource ControlHoverBrush}"/>
+                    <Setter TargetName="Chrome" Property="BorderBrush" Value="{StaticResource ControlHoverBrush}"/>
+                </Trigger>
+                <Trigger Property="IsChecked" Value="True">
+                    <Setter TargetName="Chrome" Property="BorderBrush" Value="{StaticResource AccentBrush}"/>
+                </Trigger>
+            </ControlTemplate.Triggers>
+        </ControlTemplate>
+
+        <Style TargetType="{x:Type ComboBox}">
+            <Setter Property="Height" Value="26"/>
+            <Setter Property="Background" Value="{StaticResource ControlBrush}"/>
+            <Setter Property="Foreground" Value="{StaticResource TextBrush}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource ControlBrush}"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type ComboBox}">
+                        <Grid>
+                            <ToggleButton Template="{StaticResource ProgressionComboToggleTemplate}"
+                                          IsChecked="{Binding IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
+                                          Focusable="False"
+                                          ClickMode="Press"/>
+                            <ContentPresenter Content="{TemplateBinding SelectionBoxItem}"
+                                              ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"
+                                              ContentStringFormat="{TemplateBinding SelectionBoxItemStringFormat}"
+                                              IsHitTestVisible="False"
+                                              Margin="8 0 28 0"
+                                              HorizontalAlignment="Left"
+                                              VerticalAlignment="Center"/>
+                            <Popup IsOpen="{TemplateBinding IsDropDownOpen}"
+                                   Placement="Bottom"
+                                   AllowsTransparency="True"
+                                   Focusable="False"
+                                   PopupAnimation="Fade">
+                                <Border Background="{StaticResource PanelBrush}"
+                                        BorderBrush="{StaticResource AccentBrush}"
+                                        BorderThickness="1"
+                                        CornerRadius="4"
+                                        MinWidth="{Binding ActualWidth, RelativeSource={RelativeSource TemplatedParent}}"
+                                        MaxWidth="420"
+                                        Margin="0 4 0 0">
+                                    <ScrollViewer MaxHeight="260"
+                                                  Padding="4">
+                                        <ItemsPresenter/>
+                                    </ScrollViewer>
+                                </Border>
+                            </Popup>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style TargetType="{x:Type ComboBoxItem}">
+            <Setter Property="Foreground" Value="{StaticResource TextBrush}"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Padding" Value="10 6"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type ComboBoxItem}">
+                        <Border x:Name="Chrome"
+                                Background="{TemplateBinding Background}"
+                                CornerRadius="3"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsHighlighted" Value="True">
+                                <Setter TargetName="Chrome" Property="Background" Value="{StaticResource ControlHoverBrush}"/>
+                            </Trigger>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter TargetName="Chrome" Property="Background" Value="{StaticResource AccentBrush}"/>
+                                <Setter Property="Foreground" Value="{StaticResource DarkBrush}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style TargetType="{x:Type Slider}">
+            <Setter Property="Height" Value="18"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Slider}">
+                        <Grid VerticalAlignment="Center">
+                            <Border Height="4"
+                                    Background="{StaticResource ControlBrush}"
+                                    CornerRadius="2"
+                                    VerticalAlignment="Center"/>
+                            <Track x:Name="PART_Track">
+                                <Track.DecreaseRepeatButton>
+                                    <RepeatButton Command="{x:Static Slider.DecreaseLarge}"
+                                                  Background="{StaticResource AccentBrush}"
+                                                  BorderThickness="0"
+                                                  Height="4"/>
+                                </Track.DecreaseRepeatButton>
+                                <Track.IncreaseRepeatButton>
+                                    <RepeatButton Command="{x:Static Slider.IncreaseLarge}"
+                                                  Background="Transparent"
+                                                  BorderThickness="0"
+                                                  Height="4"/>
+                                </Track.IncreaseRepeatButton>
+                                <Track.Thumb>
+                                    <Thumb Width="12"
+                                           Height="20"
+                                           Background="{StaticResource TextBrush}"/>
+                                </Track.Thumb>
+                            </Track>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style TargetType="{x:Type CheckBox}">
+            <Setter Property="Height" Value="18"/>
+            <Setter Property="Foreground" Value="{StaticResource TextBrush}"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type CheckBox}">
+                        <StackPanel Orientation="Horizontal"
+                                    Height="{TemplateBinding Height}"
+                                    VerticalAlignment="Center">
+                            <Border x:Name="Box"
+                                    Width="15"
+                                    Height="15"
+                                    Background="{StaticResource DarkBrush}"
+                                    BorderBrush="{StaticResource ControlBrush}"
+                                    BorderThickness="1"
+                                    CornerRadius="3"
+                                    Margin="0 1 6 0">
+                                <TextBlock x:Name="Mark"
+                                           Text="✓"
+                                           Foreground="{StaticResource DarkBrush}"
+                                           FontSize="11"
+                                           FontWeight="Bold"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center"
+                                           Visibility="Collapsed"/>
+                            </Border>
+                            <ContentPresenter VerticalAlignment="Center"
+                                              Margin="0 -1 0 0"/>
+                        </StackPanel>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="Box" Property="Background" Value="#A6E3A1"/>
+                                <Setter TargetName="Box" Property="BorderBrush" Value="#A6E3A1"/>
+                                <Setter TargetName="Mark" Property="Visibility" Value="Visible"/>
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Box" Property="BorderBrush" Value="{StaticResource AccentBrush}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </UserControl.Resources>
+
+    <Grid Margin="8">
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <!-- Тональность + лад -->
-        <StackPanel Grid.Row="0" Margin="0 0 0 12">
-            <StackPanel Orientation="Horizontal" Margin="0 0 0 8">
-                <TextBlock Text="Тоника:" FontSize="14" Foreground="#7C6F96"
-                           VerticalAlignment="Center" Margin="0 0 12 0"/>
-                <ItemsControl x:Name="KeySelector">
-                    <ItemsControl.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <StackPanel Orientation="Horizontal"/>
-                        </ItemsPanelTemplate>
-                    </ItemsControl.ItemsPanel>
-                </ItemsControl>
-            </StackPanel>
-            <StackPanel Orientation="Horizontal">
-                <TextBlock Text="Лад:" FontSize="14" Foreground="#7C6F96"
-                           VerticalAlignment="Center" Margin="0 0 12 0"/>
-                <ComboBox x:Name="ModeBox" Width="300" Height="30"
-                          SelectionChanged="ModeBox_Changed"/>
-            </StackPanel>
-        </StackPanel>
-
-        <!-- Ступени -->
-        <StackPanel Grid.Row="1" Margin="0 0 0 12">
-            <TextBlock Text="Ступени (нажми чтобы добавить):"
-                       FontSize="13" Foreground="#7C6F96" Margin="0 0 0 8"/>
-            <ItemsControl x:Name="DegreeButtons">
-                <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <WrapPanel/>
-                    </ItemsPanelTemplate>
-                </ItemsControl.ItemsPanel>
-            </ItemsControl>
-        </StackPanel>
-
-        <!-- Пресеты -->
-        <StackPanel Grid.Row="2" Margin="0 0 0 12">
-            <TextBlock Text="Пресеты:" FontSize="13" Foreground="#7C6F96" Margin="0 0 0 8"/>
-            <ItemsControl x:Name="PresetButtons">
-                <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <WrapPanel/>
-                    </ItemsPanelTemplate>
-                </ItemsControl.ItemsPanel>
-            </ItemsControl>
-        </StackPanel>
-
-        <!-- Прогрессия -->
-        <Border Grid.Row="3" Background="#251D38" CornerRadius="8"
-                Padding="16 12" Margin="0 0 0 12">
+        <Border Grid.Row="0"
+                Style="{StaticResource Panel}"
+                Margin="0 0 0 8">
             <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="6"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="16"/>
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
 
-                <StackPanel Grid.Column="0">
-                    <TextBlock Text="Прогрессия:" FontSize="13" Foreground="#7C6F96"
-                               Margin="0 0 0 6"/>
-                    <ItemsControl x:Name="ProgressionDisplay">
+                <StackPanel Grid.Row="0"
+                            Grid.Column="0"
+                            Grid.ColumnSpan="3">
+                    <TextBlock Text="Тоника"
+                               Style="{StaticResource GroupLabel}"/>
+                    <ItemsControl x:Name="KeySelector">
                         <ItemsControl.ItemsPanel>
                             <ItemsPanelTemplate>
                                 <WrapPanel/>
@@ -80,52 +355,226 @@
                     </ItemsControl>
                 </StackPanel>
 
-                <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                    <Button x:Name="PlayButton" Content="▶ Играть"
-                            Height="40" Width="120" FontSize="14" FontWeight="Bold"
-                            Foreground="#1A1525" Background="#CBA6F7"
-                            BorderThickness="0" Cursor="Hand"
-                            Click="Play_Click" Margin="0 0 0 4"/>
-                    <Button x:Name="StopButton" Content="⏹ Стоп"
-                            Height="32" Width="120" FontSize="12"
-                            Foreground="#1A1525" Background="#F38BA8"
-                            BorderThickness="0" Cursor="Hand"
-                            Click="Stop_Click" Margin="0 0 0 4"
-                            Visibility="Collapsed"/>
-                    <Button Content="Очистить" Height="28" Width="120"
-                            FontSize="12" Foreground="#CDD6F4" Background="#4A3860"
-                            BorderThickness="0" Cursor="Hand"
-                            Click="Clear_Click"/>
+                <StackPanel Grid.Row="2"
+                            Grid.Column="0"
+                            Width="320"
+                            HorizontalAlignment="Left">
+                    <TextBlock Text="Лад"
+                               Style="{StaticResource GroupLabel}"
+                               HorizontalAlignment="Stretch"
+                               TextAlignment="Center"/>
+                    <ComboBox x:Name="ModeBox"
+                              Width="320"
+                              SelectionChanged="ModeBox_Changed"/>
+                </StackPanel>
+
+                <StackPanel Grid.Row="2"
+                            Grid.Column="2">
+                    <TextBlock Text="Темп"
+                               Style="{StaticResource GroupLabel}"/>
+                    <StackPanel Orientation="Horizontal">
+                        <Slider x:Name="BpmSlider"
+                                Minimum="60"
+                                Maximum="200"
+                                Value="120"
+                                Width="140"
+                                VerticalAlignment="Center"
+                                ValueChanged="Bpm_Changed"/>
+                        <TextBlock x:Name="BpmLabel"
+                                   Text="120 BPM"
+                                   Foreground="{StaticResource TextBrush}"
+                                   FontSize="12"
+                                   FontWeight="Bold"
+                                   VerticalAlignment="Center"
+                                   Width="64"
+                                   Margin="8 0 12 0"/>
+                        <CheckBox x:Name="LoopCheck"
+                                  Content="Цикл"
+                                  IsChecked="True"/>
+                    </StackPanel>
                 </StackPanel>
             </Grid>
         </Border>
 
-        <!-- Сохранение пресета -->
-        <StackPanel Grid.Row="4" Orientation="Horizontal" Margin="0 0 0 12">
-            <TextBox x:Name="PresetNameBox" Width="220" Height="30"
-                     Background="#2D2240" Foreground="#CDD6F4" BorderThickness="0"
-                     FontSize="13" Padding="8 4" VerticalContentAlignment="Center"
-                     GotFocus="PresetNameBox_GotFocus"
-                     LostFocus="PresetNameBox_LostFocus"/>
-            <Button Content="💾 Сохранить пресет" Height="30"
-                    FontSize="12" Foreground="#CDD6F4" Background="#4A3860"
-                    BorderThickness="0" Cursor="Hand"
-                    Margin="8 0 0 0" Padding="12 0"
-                    Click="SavePreset_Click"/>
-        </StackPanel>
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="42*"/>
+                <ColumnDefinition Width="8"/>
+                <ColumnDefinition Width="58*"/>
+            </Grid.ColumnDefinitions>
 
-        <!-- BPM + Loop -->
-        <StackPanel Grid.Row="5" Orientation="Horizontal" VerticalAlignment="Top">
-            <TextBlock Text="Темп:" FontSize="13" Foreground="#7C6F96"
-                       VerticalAlignment="Center" Margin="0 0 8 0"/>
-            <Slider x:Name="BpmSlider" Minimum="60" Maximum="200" Value="120"
-                    Width="200" VerticalAlignment="Center"
-                    ValueChanged="Bpm_Changed"/>
-            <TextBlock x:Name="BpmLabel" Text="120 BPM" FontSize="13"
-                       Foreground="#CDD6F4" VerticalAlignment="Center" Margin="8 0 24 0"/>
-            <CheckBox x:Name="LoopCheck" Content="Зацикливать"
-                      Foreground="#CDD6F4" FontSize="13"
-                      VerticalAlignment="Center" IsChecked="True"/>
-        </StackPanel>
+            <Grid Grid.Column="0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="8"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <Border Grid.Row="0"
+                        Style="{StaticResource Panel}">
+                    <StackPanel>
+                        <TextBlock Text="Ступени"
+                                   Style="{StaticResource GroupLabel}"/>
+                        <ItemsControl x:Name="DegreeButtons">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <WrapPanel/>
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                        </ItemsControl>
+                    </StackPanel>
+                </Border>
+
+                <Border Grid.Row="2"
+                        Style="{StaticResource Panel}">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="8"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <TextBlock Grid.Row="0"
+                                   Text="Пресеты"
+                                   Style="{StaticResource GroupLabel}"/>
+                        <Grid Grid.Row="1">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="8"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <ComboBox x:Name="BuiltInPresetBox"
+                                      Grid.Column="0"/>
+                            <Button Grid.Column="2"
+                                    Content="Применить"
+                                    Style="{StaticResource ProgressionButton}"
+                                    Width="92"
+                                    Click="LoadBuiltInPreset_Click"/>
+                        </Grid>
+
+                        <TextBlock Grid.Row="3"
+                                   Text="Сохранённые"
+                                   Style="{StaticResource GroupLabel}"/>
+                        <Grid Grid.Row="4">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="8"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="6"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <ComboBox x:Name="CustomPresetBox"
+                                      Grid.Column="0"/>
+                            <Button x:Name="LoadSavedPresetButton"
+                                    Grid.Column="2"
+                                    Content="Загрузить"
+                                    Style="{StaticResource ProgressionButton}"
+                                    Width="84"
+                                    Click="LoadCustomPreset_Click"/>
+                            <Button x:Name="DeleteSavedPresetButton"
+                                    Grid.Column="4"
+                                    Content="Удалить"
+                                    Style="{StaticResource DangerButton}"
+                                    Width="76"
+                                    Click="DeleteSelectedPreset_Click"/>
+                        </Grid>
+                    </Grid>
+                </Border>
+            </Grid>
+
+            <Border Grid.Column="2"
+                    Style="{StaticResource Panel}">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="8"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <Grid Grid.Row="0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Grid.Column="0"
+                                   Text="Текущая прогрессия"
+                                   Style="{StaticResource GroupLabel}"/>
+
+                        <StackPanel Grid.Column="1"
+                                    Orientation="Horizontal">
+                            <Button x:Name="PlayButton"
+                                    Content="▶ Играть"
+                                    Style="{StaticResource PrimaryButton}"
+                                    Width="88"
+                                    Margin="0 0 6 0"
+                                    Click="Play_Click"/>
+                            <Button x:Name="StopButton"
+                                    Content="Стоп"
+                                    Style="{StaticResource DangerButton}"
+                                    Width="64"
+                                    Margin="0 0 6 0"
+                                    Visibility="Collapsed"
+                                    Click="Stop_Click"/>
+                            <Button Content="Очистить"
+                                    Style="{StaticResource ProgressionButton}"
+                                    Width="76"
+                                    Click="Clear_Click"/>
+                        </StackPanel>
+                    </Grid>
+
+                    <Border Grid.Row="1"
+                            Style="{StaticResource SectionPanel}"
+                            Margin="0 8 0 0">
+                        <ScrollViewer VerticalScrollBarVisibility="Auto">
+                            <ItemsControl x:Name="ProgressionDisplay">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <WrapPanel/>
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                            </ItemsControl>
+                        </ScrollViewer>
+                    </Border>
+
+                    <Grid Grid.Row="3">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="8"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <TextBox x:Name="PresetNameBox"
+                                 Grid.Row="0"
+                                 Grid.Column="0"
+                                 Style="{StaticResource ProgressionTextBox}"
+                                 GotFocus="PresetNameBox_GotFocus"
+                                 LostFocus="PresetNameBox_LostFocus"/>
+
+                        <Button x:Name="SavePresetButton"
+                                Grid.Row="0"
+                                Grid.Column="2"
+                                Content="Сохранить"
+                                Style="{StaticResource ProgressionButton}"
+                                Width="92"
+                                Click="SavePreset_Click"/>
+
+                        <TextBlock x:Name="SaveStatusText"
+                                   Grid.Row="1"
+                                   Grid.Column="0"
+                                   Grid.ColumnSpan="3"
+                                   Style="{StaticResource MutedText}"
+                                   Margin="0 6 0 0"/>
+                    </Grid>
+                </Grid>
+            </Border>
+        </Grid>
     </Grid>
 </UserControl>

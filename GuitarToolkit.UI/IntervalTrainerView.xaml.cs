@@ -19,13 +19,14 @@ public partial class IntervalTrainerView : UserControl
     private static readonly SolidColorBrush BrushWrong = new(Color.FromRgb(243, 139, 168));
     private static readonly SolidColorBrush BrushAccent = new(Color.FromRgb(203, 166, 247));
     private static readonly SolidColorBrush BrushBtn = new(Color.FromRgb(74, 56, 96));
+    private static readonly SolidColorBrush BrushPanelDark = new(Color.FromRgb(26, 21, 37));
     private static readonly SolidColorBrush BrushText = new(Color.FromRgb(205, 214, 244));
     private static readonly SolidColorBrush BrushDim = new(Color.FromRgb(124, 111, 150));
 
     static IntervalTrainerView()
     {
         BrushCorrect.Freeze(); BrushWrong.Freeze(); BrushAccent.Freeze();
-        BrushBtn.Freeze(); BrushText.Freeze(); BrushDim.Freeze();
+        BrushBtn.Freeze(); BrushPanelDark.Freeze(); BrushText.Freeze(); BrushDim.Freeze();
     }
 
     public IntervalTrainerView()
@@ -59,12 +60,15 @@ public partial class IntervalTrainerView : UserControl
             var btn = new Button
             {
                 Content = $"{interval.ShortName}\n{interval.Name}",
-                Width = 110, Height = 52,
+                Width = 112, Height = 50,
                 FontSize = 12, FontWeight = FontWeights.Bold,
                 Background = BrushBtn, Foreground = BrushText,
-                BorderThickness = new Thickness(0),
+                BorderBrush = BrushBtn,
+                BorderThickness = new Thickness(1),
                 Cursor = System.Windows.Input.Cursors.Hand,
-                Margin = new Thickness(4),
+                Margin = new Thickness(0, 0, 6, 6),
+                Padding = new Thickness(8, 0, 8, 0),
+                Style = (Style)FindResource("TrainerButton"),
                 Tag = interval.Semitones,
                 IsEnabled = false,
                 ToolTip = $"{interval.Name} ({interval.Semitones} полутонов)"
@@ -89,7 +93,14 @@ public partial class IntervalTrainerView : UserControl
     private void ResetButtonColors()
     {
         foreach (var item in AnswerButtons.Items)
-            if (item is Button btn) btn.Background = BrushBtn;
+        {
+            if (item is Button btn)
+            {
+                btn.Background = BrushBtn;
+                btn.BorderBrush = BrushBtn;
+                btn.Foreground = BrushText;
+            }
+        }
     }
 
     // ── Играть ───────────────────────────────────────────────
@@ -138,9 +149,17 @@ public partial class IntervalTrainerView : UserControl
             {
                 int tag = (int)b.Tag;
                 if (tag == _trainer.CurrentInterval.Semitones)
+                {
                     b.Background = BrushCorrect;
+                    b.BorderBrush = BrushCorrect;
+                    b.Foreground = BrushPanelDark;
+                }
                 else if (tag == answered && !correct)
+                {
                     b.Background = BrushWrong;
+                    b.BorderBrush = BrushWrong;
+                    b.Foreground = BrushPanelDark;
+                }
             }
         }
 
@@ -166,7 +185,7 @@ public partial class IntervalTrainerView : UserControl
 
     private void UpdateStats()
     {
-        StatsLabel.Text = $"  |  {_trainer.CorrectAnswers}/{_trainer.TotalAnswers} ({_trainer.Accuracy:F0}%)";
+        StatsLabel.Text = $"{_trainer.CorrectAnswers}/{_trainer.TotalAnswers} ({_trainer.Accuracy:F0}%)";
     }
 
     private void Difficulty_Changed(object sender, SelectionChangedEventArgs e)
@@ -199,6 +218,6 @@ public partial class IntervalTrainerView : UserControl
         SetButtonsEnabled(false);
         ResultLabel.Text = "Статистика сброшена. Нажми «Играть»";
         ResultLabel.Foreground = BrushDim;
-        ResultBorder.Background = Brushes.Transparent;
+        ResultBorder.Background = BrushPanelDark;
     }
 }

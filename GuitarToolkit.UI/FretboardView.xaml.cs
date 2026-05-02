@@ -22,13 +22,13 @@ public partial class FretboardView : UserControl
     private static readonly Color NoteColor = Color.FromRgb(203, 166, 247);
     private static readonly Color TextDark = Color.FromRgb(26, 21, 37);
     private static readonly Color TextLight = Color.FromRgb(205, 214, 244);
-    private static readonly Color FretColor = Color.FromRgb(90, 72, 110);
+    private static readonly Color FretColor = Color.FromRgb(116, 93, 142);
     private static readonly Color StringCol = Color.FromRgb(166, 173, 200);
     private static readonly Color ActiveBg = Color.FromRgb(203, 166, 247);
     private static readonly Color InactiveBg = Color.FromRgb(74, 56, 96);
-    private static readonly Color MarkerColor = Color.FromRgb(45, 34, 64);
+    private static readonly Color MarkerColor = Color.FromRgb(70, 54, 92);
 
-    private const int FretCount = 15;
+    private const int FretCount = 17;
     private const int StringCount = 6;
     private static readonly int[] DotFrets = { 3, 5, 7, 9, 12, 15 };
     private static readonly int[] DoubleDotFrets = { 12 };
@@ -83,13 +83,16 @@ public partial class FretboardView : UserControl
 
             var btn = new Button
             {
-                Content = note, Width = 40, Height = 30,
-                FontSize = 13, FontWeight = FontWeights.Bold,
+                Content = note, Width = 40, Height = 26,
+                FontSize = 12, FontWeight = FontWeights.Bold,
                 Background = new SolidColorBrush(InactiveBg),
                 Foreground = new SolidColorBrush(TextLight),
-                BorderThickness = new Thickness(0),
+                BorderBrush = new SolidColorBrush(InactiveBg),
+                BorderThickness = new Thickness(1),
                 Cursor = System.Windows.Input.Cursors.Hand,
-                Margin = new Thickness(2), Tag = semitone,
+                Margin = new Thickness(0, 0, 6, 6), Tag = semitone,
+                Padding = new Thickness(8, 0, 8, 0),
+                Style = (Style)FindResource("ScaleButton"),
                 ToolTip = $"Тоника: {note}"
             };
             btn.Click += (s, e) =>
@@ -119,6 +122,7 @@ public partial class FretboardView : UserControl
         {
             bool active = btn.Content.ToString() == _selectedRoot;
             btn.Background = new SolidColorBrush(active ? ActiveBg : InactiveBg);
+            btn.BorderBrush = new SolidColorBrush(active ? ActiveBg : InactiveBg);
             btn.Foreground = new SolidColorBrush(active ? TextDark : TextLight);
         }
     }
@@ -172,11 +176,13 @@ public partial class FretboardView : UserControl
         double canvasH = FretboardCanvas.ActualHeight;
         if (canvasW < 100 || canvasH < 50) return;
 
-        double leftPad = 32;
-        double topPad = 10;
-        double bottomPad = 25;
+        double leftPad = 34;
+        double topPad = 18;
+        double bottomPad = 28;
         double gridW = canvasW - leftPad - 10;
-        double gridH = canvasH - topPad - bottomPad;
+        double gridH = Math.Min(canvasH - topPad - bottomPad, 238);
+        double verticalOffset = Math.Max(0, (canvasH - topPad - bottomPad - gridH) / 2);
+        topPad += verticalOffset;
 
         double fretW = gridW / FretCount;
         double stringSpacing = gridH / (StringCount - 1);
@@ -199,13 +205,14 @@ public partial class FretboardView : UserControl
             FretboardCanvas.Children.Add(new Line
             {
                 X1 = x, Y1 = topPad, X2 = x, Y2 = topPad + gridH,
-                Stroke = new SolidColorBrush(FretColor), StrokeThickness = 1.2
+                Stroke = new SolidColorBrush(FretColor), StrokeThickness = 1.0
             });
 
             var label = new TextBlock
             {
-                Text = f.ToString(), FontSize = 10,
+                Text = f.ToString(), FontSize = 10.5,
                 Foreground = new SolidColorBrush(FretColor),
+                FontWeight = FontWeights.Bold,
                 TextAlignment = TextAlignment.Center, Width = fretW
             };
             Canvas.SetLeft(label, leftPad + (f - 1) * fretW);
@@ -222,12 +229,12 @@ public partial class FretboardView : UserControl
 
             if (isDouble)
             {
-                DrawMarker(cx, topPad + gridH * 0.28, 5);
-                DrawMarker(cx, topPad + gridH * 0.72, 5);
+                DrawMarker(cx, topPad + gridH * 0.28, 4.5);
+                DrawMarker(cx, topPad + gridH * 0.72, 4.5);
             }
             else
             {
-                DrawMarker(cx, topPad + gridH * 0.5, 5);
+                DrawMarker(cx, topPad + gridH * 0.5, 4.5);
             }
         }
 
@@ -250,7 +257,7 @@ public partial class FretboardView : UserControl
             {
                 X1 = leftPad, Y1 = y, X2 = leftPad + gridW, Y2 = y,
                 Stroke = new SolidColorBrush(StringCol),
-                StrokeThickness = 2.0 - s * 0.2, Opacity = 0.6
+                StrokeThickness = 1.7 - s * 0.16, Opacity = 0.62
             });
         }
 
@@ -268,7 +275,7 @@ public partial class FretboardView : UserControl
 
                 bool isRoot = note == _selectedRootSemitone;
                 double cx = f == 0 ? leftPad - 1 : leftPad + (f - 0.5) * fretW;
-                double dotSize = Math.Clamp(Math.Min(fretW * 0.7, stringSpacing * 0.7), 16, 28);
+                double dotSize = Math.Clamp(Math.Min(fretW * 0.58, stringSpacing * 0.62), 14, 23);
 
                 var dot = new Ellipse
                 {

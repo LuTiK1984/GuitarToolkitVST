@@ -23,6 +23,13 @@ All notable changes to GuitarToolkit are documented here.
 - Added purple Circle of Fifths highlights for diatonic major and minor chord nodes around the selected key.
 - Fixed Circle of Fifths diatonic highlighting for flat major keys such as Db, Ab, Eb, and Bb.
 - Increased all Circle of Fifths note nodes for stronger readability.
+- Redesigned the Progressions tab around a compact builder layout with separated built-in and saved presets.
+- Progression preset saving now requires an explicit name and updates same-named saved presets instead of creating endless defaults.
+- Styled Progressions combo box, slider, and loop checkbox to match the redesigned Tabs controls.
+- Reworked the Progressions top toolbar into two rows so mode and loop controls remain visible in compact windows.
+- Aligned the Progressions mode selector to the left and replaced preset button clouds with built-in and saved preset dropdowns.
+- Redesigned the Interval Trainer tab with the same compact dark panel style, clearer answer grid, and stronger result highlighting.
+- Redesigned the Scales tab with compact controls, info panels, and a controlled-height fretboard instead of the old oversized layout.
 
 ## [1.3.3] - 2026-04-30
 

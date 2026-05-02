@@ -11,25 +11,26 @@ public partial class ProgressionView : UserControl
 {
     private IAudioPlayback? _audio;
     private string _selectedKey = "C";
-    private int _selectedModeIndex = 0;
+    private int _selectedModeIndex;
     private readonly List<ProgressionStep> _progression = new();
     private readonly List<Button> _keyButtons = new();
     private ProgressionStep[]? _diatonicChords;
     private int _bpm = 120;
+    private bool _placeholderActive = true;
 
     private static readonly Color AccentColor = Color.FromRgb(203, 166, 247);
-    private static readonly Color InactiveBg = Color.FromRgb(74, 56, 96);
+    private static readonly Color InactiveBg = Color.FromRgb(75, 58, 100);
+    private static readonly Color DarkBg = Color.FromRgb(26, 21, 37);
     private static readonly Color TextLight = Color.FromRgb(205, 214, 244);
     private static readonly Color TextDark = Color.FromRgb(26, 21, 37);
+    private static readonly Color MutedText = Color.FromRgb(155, 139, 184);
     private static readonly Color DeleteColor = Color.FromRgb(243, 139, 168);
-
-    private bool _placeholderActive = true;
 
     public ProgressionView()
     {
         InitializeComponent();
-        PresetNameBox.Text = "Название пресета...";
-        PresetNameBox.Foreground = new SolidColorBrush(Color.FromRgb(124, 111, 150));
+        ResetPresetNamePlaceholder();
+        SaveStatusText.Text = "Введите имя, чтобы сохранить текущую прогрессию.";
     }
 
     public void Initialize(IAudioPlayback audio) => Initialize(audio, null);
@@ -60,8 +61,6 @@ public partial class ProgressionView : UserControl
         settings.ProgressionBPM = (int)BpmSlider.Value;
     }
 
-    // ── Тональность ──────────────────────────────────────────
-
     private void BuildKeyButtons()
     {
         KeySelector.Items.Clear();
@@ -69,17 +68,9 @@ public partial class ProgressionView : UserControl
 
         foreach (string root in ProgressionBuilder.AllRoots)
         {
-            var btn = new Button
-            {
-                Content = root, Width = 40, Height = 30,
-                FontSize = 13, FontWeight = FontWeights.Bold,
-                Background = new SolidColorBrush(InactiveBg),
-                Foreground = new SolidColorBrush(TextLight),
-                BorderThickness = new Thickness(0),
-                Cursor = System.Windows.Input.Cursors.Hand,
-                Margin = new Thickness(2), Tag = root
-            };
-            btn.Click += (s, e) =>
+            var btn = CreateButton(root, width: 40);
+            btn.Tag = root;
+            btn.Click += (_, _) =>
             {
                 _selectedKey = root;
                 HighlightKeyButtons();
@@ -88,6 +79,7 @@ public partial class ProgressionView : UserControl
             _keyButtons.Add(btn);
             KeySelector.Items.Add(btn);
         }
+
         HighlightKeyButtons();
     }
 
@@ -97,30 +89,30 @@ public partial class ProgressionView : UserControl
         {
             bool active = btn.Tag?.ToString() == _selectedKey;
             btn.Background = new SolidColorBrush(active ? AccentColor : InactiveBg);
+            btn.BorderBrush = new SolidColorBrush(active ? AccentColor : InactiveBg);
             btn.Foreground = new SolidColorBrush(active ? TextDark : TextLight);
         }
     }
-
-    // ── Выбор лада ───────────────────────────────────────────
 
     private void BuildModeBox()
     {
         ModeBox.Items.Clear();
         foreach (var mode in ProgressionBuilder.AllModes)
+        {
             ModeBox.Items.Add(mode.Name);
+        }
+
         ModeBox.SelectedIndex = 0;
     }
 
     private void ModeBox_Changed(object sender, SelectionChangedEventArgs e)
     {
-        if (ModeBox.SelectedIndex >= 0)
-        {
-            _selectedModeIndex = ModeBox.SelectedIndex;
-            UpdateDiatonicChords();
-        }
-    }
+        if (ModeBox.SelectedIndex < 0)
+            return;
 
-    // ── Диатонические аккорды ────────────────────────────────
+        _selectedModeIndex = ModeBox.SelectedIndex;
+        UpdateDiatonicChords();
+    }
 
     private void UpdateDiatonicChords()
     {
@@ -130,17 +122,8 @@ public partial class ProgressionView : UserControl
         foreach (var step in _diatonicChords)
         {
             string suffix = step.ChordType == "Major" ? "" : step.ChordType;
-            var btn = new Button
-            {
-                Content = $"{step.Degree}\n{step.Root}{suffix}",
-                Width = 75, Height = 52,
-                FontSize = 12, FontWeight = FontWeights.Bold,
-                Background = new SolidColorBrush(InactiveBg),
-                Foreground = new SolidColorBrush(TextLight),
-                BorderThickness = new Thickness(0),
-                Cursor = System.Windows.Input.Cursors.Hand,
-                Margin = new Thickness(3), Tag = step
-            };
+            var btn = CreateButton($"{step.Degree}\n{step.Root}{suffix}", width: 68, height: 44);
+            btn.Tag = step;
             btn.Click += Degree_Click;
             DegreeButtons.Items.Add(btn);
         }
@@ -150,141 +133,186 @@ public partial class ProgressionView : UserControl
 
     private void Degree_Click(object sender, RoutedEventArgs e)
     {
-        if (sender is Button btn && btn.Tag is ProgressionStep step)
-        {
-            _progression.Add(step);
-            UpdateProgressionDisplay();
-        }
-    }
+        if (sender is not Button { Tag: ProgressionStep step })
+            return;
 
-    // ── Пресеты ──────────────────────────────────────────────
+        _progression.Add(step);
+        UpdateProgressionDisplay();
+    }
 
     private void BuildPresetButtons()
     {
-        PresetButtons.Items.Clear();
+        BuiltInPresetBox.Items.Clear();
+        CustomPresetBox.Items.Clear();
 
-        foreach (var p in ProgressionBuilder.BuiltInPresets)
-            AddPresetButton(p);
+        foreach (var preset in ProgressionBuilder.BuiltInPresets)
+        {
+            BuiltInPresetBox.Items.Add(new PresetListItem(preset));
+        }
 
-        foreach (var p in ProgressionBuilder.CustomPresets)
-            AddPresetButton(p);
+        foreach (var preset in ProgressionBuilder.CustomPresets)
+        {
+            CustomPresetBox.Items.Add(new PresetListItem(preset));
+        }
+
+        BuiltInPresetBox.SelectedIndex = BuiltInPresetBox.Items.Count > 0 ? 0 : -1;
+        CustomPresetBox.SelectedIndex = CustomPresetBox.Items.Count > 0 ? 0 : -1;
+
+        bool hasSavedPresets = CustomPresetBox.Items.Count > 0;
+        LoadSavedPresetButton.IsEnabled = hasSavedPresets;
+        DeleteSavedPresetButton.IsEnabled = hasSavedPresets;
     }
 
-    private void AddPresetButton(ProgressionPreset preset)
+    private void AddPresetButton(ProgressionPreset preset, ItemsControl target)
     {
-        if (preset.IsCustom)
+        if (!preset.IsCustom)
         {
-            // Пользовательский пресет — кнопка + крестик удаления
-            var panel = new StackPanel { Orientation = Orientation.Horizontal, Margin = new Thickness(3) };
-
-            var btn = new Button
-            {
-                Content = "⭐ " + preset.Name,
-                Height = 32, FontSize = 12,
-                Background = new SolidColorBrush(Color.FromRgb(45, 34, 64)),
-                Foreground = new SolidColorBrush(TextLight),
-                BorderThickness = new Thickness(0),
-                Cursor = System.Windows.Input.Cursors.Hand,
-                Padding = new Thickness(12, 0, 8, 0),
-                Tag = preset
-            };
+            var btn = CreateButton(preset.Name);
+            btn.Padding = new Thickness(10, 0, 10, 0);
+            btn.Tag = preset;
             btn.Click += Preset_Click;
-
-            var delBtn = new Button
-            {
-                Content = "✕", Width = 24, Height = 32,
-                FontSize = 11,
-                Background = new SolidColorBrush(Color.FromRgb(60, 40, 60)),
-                Foreground = new SolidColorBrush(DeleteColor),
-                BorderThickness = new Thickness(0),
-                Cursor = System.Windows.Input.Cursors.Hand,
-                Padding = new Thickness(0),
-                Tag = preset
-            };
-            delBtn.Click += DeletePreset_Click;
-
-            panel.Children.Add(btn);
-            panel.Children.Add(delBtn);
-            PresetButtons.Items.Add(panel);
+            target.Items.Add(btn);
+            return;
         }
-        else
+
+        var panel = new StackPanel
         {
-            var btn = new Button
-            {
-                Content = preset.Name, Height = 32, FontSize = 12,
-                Background = new SolidColorBrush(InactiveBg),
-                Foreground = new SolidColorBrush(TextLight),
-                BorderThickness = new Thickness(0),
-                Cursor = System.Windows.Input.Cursors.Hand,
-                Margin = new Thickness(3),
-                Padding = new Thickness(12, 0, 12, 0),
-                Tag = preset
-            };
-            btn.Click += Preset_Click;
-            PresetButtons.Items.Add(btn);
-        }
+            Orientation = Orientation.Horizontal,
+            Margin = new Thickness(0, 0, 6, 6)
+        };
+
+        var presetButton = CreateButton(preset.Name);
+        presetButton.Background = new SolidColorBrush(DarkBg);
+        presetButton.BorderBrush = new SolidColorBrush(InactiveBg);
+        presetButton.Padding = new Thickness(10, 0, 8, 0);
+        presetButton.Margin = new Thickness(0);
+        presetButton.Tag = preset;
+        presetButton.Click += Preset_Click;
+
+        var deleteButton = CreateButton("×", width: 26);
+        deleteButton.Background = new SolidColorBrush(DarkBg);
+        deleteButton.BorderBrush = new SolidColorBrush(InactiveBg);
+        deleteButton.Foreground = new SolidColorBrush(DeleteColor);
+        deleteButton.Margin = new Thickness(0);
+        deleteButton.Tag = preset;
+        deleteButton.Click += DeletePreset_Click;
+
+        panel.Children.Add(presetButton);
+        panel.Children.Add(deleteButton);
+        target.Items.Add(panel);
     }
 
     private void Preset_Click(object sender, RoutedEventArgs e)
     {
-        if (sender is Button btn && btn.Tag is ProgressionPreset preset)
-        {
-            _progression.Clear();
-            _progression.AddRange(
-                ProgressionBuilder.BuildFromPreset(_selectedKey, preset, _selectedModeIndex));
-            UpdateProgressionDisplay();
-        }
+        if (sender is not Button { Tag: ProgressionPreset preset })
+            return;
+
+        _progression.Clear();
+        _progression.AddRange(ProgressionBuilder.BuildFromPreset(_selectedKey, preset, _selectedModeIndex));
+        UpdateProgressionDisplay();
     }
 
     private void DeletePreset_Click(object sender, RoutedEventArgs e)
     {
-        if (sender is Button btn && btn.Tag is ProgressionPreset preset)
-        {
-            ProgressionBuilder.CustomPresets.Remove(preset);
-            ProgressionBuilder.SavePresetsToDisk();
-            BuildPresetButtons();
-        }
+        if (sender is not Button { Tag: ProgressionPreset preset })
+            return;
+
+        ProgressionBuilder.CustomPresets.Remove(preset);
+        ProgressionBuilder.SavePresetsToDisk();
+        SaveStatusText.Text = $"Удалено: {preset.Name}";
+        BuildPresetButtons();
     }
 
-    // ── Сохранение пресета ───────────────────────────────────
+    private void LoadBuiltInPreset_Click(object sender, RoutedEventArgs e)
+    {
+        if (BuiltInPresetBox.SelectedItem is not PresetListItem item)
+            return;
+
+        LoadPreset(item.Preset);
+    }
+
+    private void LoadCustomPreset_Click(object sender, RoutedEventArgs e)
+    {
+        if (CustomPresetBox.SelectedItem is not PresetListItem item)
+            return;
+
+        LoadPreset(item.Preset);
+    }
+
+    private void DeleteSelectedPreset_Click(object sender, RoutedEventArgs e)
+    {
+        if (CustomPresetBox.SelectedItem is not PresetListItem item)
+            return;
+
+        var preset = item.Preset;
+        ProgressionBuilder.CustomPresets.Remove(preset);
+        ProgressionBuilder.SavePresetsToDisk();
+        SaveStatusText.Text = $"Удалено: {preset.Name}";
+        BuildPresetButtons();
+    }
+
+    private void LoadPreset(ProgressionPreset preset)
+    {
+        _progression.Clear();
+        _progression.AddRange(ProgressionBuilder.BuildFromPreset(_selectedKey, preset, _selectedModeIndex));
+        UpdateProgressionDisplay();
+    }
 
     private void SavePreset_Click(object sender, RoutedEventArgs e)
     {
-        if (_progression.Count == 0 || _diatonicChords == null) return;
+        if (_progression.Count == 0 || _diatonicChords == null)
+        {
+            SaveStatusText.Text = "Нечего сохранять: сначала соберите прогрессию.";
+            return;
+        }
 
         string name = _placeholderActive ? "" : PresetNameBox.Text.Trim();
-        if (string.IsNullOrEmpty(name))
-            name = $"Мой пресет {ProgressionBuilder.CustomPresets.Count + 1}";
+        if (string.IsNullOrWhiteSpace(name))
+        {
+            SaveStatusText.Text = "Введите имя пресета перед сохранением.";
+            return;
+        }
+
+        var existing = ProgressionBuilder.CustomPresets
+            .FirstOrDefault(p => p.Name.Equals(name, StringComparison.CurrentCultureIgnoreCase));
+        if (existing != null)
+        {
+            ProgressionBuilder.CustomPresets.Remove(existing);
+        }
 
         ProgressionBuilder.SaveCustomPreset(name, _progression, _diatonicChords);
         BuildPresetButtons();
 
-        _placeholderActive = true;
-        PresetNameBox.Text = "Название пресета...";
-        PresetNameBox.Foreground = new SolidColorBrush(Color.FromRgb(124, 111, 150));
+        SaveStatusText.Text = existing == null
+            ? $"Сохранено: {name}"
+            : $"Обновлено: {name}";
+        ResetPresetNamePlaceholder();
     }
 
     private void PresetNameBox_GotFocus(object sender, RoutedEventArgs e)
     {
-        if (_placeholderActive)
-        {
-            PresetNameBox.Text = "";
-            PresetNameBox.Foreground = new SolidColorBrush(TextLight);
-            _placeholderActive = false;
-        }
+        if (!_placeholderActive)
+            return;
+
+        PresetNameBox.Text = "";
+        PresetNameBox.Foreground = new SolidColorBrush(TextLight);
+        _placeholderActive = false;
     }
 
     private void PresetNameBox_LostFocus(object sender, RoutedEventArgs e)
     {
         if (string.IsNullOrWhiteSpace(PresetNameBox.Text))
         {
-            PresetNameBox.Text = "Название пресета...";
-            PresetNameBox.Foreground = new SolidColorBrush(Color.FromRgb(124, 111, 150));
-            _placeholderActive = true;
+            ResetPresetNamePlaceholder();
         }
     }
 
-    // ── Отображение прогрессии ───────────────────────────────
+    private void ResetPresetNamePlaceholder()
+    {
+        _placeholderActive = true;
+        PresetNameBox.Text = "Название пресета...";
+        PresetNameBox.Foreground = new SolidColorBrush(MutedText);
+    }
 
     private void UpdateProgressionDisplay()
     {
@@ -294,50 +322,61 @@ public partial class ProgressionView : UserControl
         {
             ProgressionDisplay.Items.Add(new TextBlock
             {
-                Text = "Пусто — добавь аккорды или выбери пресет",
+                Text = "Пусто: добавьте аккорды слева или выберите пресет.",
                 FontSize = 13,
-                Foreground = new SolidColorBrush(Color.FromRgb(124, 111, 150))
+                FontWeight = FontWeights.Bold,
+                Foreground = new SolidColorBrush(MutedText)
             });
             return;
         }
 
-        for (int idx = 0; idx < _progression.Count; idx++)
+        for (int index = 0; index < _progression.Count; index++)
         {
-            var step = _progression[idx];
+            var step = _progression[index];
             string suffix = step.ChordType == "Major" ? "" : step.ChordType;
-            int capturedIdx = idx;
+            int capturedIndex = index;
 
             var border = new Border
             {
                 Background = new SolidColorBrush(InactiveBg),
-                CornerRadius = new CornerRadius(6),
+                BorderBrush = new SolidColorBrush(InactiveBg),
+                BorderThickness = new Thickness(1),
+                CornerRadius = new CornerRadius(4),
                 Padding = new Thickness(8, 4, 8, 4),
-                Margin = new Thickness(3)
+                Margin = new Thickness(0, 0, 6, 6),
+                MinWidth = 48
             };
 
             var grid = new Grid();
             grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
             grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
 
-            var stack = new StackPanel { Orientation = Orientation.Vertical };
+            var stack = new StackPanel();
             stack.Children.Add(new TextBlock
             {
-                Text = step.Degree, FontSize = 10,
+                Text = step.Degree,
+                FontSize = 10,
+                FontWeight = FontWeights.Bold,
                 Foreground = new SolidColorBrush(AccentColor),
                 HorizontalAlignment = HorizontalAlignment.Center
             });
             stack.Children.Add(new TextBlock
             {
-                Text = step.Root + suffix, FontSize = 16, FontWeight = FontWeights.Bold,
+                Text = step.Root + suffix,
+                FontSize = 16,
+                FontWeight = FontWeights.Bold,
                 Foreground = new SolidColorBrush(TextLight),
                 HorizontalAlignment = HorizontalAlignment.Center
             });
             Grid.SetColumn(stack, 0);
             grid.Children.Add(stack);
 
-            var delBtn = new Button
+            var deleteButton = new Button
             {
-                Content = "✕", Width = 18, Height = 18, FontSize = 10,
+                Content = "×",
+                Width = 18,
+                Height = 18,
+                FontSize = 10,
                 Background = Brushes.Transparent,
                 Foreground = new SolidColorBrush(DeleteColor),
                 BorderThickness = new Thickness(0),
@@ -346,56 +385,62 @@ public partial class ProgressionView : UserControl
                 Margin = new Thickness(2, -2, -4, 0),
                 Padding = new Thickness(0)
             };
-            delBtn.Click += (s, e) =>
+            deleteButton.Click += (_, _) =>
             {
-                if (capturedIdx < _progression.Count)
+                if (capturedIndex < _progression.Count)
                 {
-                    _progression.RemoveAt(capturedIdx);
+                    _progression.RemoveAt(capturedIndex);
                     UpdateProgressionDisplay();
                 }
             };
-            Grid.SetColumn(delBtn, 1);
-            grid.Children.Add(delBtn);
+            Grid.SetColumn(deleteButton, 1);
+            grid.Children.Add(deleteButton);
 
             border.Child = grid;
             ProgressionDisplay.Items.Add(border);
         }
     }
 
-    // ── Воспроизведение ──────────────────────────────────────
-
     private void Play_Click(object sender, RoutedEventArgs e)
     {
-        if (_audio == null || _progression.Count == 0) return;
+        if (_audio == null || _progression.Count == 0)
+            return;
 
-        int sr = _audio.SampleRate;
+        int sampleRate = _audio.SampleRate;
         double beatDuration = 60.0 / _bpm;
-        int samplesPerBeat = (int)(sr * beatDuration);
-
+        int samplesPerBeat = (int)(sampleRate * beatDuration);
         bool loop = LoopCheck.IsChecked == true;
         int repeats = loop ? 32 : 1;
 
-        int oneCycleLen = samplesPerBeat * _progression.Count;
-        float[] oneCycle = new float[oneCycleLen];
+        int oneCycleLength = samplesPerBeat * _progression.Count;
+        float[] oneCycle = new float[oneCycleLength];
 
         for (int i = 0; i < _progression.Count; i++)
         {
             var step = _progression[i];
             var chord = ChordLibrary.Get(step.Root, step.ChordType);
-            if (chord == null) continue;
+            if (chord == null)
+                continue;
 
-            float[] chordSamples = ChordPlayer.Synthesize(chord, sr,
-                duration: (float)beatDuration * 0.95f, strumDelay: 0.02f);
+            float[] chordSamples = ChordPlayer.Synthesize(
+                chord,
+                sampleRate,
+                duration: (float)beatDuration * 0.95f,
+                strumDelay: 0.02f);
 
             int offset = i * samplesPerBeat;
-            int len = Math.Min(chordSamples.Length, oneCycleLen - offset);
-            for (int j = 0; j < len; j++)
+            int length = Math.Min(chordSamples.Length, oneCycleLength - offset);
+            for (int j = 0; j < length; j++)
+            {
                 oneCycle[offset + j] += chordSamples[j];
+            }
         }
 
-        float[] buffer = new float[oneCycleLen * repeats];
-        for (int r = 0; r < repeats; r++)
-            Array.Copy(oneCycle, 0, buffer, r * oneCycleLen, oneCycleLen);
+        float[] buffer = new float[oneCycleLength * repeats];
+        for (int repeat = 0; repeat < repeats; repeat++)
+        {
+            Array.Copy(oneCycle, 0, buffer, repeat * oneCycleLength, oneCycleLength);
+        }
 
         _audio.PlaySamples(buffer);
         StopButton.Visibility = Visibility.Visible;
@@ -416,6 +461,47 @@ public partial class ProgressionView : UserControl
     private void Bpm_Changed(object sender, RoutedPropertyChangedEventArgs<double> e)
     {
         _bpm = (int)e.NewValue;
-        if (BpmLabel != null) BpmLabel.Text = $"{_bpm} BPM";
+        if (BpmLabel != null)
+        {
+            BpmLabel.Text = $"{_bpm} BPM";
+        }
+    }
+
+    private sealed class PresetListItem
+    {
+        public PresetListItem(ProgressionPreset preset)
+        {
+            Preset = preset;
+        }
+
+        public ProgressionPreset Preset { get; }
+
+        public override string ToString() => Preset.Name;
+    }
+
+    private Button CreateButton(string content, double? width = null, double height = 26)
+    {
+        var button = new Button
+        {
+            Content = content,
+            Height = height,
+            FontSize = 12,
+            FontWeight = FontWeights.Bold,
+            Background = new SolidColorBrush(InactiveBg),
+            BorderBrush = new SolidColorBrush(InactiveBg),
+            BorderThickness = new Thickness(1),
+            Foreground = new SolidColorBrush(TextLight),
+            Cursor = System.Windows.Input.Cursors.Hand,
+            Margin = new Thickness(0, 0, 6, 6),
+            Padding = new Thickness(8, 0, 8, 0),
+            Style = (Style)FindResource("ProgressionButton")
+        };
+
+        if (width.HasValue)
+        {
+            button.Width = width.Value;
+        }
+
+        return button;
     }
 }

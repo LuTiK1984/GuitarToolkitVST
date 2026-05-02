@@ -56,6 +56,28 @@ GuitarToolkit is a personal, idea-driven guitar toolkit for Windows, available a
   - add refresh/search/sort controls for library files;
   - per-track volume/mute/solo state;
   - export or print later if alphaTab supports it well.
+- Better progression workflow:
+  - grow the new preset dropdowns into a fuller preset manager with search, metadata, and safer saved-preset actions;
+  - allow drag-and-drop reordering of chords in the current progression;
+  - add duplicate and undo actions for fast progression editing;
+  - support per-chord duration such as 1, 2, or 4 beats;
+  - add playback patterns such as block chords, strum, and arpeggio;
+  - export progressions as text and possibly MIDI;
+  - decide whether saved presets should include key/mode or remain degree-only templates.
+- Better interval-training workflow:
+  - add ascending, descending, and harmonic interval modes;
+  - add focused practice sets such as only seconds/thirds, only perfect intervals, or only trouble intervals;
+  - track mistakes per interval and surface weak spots in the UI;
+  - add optional guitar fretboard hints after answering;
+  - support custom root-note range and timbre choices for closer guitar-practice feel;
+  - add a slower review mode that explains the answer before auto-advance.
+- Better scale-practice workflow:
+  - add position presets for common fretboard boxes and CAGED shapes;
+  - let users filter the displayed scale by fret range and string range;
+  - add optional degree highlighting for tonic, thirds, fifths, sevenths, and avoid notes;
+  - add exercises such as find the next note, name the degree, and play through a position;
+  - compare two scales or modes on the same fretboard;
+  - export or copy scale fingering diagrams for practice notes.
 - Improve audio UX:
   - safer volume defaults;
   - smoother tab playback volume changes;
