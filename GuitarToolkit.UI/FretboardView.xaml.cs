@@ -30,7 +30,7 @@ public partial class FretboardView : UserControl
 
     private const int FretCount = 17;
     private const int StringCount = 6;
-    private static readonly int[] DotFrets = { 3, 5, 7, 9, 12, 15 };
+    private static readonly int[] DotFrets = { 3, 5, 7, 9, 12, 15, 17 };
     private static readonly int[] DoubleDotFrets = { 12 };
     private static readonly string[] StringLabels = { "E", "A", "D", "G", "B", "e" };
 
