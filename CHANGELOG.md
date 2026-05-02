@@ -4,6 +4,8 @@ All notable changes to GuitarToolkit are documented here.
 
 ## [Unreleased]
 
+## [1.4.0] - 2026-05-03
+
 ### Changed
 
 - Started interface redesign with refreshed About and Tabs layouts.
@@ -35,6 +37,11 @@ All notable changes to GuitarToolkit are documented here.
 - Quarantined tab files that fail during alphaTab import and documented the known GP4 import crash.
 - Redesigned the Metronome tab with compact controls, animated pendulum feedback, beat indicators, and quick tempo presets.
 - Fixed the Metronome pendulum so the rod and bob swing together from the same pivot.
+- Centered the Metronome BPM label under the tempo number and redesigned the Tuner tab with compact panels, styled controls, and local input-device selection.
+- Moved desktop input-device selection from the global header into the Tuner tab.
+- Recentered the Tuner needle layout, stacked the detected note above the cents gauge, and normalized string cards into an even six-column row.
+- Fixed Tuner text encoding, enlarged the frequency readout, centered the pitch display vertically, and removed note-label fade jitter.
+- Normalized Chords type selector buttons to a fixed width so every chord type has the same visual size.
 
 ## [1.3.3] - 2026-04-30
 

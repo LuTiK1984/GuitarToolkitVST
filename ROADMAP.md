@@ -93,6 +93,13 @@ GuitarToolkit is a personal, idea-driven guitar toolkit for Windows, available a
   - add tempo-ramp practice for gradual speed increases;
   - add saved tempo presets by song or exercise;
   - explore host-tempo sync for the VST when AudioPlugSharp exposes reliable transport data.
+- Better tuner workflow:
+  - add a strobe-style fine tuning view next to the current cents needle;
+  - add chromatic and string-focused modes so tuning can either follow any note or lock to the selected guitar strings;
+  - add an input calibration/noise gate control for noisy interfaces and laptops;
+  - show pitch stability over the last few detections so the user can see whether the note is settling;
+  - add quick A4 reference presets such as 432, 440, and 442 Hz;
+  - add optional alternate temperament offsets later if the core tuner remains stable enough.
 - Improve audio UX:
   - safer volume defaults;
   - smoother tab playback volume changes;

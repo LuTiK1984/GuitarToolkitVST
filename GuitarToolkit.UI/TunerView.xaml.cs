@@ -10,7 +10,8 @@ namespace GuitarToolkit.UI;
 public partial class TunerView : UserControl
 {
     private TunerEngine? _tuner;
-    private string _displayedNote = "—";
+    private string _displayedNote = "\u2014";
+    private bool _isUpdatingInputDevices;
 
     private static readonly SolidColorBrush BrushGreen = new(Color.FromRgb(166, 227, 161));
     private static readonly SolidColorBrush BrushYellow = new(Color.FromRgb(249, 226, 175));
@@ -32,6 +33,10 @@ public partial class TunerView : UserControl
     }
 
     public TunerView() { InitializeComponent(); }
+
+    public event EventHandler<int>? InputDeviceSelected;
+
+    public int SelectedInputDeviceIndex => InputDeviceBox?.SelectedIndex ?? -1;
 
     public void Initialize(TunerEngine tuner) => Initialize(tuner, null);
 
@@ -58,6 +63,43 @@ public partial class TunerView : UserControl
         _tuner.VolumeChanged += OnVolumeChanged;
     }
 
+    public void SetInputDevices(IReadOnlyList<string> devices, int selectedIndex)
+    {
+        if (InputDeviceBox == null) return;
+
+        _isUpdatingInputDevices = true;
+        try
+        {
+            InputDeviceBox.Items.Clear();
+
+            if (devices.Count == 0)
+            {
+                InputDeviceBox.Items.Add("\u0412\u0445\u043E\u0434 \u0443\u043F\u0440\u0430\u0432\u043B\u044F\u0435\u0442\u0441\u044F \u0445\u043E\u0441\u0442\u043E\u043C");
+                InputDeviceBox.SelectedIndex = 0;
+                InputDeviceBox.IsEnabled = false;
+                SetInputStatus("\u041D\u0435\u0442 \u0443\u0441\u0442\u0440\u043E\u0439\u0441\u0442\u0432", false);
+                return;
+            }
+
+            foreach (var device in devices)
+                InputDeviceBox.Items.Add(device);
+
+            InputDeviceBox.IsEnabled = true;
+            InputDeviceBox.SelectedIndex = Math.Clamp(selectedIndex, 0, devices.Count - 1);
+        }
+        finally
+        {
+            _isUpdatingInputDevices = false;
+        }
+    }
+
+    public void SetInputStatus(string text, bool isActive)
+    {
+        if (InputStatusLabel == null) return;
+        InputStatusLabel.Text = text;
+        InputStatusLabel.Foreground = isActive ? BrushGreen : BrushDim;
+    }
+
     public void SaveTo(UserSettings settings)
     {
         settings.TunerGainDb = (float)GainSlider.Value;
@@ -80,31 +122,25 @@ public partial class TunerView : UserControl
     private void UpdateUI(string note, float freq, float cents)
     {
         FreqLabel.Text = $"{freq:F1} Hz";
-        CentsLabel.Text = $"{cents:+0.0;-0.0;0} центов";
+        CentsLabel.Text = $"{cents:+0.0;-0.0;0} \u0446\u0435\u043D\u0442\u043E\u0432";
 
-        if (note != _displayedNote && note != "—")
+        if (note != _displayedNote && !IsNoNote(note))
         {
-            var fadeOut = new DoubleAnimation(1, 0.3, TimeSpan.FromMilliseconds(60));
-            fadeOut.Completed += (s, e) =>
-            {
-                NoteLabel.Text = note;
-                _displayedNote = note;
-                var fadeIn = new DoubleAnimation(0.3, 1, TimeSpan.FromMilliseconds(100));
-                NoteLabel.BeginAnimation(OpacityProperty, fadeIn);
-            };
-            NoteLabel.BeginAnimation(OpacityProperty, fadeOut);
+            NoteLabel.Text = note;
+            _displayedNote = note;
+            NoteLabel.Opacity = 1;
         }
-        else if (note == "—" && _displayedNote != "—")
+        else if (IsNoNote(note) && _displayedNote != "\u2014")
         {
-            NoteLabel.Text = "—";
-            _displayedNote = "—";
+            NoteLabel.Text = "\u2014";
+            _displayedNote = "\u2014";
         }
 
         double x = 170 + (cents / 50.0) * 165;
         x = Math.Clamp(x, 5, 335);
 
         NeedleTranslate.BeginAnimation(TranslateTransform.XProperty,
-            new DoubleAnimation { To = x, Duration = TimeSpan.FromMilliseconds(80) });
+            new DoubleAnimation { To = x, Duration = TimeSpan.FromMilliseconds(110) });
 
         bool inTune = Math.Abs(cents) < 5;
         bool close = Math.Abs(cents) < 15;
@@ -113,13 +149,15 @@ public partial class TunerView : UserControl
 
         if (inTune)
         {
-            InTuneLabel.Text = "✓  В СТРОЕ";
+            InTuneLabel.Text = "\u2713 \u0412 \u0441\u0442\u0440\u043E\u044E";
             InTuneLabel.Foreground = BrushGreen;
             InTuneIndicator.Background = BrushInTuneBg;
         }
         else
         {
-            InTuneLabel.Text = cents > 0 ? "▼  Понизь" : "▲  Повысь";
+            InTuneLabel.Text = cents > 0
+                ? "\u25BC \u041F\u043E\u043D\u0438\u0437\u044C"
+                : "\u25B2 \u041F\u043E\u0432\u044B\u0441\u044C";
             InTuneLabel.Foreground = BrushAccent;
             InTuneIndicator.Background = BrushDefaultBg;
         }
@@ -129,9 +167,12 @@ public partial class TunerView : UserControl
 
     private void UpdateVolumeBar(float volume)
     {
-        double width = Math.Clamp(volume * 640, 0, 340);
+        double maxWidth = VolumeBar.Parent is FrameworkElement parent && parent.ActualWidth > 0
+            ? parent.ActualWidth
+            : 340;
+        double width = Math.Clamp(volume * maxWidth * 1.9, 0, maxWidth);
         VolumeBar.Width = width;
-        VolumeBar.Fill = width < 204 ? BrushGreen : width < 289 ? BrushYellow : BrushRed;
+        VolumeBar.Fill = width < maxWidth * 0.6 ? BrushGreen : width < maxWidth * 0.85 ? BrushYellow : BrushRed;
     }
 
     private void GainSlider_ValueChanged(object s, RoutedPropertyChangedEventArgs<double> e)
@@ -142,6 +183,14 @@ public partial class TunerView : UserControl
     }
 
     private void TuningBox_SelectionChanged(object s, SelectionChangedEventArgs e) => BuildStrings();
+
+    private void InputDeviceBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        if (_isUpdatingInputDevices || InputDeviceBox.SelectedIndex < 0 || !InputDeviceBox.IsEnabled)
+            return;
+
+        InputDeviceSelected?.Invoke(this, InputDeviceBox.SelectedIndex);
+    }
 
     private void BuildStrings()
     {
@@ -158,23 +207,28 @@ public partial class TunerView : UserControl
 
             var border = new Border
             {
-                Width = 56, Height = 56, Margin = new Thickness(4),
-                CornerRadius = new CornerRadius(6),
+                Height = 46,
+                Margin = new Thickness(3, 0, 3, 0),
+                HorizontalAlignment = HorizontalAlignment.Stretch,
+                CornerRadius = new CornerRadius(4),
                 Background = BrushCard,
                 Tag = strFreq,
-                ToolTip = $"Струна {strNum}: {strings[i]} ({strFreq:F1} Гц)"
+                ToolTip = $"\u0421\u0442\u0440\u0443\u043D\u0430 {strNum}: {strings[i]} ({strFreq:F1} Hz)"
             };
 
             var stack = new StackPanel { VerticalAlignment = VerticalAlignment.Center };
             stack.Children.Add(new TextBlock
             {
-                Text = $"{strNum}", FontSize = 10,
+                Text = $"{strNum}",
+                FontSize = 10,
                 Foreground = BrushDim,
                 HorizontalAlignment = HorizontalAlignment.Center
             });
             stack.Children.Add(new TextBlock
             {
-                Text = strings[i], FontSize = 16, FontWeight = FontWeights.Bold,
+                Text = strings[i],
+                FontSize = 16,
+                FontWeight = FontWeights.Bold,
                 Foreground = BrushText,
                 HorizontalAlignment = HorizontalAlignment.Center
             });
@@ -225,4 +279,6 @@ public partial class TunerView : UserControl
         _tuner.ReferenceA = Math.Clamp(value, 420, 460);
         RefLabel.Text = _tuner.ReferenceA.ToString("F0");
     }
+
+    private static bool IsNoNote(string note) => note == "\u2014" || note == "вЂ”";
 }

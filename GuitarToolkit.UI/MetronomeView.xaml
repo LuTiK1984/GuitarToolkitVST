@@ -157,9 +157,16 @@
                             <ColumnDefinition Width="130"/>
                         </Grid.ColumnDefinitions>
 
-                        <StackPanel Grid.Column="0"
-                                    VerticalAlignment="Center">
+                        <Grid Grid.Column="0"
+                              Width="170"
+                              HorizontalAlignment="Left"
+                              VerticalAlignment="Center">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
                             <TextBlock x:Name="BpmDisplay"
+                                       Grid.Row="0"
                                        Text="120"
                                        FontSize="60"
                                        FontWeight="Bold"
@@ -171,9 +178,13 @@
                                 </TextBlock.RenderTransform>
                             </TextBlock>
                             <TextBlock Text="BPM"
+                                       Grid.Row="1"
                                        Style="{StaticResource MutedText}"
-                                       Margin="2 -6 0 0"/>
-                        </StackPanel>
+                                       Width="{Binding ActualWidth, ElementName=BpmDisplay}"
+                                       TextAlignment="Center"
+                                       HorizontalAlignment="Left"
+                                       Margin="0 -6 0 0"/>
+                        </Grid>
 
                         <Canvas Grid.Column="1"
                                 Width="120"

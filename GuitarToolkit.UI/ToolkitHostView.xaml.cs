@@ -41,6 +41,24 @@ public partial class ToolkitHostView : UserControl
         PreviewKeyDown += OnKeyDown;
     }
 
+    public event EventHandler<int> InputDeviceSelected
+    {
+        add => TunerTab.InputDeviceSelected += value;
+        remove => TunerTab.InputDeviceSelected -= value;
+    }
+
+    public int SelectedInputDeviceIndex => TunerTab.SelectedInputDeviceIndex;
+
+    public void SetInputDevices(IReadOnlyList<string> devices, int selectedIndex)
+    {
+        TunerTab.SetInputDevices(devices, selectedIndex);
+    }
+
+    public void SetInputStatus(string text, bool isActive)
+    {
+        TunerTab.SetInputStatus(text, isActive);
+    }
+
     private void OnKeyDown(object sender, KeyEventArgs e)
     {
         if (e.Key == Key.Space)

@@ -124,9 +124,9 @@ public partial class ChordView : UserControl
         foreach (string type in ChordLibrary.AllTypes)
         {
             string label = TypeLabels.GetValueOrDefault(type, type);
-            var btn = MakeButton(label, 0, 26);
+            var btn = MakeButton(label, 54, 26);
             btn.Tag = type;
-            btn.Padding = new Thickness(10, 0, 10, 0);
+            btn.Padding = new Thickness(0);
             btn.Click += (s, e) =>
             {
                 _selectedType = type;

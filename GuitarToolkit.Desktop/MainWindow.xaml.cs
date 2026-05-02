@@ -1,5 +1,4 @@
 using System.Windows;
-using System.Windows.Controls;
 using GuitarToolkit.Core.Services;
 using GuitarToolkit.UI;
 
@@ -20,45 +19,51 @@ public partial class MainWindow : Window
 
             var settings = UserSettings.Load();
             _toolkitView = new ToolkitHostView(_audio.Tuner, _audio.Metronome, _audio);
+            _toolkitView.InputDeviceSelected += ToolkitView_InputDeviceSelected;
             ContentArea.Content = _toolkitView;
 
             var devices = AudioBridge.GetInputDevices();
             if (devices.Count > 0)
             {
-                foreach (var d in devices)
-                    DeviceBox.Items.Add(d);
-                DeviceBox.SelectedIndex = Math.Clamp(settings.LastInputDevice, 0, devices.Count - 1);
+                int selectedIndex = Math.Clamp(settings.LastInputDevice, 0, devices.Count - 1);
+                _toolkitView.SetInputDevices(devices, selectedIndex);
+                StartInput(selectedIndex);
             }
             else
             {
-                StatusLabel.Text = "Устройства ввода не найдены";
+                _toolkitView.SetInputDevices(Array.Empty<string>(), -1);
+                _toolkitView.SetInputStatus("\u0423\u0441\u0442\u0440\u043E\u0439\u0441\u0442\u0432\u0430 \u043D\u0435 \u043D\u0430\u0439\u0434\u0435\u043D\u044B", false);
             }
         }
         catch (Exception ex)
         {
             AppLogger.Error("Desktop startup failed.", ex);
-            MessageBox.Show(ex.ToString(), "Ошибка запуска");
+            MessageBox.Show(ex.ToString(), "\u041E\u0448\u0438\u0431\u043A\u0430 \u0437\u0430\u043F\u0443\u0441\u043A\u0430");
             _audio = new AudioBridge();
         }
     }
 
-    private void DeviceBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    private void ToolkitView_InputDeviceSelected(object? sender, int deviceIndex)
     {
-        if (DeviceBox.SelectedIndex >= 0)
-        {
-            _audio.StartInput(DeviceBox.SelectedIndex);
-            StatusLabel.Text = "● Запись";
-        }
+        StartInput(deviceIndex);
+    }
+
+    private void StartInput(int deviceIndex)
+    {
+        if (deviceIndex < 0) return;
+
+        _audio.StartInput(deviceIndex);
+        _toolkitView?.SetInputStatus("\u25CF \u0417\u0430\u043F\u0438\u0441\u044C", true);
     }
 
     private void Window_Closing(object? sender, System.ComponentModel.CancelEventArgs e)
     {
-        // Сохраняем настройки
         _toolkitView?.SaveSettings();
 
-        // Сохраняем выбранное устройство отдельно
         var settings = UserSettings.Load();
-        settings.LastInputDevice = DeviceBox.SelectedIndex;
+        int selectedInputDeviceIndex = _toolkitView?.SelectedInputDeviceIndex ?? -1;
+        if (selectedInputDeviceIndex >= 0)
+            settings.LastInputDevice = selectedInputDeviceIndex;
         settings.Save();
 
         _audio.Dispose();
