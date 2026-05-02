@@ -21,11 +21,13 @@ public partial class CircleOfFifthsView : UserControl
     private static readonly int[] MinorScale = { 0, 2, 3, 5, 7, 8, 10 };
 
     private static readonly Color AccentColor = Color.FromRgb(203, 166, 247);
-    private static readonly Color InactiveBg = Color.FromRgb(74, 56, 96);
+    private static readonly Color InactiveBg = Color.FromRgb(75, 58, 100);
+    private static readonly Color HoverBg = Color.FromRgb(91, 70, 118);
     private static readonly Color TextLight = Color.FromRgb(205, 214, 244);
     private static readonly Color TextDark = Color.FromRgb(26, 21, 37);
-    private static readonly Color DimText = Color.FromRgb(124, 111, 150);
-    private static readonly Color RingColor = Color.FromRgb(45, 34, 64);
+    private static readonly Color DimText = Color.FromRgb(155, 139, 184);
+    private static readonly Color PanelBorder = Color.FromRgb(53, 40, 71);
+    private static readonly Color RingColor = Color.FromRgb(36, 27, 51);
     private static readonly Color GreenColor = Color.FromRgb(166, 227, 161);
 
     public CircleOfFifthsView()
@@ -74,7 +76,7 @@ public partial class CircleOfFifthsView : UserControl
 
         double cx = w / 2;
         double cy = h / 2;
-        double outerR = Math.Min(cx, cy) - 20;
+        double outerR = Math.Min(cx, cy) - 18;
         double innerR = outerR * 0.62;
 
         // Внешнее кольцо
@@ -82,8 +84,8 @@ public partial class CircleOfFifthsView : UserControl
         {
             Width = outerR * 2, Height = outerR * 2,
             Fill = new SolidColorBrush(RingColor),
-            Stroke = new SolidColorBrush(Color.FromRgb(90, 72, 110)),
-            StrokeThickness = 2
+            Stroke = new SolidColorBrush(PanelBorder),
+            StrokeThickness = 1.5
         };
         Canvas.SetLeft(outerRing, cx - outerR);
         Canvas.SetTop(outerRing, cy - outerR);
@@ -93,7 +95,7 @@ public partial class CircleOfFifthsView : UserControl
         var innerRing = new Ellipse
         {
             Width = innerR * 2, Height = innerR * 2,
-            Fill = new SolidColorBrush(Color.FromRgb(37, 29, 56)),
+            Fill = new SolidColorBrush(TextDark),
             Stroke = new SolidColorBrush(InactiveBg),
             StrokeThickness = 1
         };
@@ -103,6 +105,7 @@ public partial class CircleOfFifthsView : UserControl
 
         int prev = (_selectedIndex + 11) % 12;
         int next = (_selectedIndex + 1) % 12;
+        var (diatonicMajors, diatonicMinors) = GetDiatonicHighlights();
 
         for (int i = 0; i < 12; i++)
         {
@@ -115,11 +118,13 @@ public partial class CircleOfFifthsView : UserControl
             double majorR = (outerR + innerR) / 2 + 6;
             double mx = cx + majorR * Math.Cos(angle);
             double my = cy + majorR * Math.Sin(angle);
-            double dotSize = isSelected ? 46 : (isNeighbor ? 42 : 38);
+            double dotSize = isSelected ? 62 : (isNeighbor ? 56 : 50);
 
             bool majorActive = isSelected && !_showMinor;
-            Color majorColor = majorActive ? AccentColor
-                : isNeighbor ? Color.FromRgb(120, 96, 160)
+            bool majorDiatonic = diatonicMajors.Contains(FlatToSharp(CircleOfFifths.MajorKeys[i]));
+            Color majorColor = majorActive ? GreenColor
+                : majorDiatonic ? AccentColor
+                : isNeighbor ? HoverBg
                 : InactiveBg;
 
             var majorDot = new Ellipse
@@ -142,15 +147,15 @@ public partial class CircleOfFifthsView : UserControl
             var majorText = new TextBlock
             {
                 Text = CircleOfFifths.MajorKeys[i],
-                FontSize = isSelected ? 16 : 13,
+                FontSize = isSelected ? 19 : 15,
                 FontWeight = FontWeights.Bold,
                 Foreground = new SolidColorBrush(
-                    majorActive || isNeighbor ? TextDark : TextLight),
+                    majorActive || majorDiatonic ? TextDark : TextLight),
                 TextAlignment = TextAlignment.Center,
                 Width = dotSize
             };
             Canvas.SetLeft(majorText, mx - dotSize / 2);
-            Canvas.SetTop(majorText, my - (isSelected ? 10 : 8));
+            Canvas.SetTop(majorText, my - (isSelected ? 12 : 10));
             majorText.IsHitTestVisible = false;
             CircleCanvas.Children.Add(majorText);
 
@@ -158,12 +163,15 @@ public partial class CircleOfFifthsView : UserControl
             double minorR = innerR * 0.65;
             double mnx = cx + minorR * Math.Cos(angle);
             double mny = cy + minorR * Math.Sin(angle);
-            double minDotSize = isSelected ? 38 : 30;
+            double minDotSize = isSelected ? 50 : 40;
 
             bool minorActive = isSelected && _showMinor;
+            string normalizedMinor = $"{FlatToSharp(MinorRoot(CircleOfFifths.MinorKeys[i]))}m";
+            bool minorDiatonic = diatonicMinors.Contains(normalizedMinor);
             Color minorColor = minorActive ? GreenColor
-                : isSelected ? Color.FromRgb(60, 50, 80)
-                : Color.FromRgb(45, 34, 64);
+                : minorDiatonic ? AccentColor
+                : isSelected ? HoverBg
+                : RingColor;
 
             var minorDot = new Ellipse
             {
@@ -185,13 +193,13 @@ public partial class CircleOfFifthsView : UserControl
             var minorText = new TextBlock
             {
                 Text = CircleOfFifths.MinorKeys[i],
-                FontSize = isSelected ? 13 : 11,
-                Foreground = new SolidColorBrush(minorActive ? TextDark : DimText),
+                FontSize = isSelected ? 15 : 12,
+                Foreground = new SolidColorBrush(minorActive || minorDiatonic ? TextDark : DimText),
                 TextAlignment = TextAlignment.Center,
                 Width = minDotSize
             };
             Canvas.SetLeft(minorText, mnx - minDotSize / 2);
-            Canvas.SetTop(minorText, mny - (isSelected ? 8 : 7));
+            Canvas.SetTop(minorText, mny - (isSelected ? 10 : 8));
             minorText.IsHitTestVisible = false;
             CircleCanvas.Children.Add(minorText);
 
@@ -203,11 +211,49 @@ public partial class CircleOfFifthsView : UserControl
                 Y1 = cy + innerR * Math.Sin(lineAngle),
                 X2 = cx + outerR * Math.Cos(lineAngle),
                 Y2 = cy + outerR * Math.Sin(lineAngle),
-                Stroke = new SolidColorBrush(Color.FromRgb(55, 44, 74)),
+                Stroke = new SolidColorBrush(PanelBorder),
                 StrokeThickness = 0.5, Opacity = 0.5
             };
             CircleCanvas.Children.Add(line);
         }
+    }
+
+    private (HashSet<string> Majors, HashSet<string> Minors) GetDiatonicHighlights()
+    {
+        ProgressionStep[] chords;
+        if (_showMinor)
+        {
+            string root = FlatToSharp(MinorRoot(CircleOfFifths.MinorKeys[_selectedIndex]));
+            chords = ProgressionBuilder.GetDiatonicChords(root, modeIndex: 1);
+        }
+        else
+        {
+            chords = GetMajorDiatonicChords(_selectedIndex);
+        }
+
+        var majors = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        var minors = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+        foreach (var chord in chords)
+        {
+            string root = FlatToSharp(chord.Root);
+            if (chord.ChordType == "Major")
+            {
+                majors.Add(root);
+            }
+            else if (chord.ChordType == "m")
+            {
+                minors.Add($"{root}m");
+            }
+        }
+
+        return (majors, minors);
+    }
+
+    private static ProgressionStep[] GetMajorDiatonicChords(int circleIndex)
+    {
+        string root = FlatToSharp(CircleOfFifths.MajorKeys[circleIndex]);
+        return ProgressionBuilder.GetDiatonicChords(root);
     }
 
     private void UpdateInfo()
@@ -264,7 +310,7 @@ public partial class CircleOfFifthsView : UserControl
                 MajorScale.Select(s => NoteNames[(rootIdx + s) % 12]));
             NotesLabel.Text = notes;
 
-            var chords = CircleOfFifths.GetChords(i);
+            var chords = GetMajorDiatonicChords(i);
             DisplayChords(chords);
 
             string c(ProgressionStep s) => s.Root + (s.ChordType == "Major" ? "" : s.ChordType);
@@ -292,9 +338,12 @@ public partial class CircleOfFifthsView : UserControl
             var border = new Border
             {
                 Background = new SolidColorBrush(InactiveBg),
-                CornerRadius = new CornerRadius(6),
+                BorderBrush = new SolidColorBrush(InactiveBg),
+                BorderThickness = new Thickness(1),
+                CornerRadius = new CornerRadius(4),
                 Padding = new Thickness(8, 4, 8, 4),
-                Margin = new Thickness(3)
+                Margin = new Thickness(0, 0, 6, 6),
+                MinWidth = 42
             };
 
             var stack = new StackPanel();
@@ -302,6 +351,7 @@ public partial class CircleOfFifthsView : UserControl
             {
                 Text = step.Degree, FontSize = 10,
                 Foreground = new SolidColorBrush(AccentColor),
+                FontWeight = FontWeights.Bold,
                 HorizontalAlignment = HorizontalAlignment.Center
             });
             stack.Children.Add(new TextBlock

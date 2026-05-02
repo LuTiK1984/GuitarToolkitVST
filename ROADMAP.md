@@ -30,6 +30,7 @@ GuitarToolkit is a personal, idea-driven guitar toolkit for Windows, available a
   - keep testing tab playback inside FL Studio.
 - Rebuild the interface layout as a dedicated design pass:
   - introduce consistent spacing, sizing, and panel structure;
+  - use the refined Tabs page as the control-size and toolbar-density reference before applying the style across the rest of the app;
   - reduce the current feeling of scattered controls;
   - make tabs, buttons, and mode controls clearly named and visually distinguishable;
   - add an interface language switch and prepare UI text for localization;

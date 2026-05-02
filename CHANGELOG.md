@@ -10,6 +10,19 @@ All notable changes to GuitarToolkit are documented here.
 - Tabs file selection now uses one explicit source selector and one file selector instead of parallel library/recent/favorites lists.
 - Removed the non-working visual sync control from the Tabs toolbar.
 - Updated Tabs checkbox and slider styling to better match the dark purple theme.
+- Refined the Tabs toolbar toward a compact 28px control rhythm, moved auto-follow next to track mute/solo, and improved the collapsed-window layout.
+- Normalized Tabs toolbar spacing around a tighter 26px control size and lowered compact-window notation scale to show more usable tab area.
+- Fine-tuned Tabs auto-follow and speed row vertical alignment for the compact toolbar layout.
+- Nudged the Tabs speed controls down slightly to balance the lower toolbar spacing.
+- Moved the Tabs auto-follow toggle beside the speed controls for a steadier compact layout.
+- Rebuilt the Tabs speed-control row with fixed grid spacing to match the target compact toolbar layout.
+- Equalized speed-row gaps and rounded the speed percentage field to match neighboring controls.
+- Shifted the Tabs file controls right to balance compact-window side padding and reduce over-wide fullscreen file selectors.
+- Redesigned the Circle of Fifths tab with the compact dark panel style established by the Tabs redesign.
+- Enlarged Circle of Fifths note nodes and unified selection color: green for the selected key, purple for the key notes list.
+- Added purple Circle of Fifths highlights for diatonic major and minor chord nodes around the selected key.
+- Fixed Circle of Fifths diatonic highlighting for flat major keys such as Db, Ab, Eb, and Bb.
+- Increased all Circle of Fifths note nodes for stronger readability.
 
 ## [1.3.3] - 2026-04-30
 

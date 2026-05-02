@@ -624,13 +624,13 @@ public partial class TabPlayerView : UserControl
             return 0.9d;
 
         if (width < 760d)
-            return 0.7d;
+            return 0.62d;
 
         if (width < 980d)
-            return 0.78d;
+            return 0.7d;
 
         if (width < 1250d)
-            return 0.86d;
+            return 0.82d;
 
         return 0.95d;
     }

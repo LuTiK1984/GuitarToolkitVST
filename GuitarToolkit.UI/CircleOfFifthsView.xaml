@@ -3,70 +3,183 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              Background="#1A1525">
 
-    <Grid Margin="16">
+    <UserControl.Resources>
+        <SolidColorBrush x:Key="PanelBrush" Color="#241B33"/>
+        <SolidColorBrush x:Key="PanelBorderBrush" Color="#352847"/>
+        <SolidColorBrush x:Key="ControlBrush" Color="#4B3A64"/>
+        <SolidColorBrush x:Key="ControlHoverBrush" Color="#5B4676"/>
+        <SolidColorBrush x:Key="AccentBrush" Color="#CBA6F7"/>
+        <SolidColorBrush x:Key="AccentGreenBrush" Color="#A6E3A1"/>
+        <SolidColorBrush x:Key="TextBrush" Color="#CDD6F4"/>
+        <SolidColorBrush x:Key="MutedTextBrush" Color="#9B8BB8"/>
+        <SolidColorBrush x:Key="DarkBrush" Color="#1A1525"/>
+
+        <Style x:Key="Panel" TargetType="{x:Type Border}">
+            <Setter Property="Background" Value="{StaticResource PanelBrush}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource PanelBorderBrush}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="6"/>
+            <Setter Property="Padding" Value="10"/>
+        </Style>
+
+        <Style x:Key="SectionPanel" TargetType="{x:Type Border}" BasedOn="{StaticResource Panel}">
+            <Setter Property="Background" Value="{StaticResource DarkBrush}"/>
+            <Setter Property="Padding" Value="10 8"/>
+            <Setter Property="Margin" Value="0 0 0 8"/>
+        </Style>
+
+        <Style x:Key="GroupLabel" TargetType="{x:Type TextBlock}">
+            <Setter Property="Foreground" Value="{StaticResource MutedTextBrush}"/>
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Margin" Value="0 0 0 4"/>
+        </Style>
+
+        <Style x:Key="BodyText" TargetType="{x:Type TextBlock}">
+            <Setter Property="Foreground" Value="{StaticResource TextBrush}"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="LineHeight" Value="20"/>
+            <Setter Property="TextWrapping" Value="Wrap"/>
+        </Style>
+
+        <Style x:Key="CircleActionButton" TargetType="{x:Type Button}">
+            <Setter Property="Height" Value="26"/>
+            <Setter Property="MinWidth" Value="112"/>
+            <Setter Property="Padding" Value="10 0"/>
+            <Setter Property="Background" Value="{StaticResource AccentBrush}"/>
+            <Setter Property="Foreground" Value="{StaticResource DarkBrush}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource AccentBrush}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="HorizontalAlignment" Value="Left"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <Border x:Name="Chrome"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="4">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"
+                                              RecognizesAccessKey="True"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Chrome" Property="Background" Value="{StaticResource ControlHoverBrush}"/>
+                                <Setter TargetName="Chrome" Property="BorderBrush" Value="{StaticResource ControlHoverBrush}"/>
+                                <Setter Property="Foreground" Value="{StaticResource TextBrush}"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="Chrome" Property="Background" Value="{StaticResource AccentGreenBrush}"/>
+                                <Setter TargetName="Chrome" Property="BorderBrush" Value="{StaticResource AccentGreenBrush}"/>
+                                <Setter Property="Foreground" Value="{StaticResource DarkBrush}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </UserControl.Resources>
+
+    <Grid Margin="8">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="330"/>
         </Grid.ColumnDefinitions>
 
-        <!-- Круг -->
-        <Canvas x:Name="CircleCanvas" Grid.Column="0"
-                Background="Transparent"
-                SizeChanged="Canvas_SizeChanged"/>
+        <Border Grid.Column="0"
+                Style="{StaticResource Panel}"
+                Padding="12">
+            <Canvas x:Name="CircleCanvas"
+                    Background="Transparent"
+                    SizeChanged="Canvas_SizeChanged"/>
+        </Border>
 
-        <!-- Информация -->
-        <ScrollViewer Grid.Column="1" VerticalScrollBarVisibility="Auto" Margin="16 0 0 0">
-            <StackPanel>
+        <Border Grid.Column="1"
+                Style="{StaticResource Panel}"
+                Margin="8 0 0 0">
+            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                <StackPanel>
+                    <TextBlock Text="Тональность"
+                               Style="{StaticResource GroupLabel}"/>
 
-                <TextBlock x:Name="KeyNameLabel" Text="C мажор"
-                           FontSize="32" FontWeight="Bold" Foreground="#CDD6F4"
-                           Margin="0 0 0 4"/>
-                <TextBlock x:Name="MinorLabel" Text="Параллельный: Am"
-                           FontSize="15" Foreground="#7C6F96" Margin="0 0 0 4"/>
-                <TextBlock x:Name="SignatureLabel" Text="Без знаков"
-                           FontSize="15" Foreground="#CBA6F7" Margin="0 0 0 12"/>
+                    <TextBlock x:Name="KeyNameLabel"
+                               Text="C мажор"
+                               FontSize="28"
+                               FontWeight="Bold"
+                               Foreground="{StaticResource TextBrush}"
+                               Margin="0 0 0 2"/>
 
-                <!-- Кнопка воспроизведения гаммы -->
-                <Button Content="🔊 Играть гамму" Height="36" Width="200"
-                        FontSize="13" FontWeight="Bold"
-                        Foreground="#1A1525" Background="#CBA6F7"
-                        BorderThickness="0" Cursor="Hand"
-                        HorizontalAlignment="Left" Margin="0 0 0 16"
-                        Click="PlayScale_Click"/>
+                    <TextBlock x:Name="MinorLabel"
+                               Text="Параллельный: Am"
+                               Foreground="{StaticResource MutedTextBrush}"
+                               FontSize="13"
+                               FontWeight="Bold"
+                               Margin="0 0 0 2"/>
 
-                <!-- Ноты в тональности -->
-                <TextBlock Text="Ноты в тональности:" FontSize="13"
-                           Foreground="#7C6F96" Margin="0 0 0 6"/>
-                <TextBlock x:Name="NotesLabel" Text="C  D  E  F  G  A  B"
-                           FontSize="16" FontWeight="Bold" Foreground="#CDD6F4"
-                           Margin="0 0 0 16"/>
+                    <TextBlock x:Name="SignatureLabel"
+                               Text="Без знаков"
+                               Foreground="{StaticResource AccentBrush}"
+                               FontSize="13"
+                               FontWeight="Bold"
+                               Margin="0 0 0 10"/>
 
-                <!-- Диатонические аккорды -->
-                <TextBlock Text="Диатонические аккорды:" FontSize="13"
-                           Foreground="#7C6F96" Margin="0 0 0 8"/>
-                <ItemsControl x:Name="ChordsDisplay">
-                    <ItemsControl.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <WrapPanel/>
-                        </ItemsPanelTemplate>
-                    </ItemsControl.ItemsPanel>
-                </ItemsControl>
+                    <Button Content="▶ Играть гамму"
+                            Style="{StaticResource CircleActionButton}"
+                            Margin="0 0 0 10"
+                            Click="PlayScale_Click"/>
 
-                <!-- Популярные прогрессии -->
-                <TextBlock Text="Популярные прогрессии:" FontSize="13"
-                           Foreground="#7C6F96" Margin="0 16 0 8"/>
-                <TextBlock x:Name="ProgressionsLabel" Text=""
-                           FontSize="13" Foreground="#CDD6F4"
-                           TextWrapping="Wrap" LineHeight="22"/>
+                    <Border Style="{StaticResource SectionPanel}">
+                        <StackPanel>
+                            <TextBlock Text="Ноты"
+                                       Style="{StaticResource GroupLabel}"/>
+                            <TextBlock x:Name="NotesLabel"
+                                       Text="C  D  E  F  G  A  B"
+                                       Foreground="{StaticResource AccentBrush}"
+                                       FontSize="17"
+                                       FontWeight="Bold"/>
+                        </StackPanel>
+                    </Border>
 
-                <!-- Родственные тональности -->
-                <TextBlock Text="Родственные тональности:" FontSize="13"
-                           Foreground="#7C6F96" Margin="0 16 0 8"/>
-                <TextBlock x:Name="RelatedLabel" Text=""
-                           FontSize="13" Foreground="#CDD6F4"
-                           TextWrapping="Wrap" LineHeight="22"/>
+                    <Border Style="{StaticResource SectionPanel}">
+                        <StackPanel>
+                            <TextBlock Text="Диатонические аккорды"
+                                       Style="{StaticResource GroupLabel}"/>
+                            <ItemsControl x:Name="ChordsDisplay">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <WrapPanel/>
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                            </ItemsControl>
+                        </StackPanel>
+                    </Border>
 
-            </StackPanel>
-        </ScrollViewer>
+                    <Border Style="{StaticResource SectionPanel}">
+                        <StackPanel>
+                            <TextBlock Text="Популярные прогрессии"
+                                       Style="{StaticResource GroupLabel}"/>
+                            <TextBlock x:Name="ProgressionsLabel"
+                                       Text=""
+                                       Style="{StaticResource BodyText}"/>
+                        </StackPanel>
+                    </Border>
+
+                    <Border Style="{StaticResource SectionPanel}"
+                            Margin="0">
+                        <StackPanel>
+                            <TextBlock Text="Родственные тональности"
+                                       Style="{StaticResource GroupLabel}"/>
+                            <TextBlock x:Name="RelatedLabel"
+                                       Text=""
+                                       Style="{StaticResource BodyText}"/>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </ScrollViewer>
+        </Border>
     </Grid>
 </UserControl>
