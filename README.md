@@ -1,6 +1,6 @@
 # GuitarToolkit
 
-[![CI](https://github.com/LuTiK1984/GuitarToolkitVST/actions/workflows/ci.yml/badge.svg)](https://github.com/LuTiK1984/GuitarToolkitVST/actions/workflows/ci.yml)
+[![CI](https://github.com/LuTiK1984/GuitarToolkit/actions/workflows/ci.yml/badge.svg)](https://github.com/LuTiK1984/GuitarToolkit/actions/workflows/ci.yml)
 ![.NET](https://img.shields.io/badge/.NET-8.0-7B5CD6)
 ![Windows](https://img.shields.io/badge/platform-Windows-7C6F96)
 ![VST3](https://img.shields.io/badge/plugin-VST3-CBA6F7)
@@ -9,13 +9,41 @@
 
 [Русская версия](#guitartoolkit-ru)
 
-**GuitarToolkit** is a Windows guitar toolkit for practice, writing, and DAW work. It ships as both a standalone WPF desktop app and a VST3 plugin, with the same musician-focused interface shared between both targets.
+**GuitarToolkit** is an open-source Windows guitar toolkit for practice, writing, and DAW work. It ships as both a standalone WPF desktop app and a VST3 plugin, with the same musician-focused interface shared between both targets.
 
 The app brings together a tuner, metronome, chord library, scale fretboard, interval trainer, progression builder, circle of fifths, and Guitar Pro / MusicXML tab viewer. The goal is practical: one compact place for daily guitar work, quick theory checks, and sketching ideas inside or outside a DAW.
 
+## Project Status
+
+GuitarToolkit is an active open-source passion project.
+
+| Target | Status |
+| --- | --- |
+| Desktop app | Usable on Windows 10/11 x64 |
+| VST3 plugin | Usable, with DAW compatibility still being collected |
+| Tabs viewer | Active development; alphaTab import limits may apply |
+| Platform | Windows-only for now |
+
+## Quick Start
+
+1. Download the latest build from [GitHub Releases](https://github.com/LuTiK1984/GuitarToolkit/releases).
+2. For Desktop: unzip `GuitarToolkit_DESKTOP_v.<version>.zip` and run the desktop executable.
+3. For VST3: unzip `GuitarToolkit_VST3_v.<version>.zip` and copy the whole `GuitarToolkit` plugin folder to:
+
+```text
+C:\Program Files\Common Files\VST3\GuitarToolkit\
+```
+
+4. Rescan plugins in your DAW.
+5. If something fails, check logs in:
+
+```text
+%AppData%\GuitarToolkit\logs
+```
+
 ## Downloads
 
-Get the latest build from [GitHub Releases](https://github.com/LuTiK1984/GuitarToolkitVST/releases).
+Get the latest build from [GitHub Releases](https://github.com/LuTiK1984/GuitarToolkit/releases).
 
 - `GuitarToolkit_DESKTOP_v.1.5.0.zip` - standalone Windows desktop app.
 - `GuitarToolkit_VST3_v.1.5.0.zip` - VST3 plugin package for DAW hosts.
@@ -218,17 +246,19 @@ Diagnostic logs are written to:
 %AppData%\GuitarToolkit\logs
 ```
 
-## Community
+## Community and Support
 
-- [Contributing guide](CONTRIBUTING.md)
-- [Code of conduct](CODE_OF_CONDUCT.md)
-- [Security policy](SECURITY.md)
-- [Release checklist](RELEASE_CHECKLIST.md)
-- [Third-party notices](THIRD_PARTY_NOTICES.md)
-- [Roadmap](ROADMAP.md)
-- [Known tab import issues](KNOWN_TAB_IMPORT_ISSUES.md)
+- [Discussions](https://github.com/LuTiK1984/GuitarToolkit/discussions) - questions, ideas, DAW compatibility reports, and community feedback.
+- [Support guide](SUPPORT.md) - where to ask for help and what information to include.
+- [Contributing guide](CONTRIBUTING.md) - how to contribute safely and keep changes focused.
+- [Code of conduct](CODE_OF_CONDUCT.md) - community behavior expectations.
+- [Security policy](SECURITY.md) - how to report sensitive issues.
+- [Release checklist](RELEASE_CHECKLIST.md) - release process and manual verification.
+- [Third-party notices](THIRD_PARTY_NOTICES.md) - dependency and license notes.
+- [Roadmap](ROADMAP.md) - project direction and planned improvements.
+- [Known tab import issues](KNOWN_TAB_IMPORT_ISSUES.md) - current tab import limitations.
 
-Bug reports, feature ideas, and DAW compatibility reports are welcome through the GitHub issue templates.
+Use Discussions for open-ended questions and ideas. Use Issues for reproducible bugs and clearly scoped development tasks.
 
 ## License
 
@@ -244,13 +274,41 @@ VST is a trademark of Steinberg Media Technologies GmbH. Third-party dependency 
 
 [English version](#guitartoolkit)
 
-**GuitarToolkit** - гитарный набор инструментов для Windows, практики, набросков и работы в DAW. Проект поставляется как standalone WPF-приложение и как VST3-плагин, а общий интерфейс используется в обеих версиях.
+**GuitarToolkit** - open-source набор инструментов для гитаристов под Windows, практики, набросков и работы в DAW. Проект поставляется как standalone WPF-приложение и как VST3-плагин, а общий интерфейс используется в обеих версиях.
 
 В одном компактном приложении собраны тюнер, метроном, справочник аккордов, гриф с гаммами, тренажёр интервалов, построитель прогрессий, круг квинт и просмотр табулатур Guitar Pro / MusicXML. Идея проекта простая: дать гитаристу практичный рабочий набор для ежедневных занятий, быстрой проверки теории и музыкальных идей внутри DAW или отдельно от неё.
 
+## Статус проекта
+
+GuitarToolkit — активный open-source passion project.
+
+| Цель | Статус |
+| --- | --- |
+| Desktop-приложение | Можно использовать на Windows 10/11 x64 |
+| VST3-плагин | Можно использовать, совместимость с DAW ещё собирается |
+| Просмотр табов | Активная разработка; возможны ограничения импорта alphaTab |
+| Платформа | Пока только Windows |
+
+## Быстрый старт
+
+1. Скачайте последнюю сборку на странице [GitHub Releases](https://github.com/LuTiK1984/GuitarToolkit/releases).
+2. Для Desktop: распакуйте `GuitarToolkit_DESKTOP_v.<version>.zip` и запустите desktop executable.
+3. Для VST3: распакуйте `GuitarToolkit_VST3_v.<version>.zip` и скопируйте всю папку плагина `GuitarToolkit` сюда:
+
+```text
+C:\Program Files\Common Files\VST3\GuitarToolkit\
+```
+
+4. Пересканируйте плагины в DAW.
+5. Если что-то не работает, проверьте логи:
+
+```text
+%AppData%\GuitarToolkit\logs
+```
+
 ## Загрузка
 
-Актуальная версия доступна на странице [GitHub Releases](https://github.com/LuTiK1984/GuitarToolkitVST/releases).
+Актуальная версия доступна на странице [GitHub Releases](https://github.com/LuTiK1984/GuitarToolkit/releases).
 
 - `GuitarToolkit_DESKTOP_v.1.5.0.zip` - standalone-приложение для Windows.
 - `GuitarToolkit_VST3_v.1.5.0.zip` - пакет VST3-плагина для DAW.
@@ -453,17 +511,19 @@ C:\Program Files\Common Files\VST3\GuitarToolkit\
 %AppData%\GuitarToolkit\logs
 ```
 
-## Сообщество
+## Сообщество и поддержка
 
-- [Как участвовать в разработке](CONTRIBUTING.md)
-- [Кодекс поведения](CODE_OF_CONDUCT.md)
-- [Политика безопасности](SECURITY.md)
-- [Чеклист релиза](RELEASE_CHECKLIST.md)
-- [Уведомления о сторонних библиотеках](THIRD_PARTY_NOTICES.md)
-- [Roadmap](ROADMAP.md)
-- [Известные ограничения импорта табов](KNOWN_TAB_IMPORT_ISSUES.md)
+- [Discussions](https://github.com/LuTiK1984/GuitarToolkit/discussions) - вопросы, идеи, отчёты о совместимости DAW и обратная связь.
+- [Руководство по поддержке](SUPPORT.md) - куда писать и какую информацию прикладывать.
+- [Как участвовать в разработке](CONTRIBUTING.md) - как безопасно вносить изменения и держать PR сфокусированными.
+- [Кодекс поведения](CODE_OF_CONDUCT.md) - правила общения в сообществе.
+- [Политика безопасности](SECURITY.md) - как сообщать о чувствительных проблемах.
+- [Чеклист релиза](RELEASE_CHECKLIST.md) - процесс релиза и ручные проверки.
+- [Уведомления о сторонних библиотеках](THIRD_PARTY_NOTICES.md) - зависимости и лицензии.
+- [Roadmap](ROADMAP.md) - направление проекта и планируемые улучшения.
+- [Известные ограничения импорта табов](KNOWN_TAB_IMPORT_ISSUES.md) - текущие ограничения импорта табулатур.
 
-Баг-репорты, идеи функций и отчёты о совместимости с DAW можно оставлять через GitHub issue templates.
+Используйте Discussions для открытых вопросов и идей. Используйте Issues для воспроизводимых багов и чётких задач разработки.
 
 ## Лицензия
 
