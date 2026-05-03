@@ -1,0 +1,50 @@
+name: Task / Задача
+description: Track a maintenance, documentation, refactoring, release, or project-management task / Внутренняя задача по поддержке, документации, рефакторингу, релизу или ведению проекта
+title: "[Task]: "
+labels:
+  - task
+body:
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary / Кратко
+      description: What needs to be done? / Что нужно сделать?
+      placeholder: |
+        Describe the task clearly.
+        Опишите задачу понятно.
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area / Область
+      options:
+        - Documentation / Документация
+        - Release / Релиз
+        - CI / CI
+        - Tests / Тесты
+        - Refactoring / Рефакторинг
+        - Desktop app / Desktop-приложение
+        - VST3 plugin / VST3-плагин
+        - DAW compatibility / Совместимость с DAW
+        - UI/UX / Интерфейс
+        - Project management / Ведение проекта
+        - Other / Другое
+    validations:
+      required: true
+  - type: textarea
+    id: checklist
+    attributes:
+      label: Checklist / Чеклист
+      description: Break the task into small steps. / Разбейте задачу на небольшие шаги.
+      placeholder: |
+        - [ ] Step 1
+        - [ ] Step 2
+        - [ ] Step 3
+  - type: textarea
+    id: done
+    attributes:
+      label: Done when / Готово, когда
+      description: How do we know this task is complete? / Как понять, что задача завершена?
+    validations:
+      required: true
