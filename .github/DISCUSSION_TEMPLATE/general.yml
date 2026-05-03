@@ -1,0 +1,20 @@
+title: "[General]: "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this category for useful project conversations that do not fit Q&A, Ideas, DAW Compatibility, Announcements, or Show and Tell.
+
+        Используйте эту категорию для полезных обсуждений проекта, которые не подходят под Q&A, Ideas, DAW Compatibility, Announcements или Show and Tell.
+  - type: textarea
+    id: topic
+    attributes:
+      label: Topic / Тема
+      description: What would you like to discuss? / Что хотите обсудить?
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: Context / Контекст
+      description: Add details, links, examples, screenshots, or background. / Добавьте детали, ссылки, примеры, скриншоты или контекст.
