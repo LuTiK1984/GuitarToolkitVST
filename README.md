@@ -26,6 +26,8 @@ GuitarToolkit is an active open-source passion project.
 
 ## Quick Start
 
+For a more detailed installation walkthrough, see the [Quick Start guide](docs/QUICK_START.md).
+
 1. Download the latest build from [GitHub Releases](https://github.com/LuTiK1984/GuitarToolkit/releases).
 2. For Desktop: unzip `GuitarToolkit_DESKTOP_v.<version>.zip` and run the desktop executable.
 3. For VST3: unzip `GuitarToolkit_VST3_v.<version>.zip` and copy the whole `GuitarToolkit` plugin folder to:
@@ -250,6 +252,7 @@ Diagnostic logs are written to:
 
 - [Discussions](https://github.com/LuTiK1984/GuitarToolkit/discussions) - questions, ideas, DAW compatibility reports, and community feedback.
 - [Support guide](SUPPORT.md) - where to ask for help and what information to include.
+- [Quick Start guide](docs/QUICK_START.md) - Desktop and VST3 installation walkthrough.
 - [Contributing guide](CONTRIBUTING.md) - how to contribute safely and keep changes focused.
 - [Code of conduct](CODE_OF_CONDUCT.md) - community behavior expectations.
 - [Security policy](SECURITY.md) - how to report sensitive issues.
@@ -290,6 +293,8 @@ GuitarToolkit — активный open-source passion project.
 | Платформа | Пока только Windows |
 
 ## Быстрый старт
+
+Подробная инструкция по установке находится в [Quick Start guide](docs/QUICK_START.md).
 
 1. Скачайте последнюю сборку на странице [GitHub Releases](https://github.com/LuTiK1984/GuitarToolkit/releases).
 2. Для Desktop: распакуйте `GuitarToolkit_DESKTOP_v.<version>.zip` и запустите desktop executable.
@@ -515,6 +520,7 @@ C:\Program Files\Common Files\VST3\GuitarToolkit\
 
 - [Discussions](https://github.com/LuTiK1984/GuitarToolkit/discussions) - вопросы, идеи, отчёты о совместимости DAW и обратная связь.
 - [Руководство по поддержке](SUPPORT.md) - куда писать и какую информацию прикладывать.
+- [Quick Start guide](docs/QUICK_START.md) - инструкция по установке Desktop и VST3.
 - [Как участвовать в разработке](CONTRIBUTING.md) - как безопасно вносить изменения и держать PR сфокусированными.
 - [Кодекс поведения](CODE_OF_CONDUCT.md) - правила общения в сообществе.
 - [Политика безопасности](SECURITY.md) - как сообщать о чувствительных проблемах.
