@@ -254,6 +254,7 @@ Diagnostic logs are written to:
 - [Support guide](SUPPORT.md) - where to ask for help and what information to include.
 - [Quick Start guide](docs/QUICK_START.md) - Desktop and VST3 installation walkthrough.
 - [Project structure](docs/PROJECT_STRUCTURE.md) - where files belong and what should not be committed.
+- [Maintainer guide](docs/MAINTAINER_GUIDE.md) - how Issues, Discussions, labels, milestones, and routine triage are handled.
 - [Dependency policy](docs/DEPENDENCY_POLICY.md) - how Dependabot updates and risky dependency changes are reviewed.
 - [Release process](docs/RELEASE_PROCESS.md) - how versions, release packages, and GitHub Releases are prepared.
 - [Contributing guide](CONTRIBUTING.md) - how to contribute safely and keep changes focused.
@@ -525,6 +526,7 @@ C:\Program Files\Common Files\VST3\GuitarToolkit\
 - [Руководство по поддержке](SUPPORT.md) - куда писать и какую информацию прикладывать.
 - [Quick Start guide](docs/QUICK_START.md) - инструкция по установке Desktop и VST3.
 - [Project structure](docs/PROJECT_STRUCTURE.md) - где должны лежать файлы и что не нужно коммитить.
+- [Maintainer guide](docs/MAINTAINER_GUIDE.md) - как работать с Issues, Discussions, labels, milestones и triage.
 - [Политика зависимостей](docs/DEPENDENCY_POLICY.md) - как проверяются Dependabot updates и рискованные обновления зависимостей.
 - [Процесс релиза](docs/RELEASE_PROCESS.md) - как готовятся версии, release packages и GitHub Releases.
 - [Как участвовать в разработке](CONTRIBUTING.md) - как безопасно вносить изменения и держать PR сфокусированными.
