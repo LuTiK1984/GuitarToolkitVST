@@ -252,6 +252,7 @@ Diagnostic logs are written to:
 
 - [Discussions](https://github.com/LuTiK1984/GuitarToolkit/discussions) - questions, ideas, DAW compatibility reports, and community feedback.
 - [Support guide](SUPPORT.md) - where to ask for help and what information to include.
+- [Documentation index](docs/README.md) - organized entry point for all user, contributor, maintainer, and release documentation.
 - [Quick Start guide](docs/QUICK_START.md) - Desktop and VST3 installation walkthrough.
 - [Release page guide](docs/RELEASE_PAGE_GUIDE.md) - how to keep GitHub Releases clean, useful, and download-friendly.
 - [Project structure](docs/PROJECT_STRUCTURE.md) - where files belong and what should not be committed.
@@ -529,6 +530,7 @@ C:\Program Files\Common Files\VST3\GuitarToolkit\
 
 - [Discussions](https://github.com/LuTiK1984/GuitarToolkit/discussions) - вопросы, идеи, отчёты о совместимости DAW и обратная связь.
 - [Руководство по поддержке](SUPPORT.md) - куда писать и какую информацию прикладывать.
+- [Documentation index](docs/README.md) - единая точка входа для пользовательской, contributor, maintainer и release-документации.
 - [Quick Start guide](docs/QUICK_START.md) - инструкция по установке Desktop и VST3.
 - [Release page guide](docs/RELEASE_PAGE_GUIDE.md) - как держать GitHub Releases чистыми, полезными и удобными для скачивания.
 - [Project structure](docs/PROJECT_STRUCTURE.md) - где должны лежать файлы и что не нужно коммитить.
