@@ -23,11 +23,12 @@ $releaseDocs = @(
     "LICENSE",
     "CHANGELOG.md",
     "THIRD_PARTY_NOTICES.md",
-    "docs\QUICK_START.md",
-    "docs\SUPPORTED_DAWS.md",
-    "docs\FL_STUDIO.md",
-    "docs\REAPER.md",
-    "KNOWN_TAB_IMPORT_ISSUES.md"
+    "docs\README.md",
+    "docs\user\QUICK_START.md",
+    "docs\user\SUPPORTED_DAWS.md",
+    "docs\user\FL_STUDIO.md",
+    "docs\user\REAPER.md",
+    "docs\user\KNOWN_TAB_IMPORT_ISSUES.md"
 )
 
 Write-Host "== GuitarToolkit release build v$Version =="
@@ -62,14 +63,14 @@ function Assert-File {
 function Copy-ReleaseDocs {
     param([string]$Destination)
 
-    $docsOut = Join-Path $Destination "docs"
-    New-Item -ItemType Directory -Path $docsOut -Force | Out-Null
-
     foreach ($relativePath in $releaseDocs) {
         $source = Join-Path $root $relativePath
         if (Test-Path -LiteralPath $source) {
             if ($relativePath -like "docs\*") {
-                Copy-Item -LiteralPath $source -Destination $docsOut -Force
+                $target = Join-Path $Destination $relativePath
+                $targetDir = Split-Path -Parent $target
+                New-Item -ItemType Directory -Path $targetDir -Force | Out-Null
+                Copy-Item -LiteralPath $source -Destination $target -Force
             }
             else {
                 Copy-Item -LiteralPath $source -Destination $Destination -Force
