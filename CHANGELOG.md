@@ -8,10 +8,13 @@ All notable changes to GuitarToolkit are documented here.
 
 - Added MIT license, contributing guide, code of conduct, security policy, pull request template, CODEOWNERS, Dependabot config, and EditorConfig.
 - Added DAW documentation for FL Studio, Reaper, and supported-host compatibility tracking.
+- Added bilingual English/Russian README, contributor documentation, security policy, code of conduct, PR template, issue templates, release checklist, quick-start setup guide, and DAW setup guides.
+- Added refreshed GitHub screenshot set for dark and light themes.
 
 ### Changed
 
 - Linked community, security, release, and DAW documentation from the README and release checklist.
+- Reworked README as a full bilingual project overview with release links, architecture notes, feature descriptions, VST3 deployment guidance, and updated screenshots.
 
 ## [1.5.0] - 2026-05-03
 

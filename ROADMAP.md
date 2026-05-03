@@ -1,5 +1,7 @@
 # GuitarToolkit Roadmap
 
+[Русская версия](#ru)
+
 GuitarToolkit is a personal, idea-driven guitar toolkit for Windows, available as a standalone desktop app and a VST3 plugin. The goal is to grow it from a useful passion project into a polished, trustworthy tool for guitar practice, writing, and DAW workflows.
 
 ## Product Direction
@@ -134,3 +136,52 @@ Before it feels commercial-grade:
 - license and third-party notices should be clear;
 - release packages should feel intentional, not like raw build folders;
 - Windows signing/installer strategy should be researched.
+
+---
+
+<a id="ru"></a>
+
+# Roadmap GuitarToolkit
+
+[English version](#guitartoolkit-roadmap)
+
+GuitarToolkit - личный, идейный гитарный набор инструментов для Windows, доступный как standalone desktop-приложение и VST3-плагин. Цель проекта - вырасти из полезного passion project в аккуратный и надёжный инструмент для практики, сочинения и работы в DAW.
+
+## Направление продукта
+
+- Держать проект musician-first: быстро открыть, легко понять, удобно использовать во время реальной практики или записи.
+- Считать Desktop и VST3 равноправными целями, но аккуратно проверять поведение в DAW перед тем, как называть функцию стабильной.
+- Предпочитать практичные улучшения workflow простому наращиванию количества функций.
+- Сохранять open-source/passion-project характер и постепенно повышать качество продукта.
+
+## Ближайшие приоритеты
+
+- Улучшить установку VST3 и сделать очевидным, что копировать нужно весь каталог плагина.
+- Поддерживать отдельные инструкции для FL Studio, Reaper и общего списка совместимости DAW.
+- Развивать диагностику: логи в `%AppData%\GuitarToolkit\logs`, понятные подсказки из UI и README.
+- Полировать Tabs: меньше визуальных перерисовок после resize/maximize/restore, сохранение последнего файла, дорожки, громкости, скорости и auto-follow.
+- Развивать Settings как центр языка, темы, аудио, путей библиотеки табов, диагностики и reset-действий.
+- Готовить интерфейс к локализации и будущим модулям без ломки текущих вкладок.
+
+## Среднесрочные идеи
+
+- Installer или более полированный portable package.
+- DAW-aware поведение: host tempo, transport sync, меньше конфликтов hotkeys внутри DAW.
+- Более сильный workflow табов: поиск, сортировка, refresh библиотеки, per-track volume/mute/solo.
+- Более сильный workflow прогрессий: менеджер пресетов, drag-and-drop, undo, длительности аккордов, strum/arpeggio, export.
+- Расширение interval trainer, scale practice, chord workflow, metronome и tuner в сторону реальной ежедневной практики.
+
+## Чеклист охоты за багами
+
+- Проверять Tabs после resize/maximize/restore.
+- Проверять VST3 startup и editor opening в FL Studio после каждого релиза.
+- Проверять деплой полного dependency set, включая `runtimes`.
+- Проверять назначение и смену recording input после загрузки плагина.
+- Тестировать GP3, GP4, GP5/GPX и MusicXML.
+- Следить, чтобы Desktop и VST3 не расходились в shared UI behavior.
+
+## Коммерческая готовность
+
+Текущее состояние: сильный нишевый open-source/passion project с продуктовым потенциалом.
+
+Перед commercial-grade уровнем нужны более простая установка, проверенная VST3-стабильность в разных DAW, хорошая диагностика, понятные лицензии и third-party notices, более аккуратная релизная упаковка и исследование Windows signing/installer.

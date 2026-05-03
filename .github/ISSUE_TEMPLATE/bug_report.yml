@@ -1,5 +1,5 @@
-name: Bug report
-description: Report a GuitarToolkit bug
+name: Bug report / Баг-репорт
+description: Report a GuitarToolkit bug / Сообщить об ошибке GuitarToolkit
 title: "[Bug]: "
 labels:
   - bug
@@ -7,52 +7,52 @@ body:
   - type: textarea
     id: summary
     attributes:
-      label: Summary
-      description: What happened?
+      label: Summary / Кратко
+      description: What happened? / Что произошло?
     validations:
       required: true
   - type: dropdown
     id: target
     attributes:
-      label: Target
+      label: Target / Где проявляется
       options:
-        - Desktop app
-        - VST3 plugin
-        - Both
-        - Not sure
+        - Desktop app / Desktop-приложение
+        - VST3 plugin / VST3-плагин
+        - Both / Оба варианта
+        - Not sure / Не уверен
     validations:
       required: true
   - type: input
     id: version
     attributes:
-      label: GuitarToolkit version
-      placeholder: v1.1.0
+      label: GuitarToolkit version / Версия GuitarToolkit
+      placeholder: v1.5.0
     validations:
       required: true
   - type: textarea
     id: steps
     attributes:
-      label: Steps to reproduce
+      label: Steps to reproduce / Шаги воспроизведения
       placeholder: |
-        1. Open...
-        2. Click...
-        3. Observe...
+        1. Open... / Открыть...
+        2. Click... / Нажать...
+        3. Observe... / Увидеть...
     validations:
       required: true
   - type: textarea
     id: expected
     attributes:
-      label: Expected behavior
+      label: Expected behavior / Ожидаемое поведение
     validations:
       required: true
   - type: textarea
     id: environment
     attributes:
-      label: Environment
+      label: Environment / Окружение
       placeholder: |
-        Windows version:
+        Windows version / версия Windows:
         .NET runtime:
-        Audio device:
-        DAW, if applicable:
+        Audio device / аудиоустройство:
+        DAW, if applicable / DAW, если актуально:
     validations:
       required: true

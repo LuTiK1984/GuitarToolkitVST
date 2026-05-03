@@ -1,5 +1,5 @@
-name: DAW compatibility report
-description: Report VST3 behavior in a specific DAW
+name: DAW compatibility report / Совместимость с DAW
+description: Report VST3 behavior in a specific DAW / Сообщить о поведении VST3 в конкретной DAW
 title: "[DAW]: "
 labels:
   - daw
@@ -8,49 +8,49 @@ body:
   - type: input
     id: daw
     attributes:
-      label: DAW and version
+      label: DAW and version / DAW и версия
       placeholder: FL Studio 24, Reaper 7, Cubase, Ableton Live...
     validations:
       required: true
   - type: input
     id: version
     attributes:
-      label: GuitarToolkit version
-      placeholder: v1.1.0
+      label: GuitarToolkit version / Версия GuitarToolkit
+      placeholder: v1.5.0
     validations:
       required: true
   - type: dropdown
     id: result
     attributes:
-      label: Result
+      label: Result / Результат
       options:
-        - Works
-        - Loads but has issues
-        - Does not load
-        - Crashes DAW
+        - Works / Работает
+        - Loads but has issues / Загружается, но есть проблемы
+        - Does not load / Не загружается
+        - Crashes DAW / Роняет DAW
     validations:
       required: true
   - type: textarea
     id: details
     attributes:
-      label: Details
-      description: Describe what works or fails.
+      label: Details / Детали
+      description: Describe what works or fails. / Опишите, что работает или ломается.
     validations:
       required: true
   - type: textarea
     id: audio_setup
     attributes:
-      label: Audio setup
+      label: Audio setup / Аудионастройки
       placeholder: |
-        Audio interface:
-        Input type:
-        Buffer size:
-        Sample rate:
+        Audio interface / аудиоинтерфейс:
+        Input type / тип входа:
+        Buffer size / размер буфера:
+        Sample rate / частота дискретизации:
   - type: textarea
     id: steps
     attributes:
-      label: Steps tested
+      label: Steps tested / Проверенные шаги
       placeholder: |
-        1. Added plugin to track.
-        2. Assigned input.
-        3. Enabled monitoring.
+        1. Added plugin to track. / Добавил плагин на дорожку.
+        2. Assigned input. / Назначил вход.
+        3. Enabled monitoring. / Включил мониторинг.

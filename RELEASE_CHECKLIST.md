@@ -1,5 +1,7 @@
 # Release Checklist
 
+[Русская версия](#ru)
+
 Use this checklist before publishing a GuitarToolkit release.
 
 ## 1. Version
@@ -73,3 +75,85 @@ Expected:
 - Confirm repository description and topics are up to date.
 - Confirm the latest release assets download correctly.
 - Open a fresh issue form preview if issue templates changed.
+
+---
+
+<a id="ru"></a>
+
+# Чеклист релиза
+
+[English version](#release-checklist)
+
+Используйте этот чеклист перед публикацией релиза GuitarToolkit.
+
+## 1. Версия
+
+- Обновить `Directory.Build.props`.
+- Обновить версию плагина в `GuitarToolkit.Plugin/GuitarToolkitPlugin.cs`.
+- Обновить title desktop-окна, если версия видна в UI.
+- Обновить `CHANGELOG.md`.
+- Обновить имена релизных архивов в README, если нужно.
+- Проверить `THIRD_PARTY_NOTICES.md`, если менялись зависимости.
+- Проверить community-файлы, если менялся workflow контрибьюторов:
+  - `CONTRIBUTING.md`
+  - `SECURITY.md`
+  - `.github/PULL_REQUEST_TEMPLATE.md`
+- Проверить DAW-документацию, если менялось поведение VST:
+  - `docs/FL_STUDIO.md`
+  - `docs/REAPER.md`
+  - `docs/SUPPORTED_DAWS.md`
+
+## 2. Сборка
+
+Запустить:
+
+```powershell
+dotnet build GuitarToolkit.sln --no-restore --configuration Debug
+dotnet test GuitarToolkit.sln --no-restore --configuration Debug
+powershell -ExecutionPolicy Bypass -File .\build-release.ps1 -Version <version> -Configuration Release
+```
+
+Ожидаемый результат:
+
+- Build без ошибок и предупреждений.
+- Все тесты проходят.
+- Релизные ZIP-файлы созданы в `artifacts/release/`.
+
+## 3. Ручная проверка Desktop
+
+- Запустить `GuitarToolkit.Desktop.exe`.
+- Проверить иконку приложения в окне и на taskbar.
+- Выбрать входное устройство.
+- Проверить вход тюнера.
+- Проверить воспроизведение метронома.
+- Проверить воспроизведение аккордов/гамм.
+- Проверить Tabs: открыть Guitar Pro файл, переключить дорожки, play/pause/stop, solo/mute, resize maximize/restore и auto-follow.
+- Проверить recent files, favorites, library folder loading и refresh во вкладке Tabs.
+- Известное follow-up: при resize/maximize/restore alphaTab может несколько раз перерисовываться перед стабилизацией.
+
+## 4. Ручная проверка VST3
+
+- Закрыть DAW.
+- Задеплоить плагин или скопировать релизные файлы в VST3-каталог.
+- Открыть DAW и пересканировать плагины.
+- Добавить GuitarToolkit на audio track.
+- Назначить или изменить вход записи после загрузки плагина.
+- Проверить вход тюнера, метроном и воспроизведение аккордов/гамм.
+- Проверить Tabs: загрузку, playback, recent files, favorites и library folder, если DAW стабильно открывает editor.
+
+## 5. GitHub Release
+
+- Создать draft release.
+- Загрузить:
+  - `GuitarToolkit_VST3_v.<version>.zip`
+  - `GuitarToolkit_DESKTOP_v.<version>.zip`
+- Вставить release notes из `CHANGELOG.md` или отдельного файла release notes.
+- Проверить имена assets и описание.
+- Опубликовать release.
+
+## 6. Проверка репозитория после релиза
+
+- Убедиться, что GitHub Community Standards всё ещё проходят.
+- Проверить описание репозитория и topics.
+- Проверить, что assets последнего релиза скачиваются.
+- Открыть preview issue forms, если менялись issue templates.
