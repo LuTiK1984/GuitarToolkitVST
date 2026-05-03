@@ -1,0 +1,17 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Q&A / Вопросы и помощь
+    url: https://github.com/LuTiK1984/GuitarToolkit/discussions/categories/q-a
+    about: Ask installation, setup, build, usage, Desktop, VST3, or DAW setup questions here. / Вопросы по установке, настройке, сборке, Desktop, VST3 или DAW задавайте здесь.
+  - name: Ideas / Идеи
+    url: https://github.com/LuTiK1984/GuitarToolkit/discussions/categories/ideas
+    about: Suggest feature ideas, workflow improvements, and future modules here. / Идеи функций, улучшения workflow и будущие модули предлагайте здесь.
+  - name: DAW Compatibility / Совместимость с DAW
+    url: https://github.com/LuTiK1984/GuitarToolkit/discussions/categories/daw-compatibility
+    about: Report VST3 behavior in FL Studio, Reaper, Cubase, Ableton Live, and other DAWs here. / Отчёты о работе VST3 в DAW оставляйте здесь.
+  - name: Support guide / Руководство по поддержке
+    url: https://github.com/LuTiK1984/GuitarToolkit/blob/master/SUPPORT.md
+    about: Read where to ask questions, report bugs, or request help. / Куда писать вопросы, баги и запросы помощи.
+  - name: Security policy / Политика безопасности
+    url: https://github.com/LuTiK1984/GuitarToolkit/blob/master/SECURITY.md
+    about: Read how to report security-sensitive issues. / Как сообщать о чувствительных проблемах безопасности.
