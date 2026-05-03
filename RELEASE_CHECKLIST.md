@@ -2,7 +2,7 @@
 
 [Русская версия](#ru)
 
-Use this checklist before publishing a GuitarToolkit release.
+Use this checklist before publishing a GuitarToolkit release. For the full step-by-step flow, see [Release Process](docs/RELEASE_PROCESS.md).
 
 ## 1. Version
 
@@ -20,6 +20,8 @@ Use this checklist before publishing a GuitarToolkit release.
   - `docs/FL_STUDIO.md`
   - `docs/REAPER.md`
   - `docs/SUPPORTED_DAWS.md`
+- Check dependency update notes if dependencies changed:
+  - `docs/DEPENDENCY_POLICY.md`
 
 ## 2. Build
 
@@ -65,7 +67,7 @@ Expected:
 - Upload:
   - `GuitarToolkit_VST3_v.<version>.zip`
   - `GuitarToolkit_DESKTOP_v.<version>.zip`
-- Paste release notes from `CHANGELOG.md` or a dedicated release notes file.
+- Paste release notes from `CHANGELOG.md` or the template in `docs/RELEASE_PROCESS.md`.
 - Review asset names and description.
 - Publish the release.
 
@@ -75,6 +77,7 @@ Expected:
 - Confirm repository description and topics are up to date.
 - Confirm the latest release assets download correctly.
 - Open a fresh issue form preview if issue templates changed.
+- Confirm Discussions routes still point users to Q&A, Ideas, and DAW Compatibility.
 
 ---
 
@@ -84,7 +87,7 @@ Expected:
 
 [English version](#release-checklist)
 
-Используйте этот чеклист перед публикацией релиза GuitarToolkit.
+Используйте этот чеклист перед публикацией релиза GuitarToolkit. Полный пошаговый процесс описан в [Release Process](docs/RELEASE_PROCESS.md).
 
 ## 1. Версия
 
@@ -102,6 +105,8 @@ Expected:
   - `docs/FL_STUDIO.md`
   - `docs/REAPER.md`
   - `docs/SUPPORTED_DAWS.md`
+- Проверить заметки по зависимостям, если менялись dependencies:
+  - `docs/DEPENDENCY_POLICY.md`
 
 ## 2. Сборка
 
@@ -147,7 +152,7 @@ powershell -ExecutionPolicy Bypass -File .\build-release.ps1 -Version <version> 
 - Загрузить:
   - `GuitarToolkit_VST3_v.<version>.zip`
   - `GuitarToolkit_DESKTOP_v.<version>.zip`
-- Вставить release notes из `CHANGELOG.md` или отдельного файла release notes.
+- Вставить release notes из `CHANGELOG.md` или шаблон из `docs/RELEASE_PROCESS.md`.
 - Проверить имена assets и описание.
 - Опубликовать release.
 
@@ -157,3 +162,4 @@ powershell -ExecutionPolicy Bypass -File .\build-release.ps1 -Version <version> 
 - Проверить описание репозитория и topics.
 - Проверить, что assets последнего релиза скачиваются.
 - Открыть preview issue forms, если менялись issue templates.
+- Убедиться, что Discussions routes всё ещё ведут пользователей в Q&A, Ideas и DAW Compatibility.
