@@ -250,28 +250,15 @@ Diagnostic logs are written to:
 
 ## Community and Support
 
-- [Discussions](https://github.com/LuTiK1984/GuitarToolkit/discussions) - questions, ideas, DAW compatibility reports, and community feedback.
-- [Support guide](SUPPORT.md) - where to ask for help and what information to include.
-- [Documentation index](docs/README.md) - organized entry point for all user, contributor, maintainer, and release documentation.
-- [Quick Start guide](docs/QUICK_START.md) - Desktop and VST3 installation walkthrough.
-- [Release page guide](docs/RELEASE_PAGE_GUIDE.md) - how to keep GitHub Releases clean, useful, and download-friendly.
-- [Project structure](docs/PROJECT_STRUCTURE.md) - where files belong and what should not be committed.
-- [Labels and milestones](docs/LABELS_AND_MILESTONES.md) - recommended labels, milestone scopes, and triage rules.
-- [Maintainer guide](docs/MAINTAINER_GUIDE.md) - how Issues, Discussions, labels, milestones, and routine triage are handled.
-- [Branching and protection](docs/BRANCHING_AND_PROTECTION.md) - branch workflow and recommended `master` protection settings.
-- [GitHub settings](docs/GITHUB_SETTINGS.md) - repository UI settings, expected checks, and external check troubleshooting.
-- [Repository presentation](docs/REPOSITORY_PRESENTATION.md) - ready-to-use About text, topics, pinned posts, and release descriptions.
-- [Dependency policy](docs/DEPENDENCY_POLICY.md) - how Dependabot updates and risky dependency changes are reviewed.
-- [Release process](docs/RELEASE_PROCESS.md) - how versions, release packages, and GitHub Releases are prepared.
-- [Contributing guide](CONTRIBUTING.md) - how to contribute safely and keep changes focused.
-- [Code of conduct](CODE_OF_CONDUCT.md) - community behavior expectations.
-- [Security policy](SECURITY.md) - how to report sensitive issues.
-- [Release checklist](RELEASE_CHECKLIST.md) - release process and manual verification.
-- [Third-party notices](THIRD_PARTY_NOTICES.md) - dependency and license notes.
-- [Roadmap](ROADMAP.md) - project direction and planned improvements.
-- [Known tab import issues](KNOWN_TAB_IMPORT_ISSUES.md) - current tab import limitations.
+- [Downloads / Releases](https://github.com/LuTiK1984/GuitarToolkit/releases) - download Desktop and VST3 builds.
+- [Quick Start](docs/QUICK_START.md) - install and launch GuitarToolkit.
+- [Documentation](docs/README.md) - full documentation index.
+- [Discussions](https://github.com/LuTiK1984/GuitarToolkit/discussions) - questions, ideas, DAW compatibility reports, and feedback.
+- [Support](SUPPORT.md) - where to ask for help and what details to include.
+- [Contributing](CONTRIBUTING.md) - how to contribute.
+- [Security](SECURITY.md) - how to report sensitive issues.
 
-Use Discussions for open-ended questions and ideas. Use Issues for reproducible bugs and clearly scoped development tasks.
+Use Discussions for questions and ideas. Use Issues for reproducible bugs and scoped development tasks.
 
 ## License
 
@@ -528,28 +515,15 @@ C:\Program Files\Common Files\VST3\GuitarToolkit\
 
 ## Сообщество и поддержка
 
+- [Загрузка / Releases](https://github.com/LuTiK1984/GuitarToolkit/releases) - скачать Desktop и VST3 сборки.
+- [Quick Start](docs/QUICK_START.md) - установка и запуск GuitarToolkit.
+- [Документация](docs/README.md) - полный индекс документации.
 - [Discussions](https://github.com/LuTiK1984/GuitarToolkit/discussions) - вопросы, идеи, отчёты о совместимости DAW и обратная связь.
-- [Руководство по поддержке](SUPPORT.md) - куда писать и какую информацию прикладывать.
-- [Documentation index](docs/README.md) - единая точка входа для пользовательской, contributor, maintainer и release-документации.
-- [Quick Start guide](docs/QUICK_START.md) - инструкция по установке Desktop и VST3.
-- [Release page guide](docs/RELEASE_PAGE_GUIDE.md) - как держать GitHub Releases чистыми, полезными и удобными для скачивания.
-- [Project structure](docs/PROJECT_STRUCTURE.md) - где должны лежать файлы и что не нужно коммитить.
-- [Labels and milestones](docs/LABELS_AND_MILESTONES.md) - рекомендуемые labels, milestone scopes и triage rules.
-- [Maintainer guide](docs/MAINTAINER_GUIDE.md) - как работать с Issues, Discussions, labels, milestones и triage.
-- [Branching and protection](docs/BRANCHING_AND_PROTECTION.md) - branch workflow и рекомендуемые настройки защиты `master`.
-- [GitHub settings](docs/GITHUB_SETTINGS.md) - repository UI settings, expected checks и troubleshooting external checks.
-- [Repository presentation](docs/REPOSITORY_PRESENTATION.md) - готовые тексты About, topics, pinned posts и release descriptions.
-- [Политика зависимостей](docs/DEPENDENCY_POLICY.md) - как проверяются Dependabot updates и рискованные обновления зависимостей.
-- [Процесс релиза](docs/RELEASE_PROCESS.md) - как готовятся версии, release packages и GitHub Releases.
-- [Как участвовать в разработке](CONTRIBUTING.md) - как безопасно вносить изменения и держать PR сфокусированными.
-- [Кодекс поведения](CODE_OF_CONDUCT.md) - правила общения в сообществе.
-- [Политика безопасности](SECURITY.md) - как сообщать о чувствительных проблемах.
-- [Чеклист релиза](RELEASE_CHECKLIST.md) - процесс релиза и ручные проверки.
-- [Уведомления о сторонних библиотеках](THIRD_PARTY_NOTICES.md) - зависимости и лицензии.
-- [Roadmap](ROADMAP.md) - направление проекта и планируемые улучшения.
-- [Известные ограничения импорта табов](KNOWN_TAB_IMPORT_ISSUES.md) - текущие ограничения импорта табулатур.
+- [Поддержка](SUPPORT.md) - куда писать за помощью и какие данные прикладывать.
+- [Участие в разработке](CONTRIBUTING.md) - как участвовать в проекте.
+- [Безопасность](SECURITY.md) - как сообщать о чувствительных проблемах.
 
-Используйте Discussions для открытых вопросов и идей. Используйте Issues для воспроизводимых багов и чётких задач разработки.
+Используйте Discussions для вопросов и идей. Используйте Issues для воспроизводимых багов и чётких задач разработки.
 
 ## Лицензия
 
