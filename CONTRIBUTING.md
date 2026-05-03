@@ -12,6 +12,8 @@ Thanks for helping improve GuitarToolkit. This project is a Windows guitar toolk
 - `GuitarToolkit.Plugin` is the VST3 entry point and uses AudioPlugSharp.
 - `GuitarToolkit.Tests` contains xUnit tests for Core behavior.
 
+For detailed file-placement rules, see the [project structure guide](docs/PROJECT_STRUCTURE.md).
+
 ## Development Setup
 
 Requirements:
@@ -35,6 +37,7 @@ For VST-related changes, build and test as `x64`.
 - Keep the change focused and scoped.
 - Update `CHANGELOG.md` for user-visible behavior changes.
 - Update README or docs when setup, release packaging, screenshots, or DAW behavior changes.
+- Put new long-form documentation under `docs/` unless it belongs in a standard root-level community file.
 - Run the Debug build and test commands above when code changes.
 - For VST changes, manually test in a DAW when possible.
 - Do not add blocking operations, file I/O, locks, or frequent logging in the audio callback.
@@ -92,6 +95,8 @@ For Guitar Pro or MusicXML import issues, mention the file format and whether th
 - `GuitarToolkit.Plugin` - точка входа VST3-плагина, использует AudioPlugSharp.
 - `GuitarToolkit.Tests` - xUnit-тесты поведения Core.
 
+Подробные правила размещения файлов описаны в [project structure guide](docs/PROJECT_STRUCTURE.md).
+
 ## Подготовка окружения
 
 Требования:
@@ -115,6 +120,7 @@ dotnet test GuitarToolkit.sln --no-restore --configuration Debug
 - Держите изменение сфокусированным.
 - Обновляйте `CHANGELOG.md`, если меняется поведение для пользователя.
 - Обновляйте README или документацию, если меняется установка, релизная упаковка, скриншоты или поведение в DAW.
+- Новую длинную документацию кладите в `docs/`, если это не стандартный root-level community file.
 - Запускайте Debug build и тесты после изменений кода.
 - Для VST-изменений по возможности проверяйте плагин в DAW.
 - Не добавляйте блокирующие операции, файловый ввод/вывод, locks или частое логирование в audio callback.
