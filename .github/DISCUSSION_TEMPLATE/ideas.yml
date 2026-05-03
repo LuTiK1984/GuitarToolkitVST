@@ -1,0 +1,60 @@
+title: "[Idea]: "
+labels:
+  - enhancement
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Share feature ideas, workflow improvements, and module suggestions here.
+
+        Делитесь здесь идеями функций, улучшениями workflow и предложениями по новым модулям.
+  - type: textarea
+    id: use_case
+    attributes:
+      label: Use case / Сценарий
+      description: What should GuitarToolkit help you do? / С чем должен помочь GuitarToolkit?
+      placeholder: |
+        Example: I want to practice chord changes with a metronome and saved presets.
+        Пример: хочу тренировать смену аккордов под метроном с сохранёнными пресетами.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed idea / Предложение
+      description: What would you like to see? / Что вы хотите увидеть?
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area / Область
+      options:
+        - Tuner / Тюнер
+        - Metronome / Метроном
+        - Chord Library / Аккорды
+        - Fretboard and Scales / Гриф и гаммы
+        - Interval Trainer / Интервалы
+        - Progression Builder / Прогрессии
+        - Circle of Fifths / Круг квинт
+        - Tabs / Табы
+        - Desktop app / Desktop-приложение
+        - VST3 plugin / VST3-плагин
+        - UI/UX / Интерфейс
+        - Documentation / Документация
+        - Other / Другое
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives or examples / Альтернативы или примеры
+      description: Similar apps, screenshots, references, or workflow examples. / Похожие приложения, скриншоты, ссылки или примеры workflow.
+  - type: checkboxes
+    id: contribution
+    attributes:
+      label: Contribution / Участие
+      options:
+        - label: I can help test this / Могу помочь протестировать
+        - label: I can provide examples or screenshots / Могу дать примеры или скриншоты
+        - label: I may be able to contribute code or docs / Возможно, смогу помочь кодом или документацией
