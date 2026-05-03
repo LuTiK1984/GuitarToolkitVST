@@ -254,6 +254,7 @@ Diagnostic logs are written to:
 - [Support guide](SUPPORT.md) - where to ask for help and what information to include.
 - [Quick Start guide](docs/QUICK_START.md) - Desktop and VST3 installation walkthrough.
 - [Dependency policy](docs/DEPENDENCY_POLICY.md) - how Dependabot updates and risky dependency changes are reviewed.
+- [Release process](docs/RELEASE_PROCESS.md) - how versions, release packages, and GitHub Releases are prepared.
 - [Contributing guide](CONTRIBUTING.md) - how to contribute safely and keep changes focused.
 - [Code of conduct](CODE_OF_CONDUCT.md) - community behavior expectations.
 - [Security policy](SECURITY.md) - how to report sensitive issues.
@@ -523,6 +524,7 @@ C:\Program Files\Common Files\VST3\GuitarToolkit\
 - [Руководство по поддержке](SUPPORT.md) - куда писать и какую информацию прикладывать.
 - [Quick Start guide](docs/QUICK_START.md) - инструкция по установке Desktop и VST3.
 - [Политика зависимостей](docs/DEPENDENCY_POLICY.md) - как проверяются Dependabot updates и рискованные обновления зависимостей.
+- [Процесс релиза](docs/RELEASE_PROCESS.md) - как готовятся версии, release packages и GitHub Releases.
 - [Как участвовать в разработке](CONTRIBUTING.md) - как безопасно вносить изменения и держать PR сфокусированными.
 - [Кодекс поведения](CODE_OF_CONDUCT.md) - правила общения в сообществе.
 - [Политика безопасности](SECURITY.md) - как сообщать о чувствительных проблемах.
