@@ -2,7 +2,7 @@
 
 [Русская версия](#ru)
 
-This directory contains extended documentation for GuitarToolkit. The main project overview remains in the root `README.md`; this page is a documentation index.
+This directory contains extended documentation for GuitarToolkit. The main project overview remains in the root `README.md`; this page is the full documentation index.
 
 ## For users
 
@@ -44,24 +44,25 @@ This directory contains extended documentation for GuitarToolkit. The main proje
 | --- | --- |
 | [images](images/) | README and documentation screenshots. |
 
-## Root-level docs
+## Root-level documentation
 
 Some project files intentionally stay in the repository root because GitHub expects them there or because they are the main entry points:
 
 | File | Purpose |
 | --- | --- |
-| `../README.md` | Main project overview. |
-| `../LICENSE` | License. |
-| `../CHANGELOG.md` | Release history. |
-| `../CONTRIBUTING.md` | Contribution guide. |
-| `../SUPPORT.md` | Support routing. |
-| `../SECURITY.md` | Security policy. |
-| `../CODE_OF_CONDUCT.md` | Community rules. |
-| `../RELEASE_CHECKLIST.md` | Short release checklist. |
-| `../ROADMAP.md` | Product direction. |
-| `../THIRD_PARTY_NOTICES.md` | Third-party dependency/license notes. |
-| `../KNOWN_TAB_IMPORT_ISSUES.md` | Known tab import limitations. |
-| `../DISCUSSIONS.md` | GitHub Discussions setup guide. |
+| [README](../README.md) | Main project overview. |
+| [LICENSE](../LICENSE) | License. |
+| [CHANGELOG](../CHANGELOG.md) | Release history. |
+| [CONTRIBUTING](../CONTRIBUTING.md) | Contribution guide. |
+| [SUPPORT](../SUPPORT.md) | Support routing. |
+| [SECURITY](../SECURITY.md) | Security policy. |
+| [CODE_OF_CONDUCT](../CODE_OF_CONDUCT.md) | Community rules. |
+| [RELEASE_CHECKLIST](../RELEASE_CHECKLIST.md) | Short release checklist. |
+| [ROADMAP](../ROADMAP.md) | Product direction. |
+| [THIRD_PARTY_NOTICES](../THIRD_PARTY_NOTICES.md) | Third-party dependency/license notes. |
+| [KNOWN_TAB_IMPORT_ISSUES](../KNOWN_TAB_IMPORT_ISSUES.md) | Known tab import limitations. |
+| [DISCUSSIONS](../DISCUSSIONS.md) | GitHub Discussions setup guide. |
+| [AGENTS](../AGENTS.md) | Development notes for AI/coding agents and project boundaries. |
 
 ---
 
@@ -71,7 +72,7 @@ Some project files intentionally stay in the repository root because GitHub expe
 
 [English version](#guitartoolkit-documentation)
 
-В этой папке находится расширенная документация GuitarToolkit. Основной обзор проекта остаётся в корневом `README.md`; эта страница служит индексом документации.
+В этой папке находится расширенная документация GuitarToolkit. Основной обзор проекта остаётся в корневом `README.md`; эта страница служит полным индексом документации.
 
 ## Для пользователей
 
@@ -119,15 +120,16 @@ Some project files intentionally stay in the repository root because GitHub expe
 
 | Файл | Назначение |
 | --- | --- |
-| `../README.md` | Главный обзор проекта. |
-| `../LICENSE` | Лицензия. |
-| `../CHANGELOG.md` | История релизов. |
-| `../CONTRIBUTING.md` | Как участвовать в разработке. |
-| `../SUPPORT.md` | Куда обращаться за помощью. |
-| `../SECURITY.md` | Политика безопасности. |
-| `../CODE_OF_CONDUCT.md` | Правила сообщества. |
-| `../RELEASE_CHECKLIST.md` | Короткий чеклист релиза. |
-| `../ROADMAP.md` | Направление развития. |
-| `../THIRD_PARTY_NOTICES.md` | Уведомления о сторонних зависимостях и лицензиях. |
-| `../KNOWN_TAB_IMPORT_ISSUES.md` | Известные ограничения импорта табов. |
-| `../DISCUSSIONS.md` | Настройка GitHub Discussions. |
+| [README](../README.md) | Главный обзор проекта. |
+| [LICENSE](../LICENSE) | Лицензия. |
+| [CHANGELOG](../CHANGELOG.md) | История релизов. |
+| [CONTRIBUTING](../CONTRIBUTING.md) | Как участвовать в разработке. |
+| [SUPPORT](../SUPPORT.md) | Куда обращаться за помощью. |
+| [SECURITY](../SECURITY.md) | Политика безопасности. |
+| [CODE_OF_CONDUCT](../CODE_OF_CONDUCT.md) | Правила сообщества. |
+| [RELEASE_CHECKLIST](../RELEASE_CHECKLIST.md) | Короткий чеклист релиза. |
+| [ROADMAP](../ROADMAP.md) | Направление развития. |
+| [THIRD_PARTY_NOTICES](../THIRD_PARTY_NOTICES.md) | Уведомления о сторонних зависимостях и лицензиях. |
+| [KNOWN_TAB_IMPORT_ISSUES](../KNOWN_TAB_IMPORT_ISSUES.md) | Известные ограничения импорта табов. |
+| [DISCUSSIONS](../DISCUSSIONS.md) | Настройка GitHub Discussions. |
+| [AGENTS](../AGENTS.md) | Заметки для AI/coding agents и границы проекта. |
