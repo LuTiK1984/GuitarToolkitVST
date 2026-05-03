@@ -30,8 +30,8 @@ The project is built with C# and .NET 8. The shared WPF interface is used by bot
 
 The latest release provides two archives:
 
-- `GuitarToolkit_DESKTOP_v.1.4.0.zip` - standalone Windows desktop application.
-- `GuitarToolkit_VST3_v.1.4.0.zip` - VST3 plugin package for DAW hosts.
+- `GuitarToolkit_DESKTOP_v.1.5.0.zip` - standalone Windows desktop application.
+- `GuitarToolkit_VST3_v.1.5.0.zip` - VST3 plugin package for DAW hosts.
 
 Open the release page:
 
@@ -187,7 +187,7 @@ dotnet test GuitarToolkit.sln --configuration Debug
 Release package build:
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File .\build-release.ps1 -Version 1.4.0 -Configuration Release
+powershell -ExecutionPolicy Bypass -File .\build-release.ps1 -Version 1.5.0 -Configuration Release
 ```
 
 Current verification status:
@@ -282,8 +282,8 @@ Third-party dependency notes are listed in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_
 
 В релизе доступны два архива:
 
-- `GuitarToolkit_DESKTOP_v.1.4.0.zip` - standalone-приложение для Windows.
-- `GuitarToolkit_VST3_v.1.4.0.zip` - VST3-плагин для DAW.
+- `GuitarToolkit_DESKTOP_v.1.5.0.zip` - standalone-приложение для Windows.
+- `GuitarToolkit_VST3_v.1.5.0.zip` - VST3-плагин для DAW.
 
 Страница релизов:
 
@@ -440,7 +440,7 @@ dotnet test GuitarToolkit.sln --configuration Debug
 Сборка release-пакетов:
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File .\build-release.ps1 -Version 1.4.0 -Configuration Release
+powershell -ExecutionPolicy Bypass -File .\build-release.ps1 -Version 1.5.0 -Configuration Release
 ```
 
 Текущее состояние проверки:

@@ -1,5 +1,7 @@
+using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Interop;
 using GuitarToolkit.Core.Services;
 using GuitarToolkit.UI;
 
@@ -13,6 +15,7 @@ public partial class MainWindow : Window
     public MainWindow()
     {
         InitializeComponent();
+        SourceInitialized += MainWindow_SourceInitialized;
 
         try
         {
@@ -42,6 +45,44 @@ public partial class MainWindow : Window
             MessageBox.Show(ex.ToString(), "\u041E\u0448\u0438\u0431\u043A\u0430 \u0437\u0430\u043F\u0443\u0441\u043A\u0430");
             _audio = new AudioBridge();
         }
+    }
+
+    private void MainWindow_SourceInitialized(object? sender, EventArgs e)
+    {
+        if (PresentationSource.FromVisual(this) is HwndSource source)
+            source.AddHook(WindowProc);
+    }
+
+    private static IntPtr WindowProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
+    {
+        const int wmGetMinMaxInfo = 0x0024;
+        if (msg == wmGetMinMaxInfo)
+        {
+            AdjustMaximizedWindow(hwnd, lParam);
+            handled = true;
+        }
+
+        return IntPtr.Zero;
+    }
+
+    private static void AdjustMaximizedWindow(IntPtr hwnd, IntPtr lParam)
+    {
+        IntPtr monitor = NativeMethods.MonitorFromWindow(hwnd, NativeMethods.MonitorDefaultToNearest);
+        if (monitor == IntPtr.Zero) return;
+
+        var monitorInfo = new NativeMethods.MonitorInfo();
+        if (!NativeMethods.GetMonitorInfo(monitor, monitorInfo)) return;
+
+        var minMaxInfo = Marshal.PtrToStructure<NativeMethods.MinMaxInfo>(lParam);
+        var workArea = monitorInfo.WorkArea;
+        var monitorArea = monitorInfo.Monitor;
+
+        minMaxInfo.MaxPosition.X = Math.Abs(workArea.Left - monitorArea.Left);
+        minMaxInfo.MaxPosition.Y = Math.Abs(workArea.Top - monitorArea.Top);
+        minMaxInfo.MaxSize.X = Math.Abs(workArea.Right - workArea.Left);
+        minMaxInfo.MaxSize.Y = Math.Abs(workArea.Bottom - workArea.Top);
+
+        Marshal.StructureToPtr(minMaxInfo, lParam, true);
     }
 
     private void Minimize_Click(object sender, RoutedEventArgs e)
@@ -107,5 +148,51 @@ public partial class MainWindow : Window
         settings.Save();
 
         _audio.Dispose();
+    }
+
+    private static class NativeMethods
+    {
+        public const int MonitorDefaultToNearest = 2;
+
+        [DllImport("user32.dll")]
+        public static extern IntPtr MonitorFromWindow(IntPtr hwnd, int flags);
+
+        [DllImport("user32.dll", CharSet = CharSet.Auto)]
+        public static extern bool GetMonitorInfo(IntPtr hMonitor, MonitorInfo lpmi);
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct Point
+        {
+            public int X;
+            public int Y;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct MinMaxInfo
+        {
+            public Point Reserved;
+            public Point MaxSize;
+            public Point MaxPosition;
+            public Point MinTrackSize;
+            public Point MaxTrackSize;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct Rect
+        {
+            public int Left;
+            public int Top;
+            public int Right;
+            public int Bottom;
+        }
+
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto)]
+        public sealed class MonitorInfo
+        {
+            public int Size = Marshal.SizeOf<MonitorInfo>();
+            public Rect Monitor;
+            public Rect WorkArea;
+            public int Flags;
+        }
     }
 }

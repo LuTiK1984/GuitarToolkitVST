@@ -4,6 +4,8 @@ All notable changes to GuitarToolkit are documented here.
 
 ## [Unreleased]
 
+## [1.5.0] - 2026-05-03
+
 ### Added
 
 - Added a desktop custom title bar using WPF `WindowChrome`, with custom minimize, maximize, and close controls.
@@ -25,6 +27,8 @@ All notable changes to GuitarToolkit are documented here.
 - Made code-created Interval Trainer, Scales, Progressions, and Circle of Fifths controls redraw from the active theme palette.
 - Polished light-theme tuner, metronome, chord, scale, and interval details before the 1.5 release pass.
 - Refined the chord header alignment, fret-number spacing, current-progression outline, and theme-aware window frame styling.
+- Softened the light-theme window frame and removed the duplicate centered title-bar label.
+- Fixed custom maximized desktop windows so they respect the Windows taskbar work area.
 
 ### Changed
 
