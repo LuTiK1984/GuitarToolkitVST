@@ -39,6 +39,18 @@ For VST-related changes, build and test as `x64`.
 - For VST changes, manually test in a DAW when possible.
 - Do not add blocking operations, file I/O, locks, or frequent logging in the audio callback.
 
+## Dependency Updates
+
+Dependency updates are reviewed with extra care because GuitarToolkit includes audio, UI, and VST3 behavior that CI cannot fully verify.
+
+Use the [dependency update policy](docs/DEPENDENCY_POLICY.md) when reviewing Dependabot PRs or manually updating NuGet/GitHub Actions dependencies.
+
+In short:
+
+- test-only updates usually need green CI;
+- GitHub Actions major updates need green CI and runner/version note review;
+- audio, VST3, and tab-rendering updates need manual smoke testing in addition to CI.
+
 ## DAW and VST Changes
 
 DAW hosts can be sensitive to plugin metadata, port layout, editor startup, and runtime files. For VST changes, please include:
@@ -106,6 +118,18 @@ dotnet test GuitarToolkit.sln --no-restore --configuration Debug
 - Запускайте Debug build и тесты после изменений кода.
 - Для VST-изменений по возможности проверяйте плагин в DAW.
 - Не добавляйте блокирующие операции, файловый ввод/вывод, locks или частое логирование в audio callback.
+
+## Обновления зависимостей
+
+Обновления зависимостей проверяются особенно аккуратно, потому что GuitarToolkit содержит audio, UI и VST3-поведение, которое CI не может полностью проверить.
+
+Используйте [политику обновления зависимостей](docs/DEPENDENCY_POLICY.md) при проверке Dependabot PR или ручном обновлении NuGet/GitHub Actions dependencies.
+
+Кратко:
+
+- test-only updates обычно требуют зелёный CI;
+- GitHub Actions major updates требуют зелёный CI и просмотр runner/version notes;
+- audio, VST3 и tab-rendering updates требуют ручной smoke test дополнительно к CI.
 
 ## Изменения DAW и VST
 
