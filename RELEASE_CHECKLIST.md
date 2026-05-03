@@ -10,6 +10,14 @@ Use this checklist before publishing a GuitarToolkit release.
 - Update `CHANGELOG.md`.
 - Update README release archive names if needed.
 - Check `THIRD_PARTY_NOTICES.md` when dependencies change.
+- Check community files if contributor workflow changed:
+  - `CONTRIBUTING.md`
+  - `SECURITY.md`
+  - `.github/PULL_REQUEST_TEMPLATE.md`
+- Check DAW docs if VST behavior changed:
+  - `docs/FL_STUDIO.md`
+  - `docs/REAPER.md`
+  - `docs/SUPPORTED_DAWS.md`
 
 ## 2. Build
 
@@ -58,3 +66,10 @@ Expected:
 - Paste release notes from `CHANGELOG.md` or a dedicated release notes file.
 - Review asset names and description.
 - Publish the release.
+
+## 6. Post-release Repository Check
+
+- Confirm GitHub Community Standards still pass.
+- Confirm repository description and topics are up to date.
+- Confirm the latest release assets download correctly.
+- Open a fresh issue form preview if issue templates changed.

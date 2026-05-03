@@ -4,6 +4,15 @@ All notable changes to GuitarToolkit are documented here.
 
 ## [Unreleased]
 
+### Added
+
+- Added MIT license, contributing guide, code of conduct, security policy, pull request template, CODEOWNERS, Dependabot config, and EditorConfig.
+- Added DAW documentation for FL Studio, Reaper, and supported-host compatibility tracking.
+
+### Changed
+
+- Linked community, security, release, and DAW documentation from the README and release checklist.
+
 ## [1.5.0] - 2026-05-03
 
 ### Added

@@ -22,7 +22,9 @@ The project is built with C# and .NET 8. The shared WPF interface is used by bot
 - [Requirements](#requirements)
 - [Build From Source](#build-from-source)
 - [VST3 Deployment](#vst3-deployment)
+- [DAW Compatibility](#daw-compatibility)
 - [Data and Logs](#data-and-logs)
+- [Community and Contributing](#community-and-contributing)
 - [Release Notes](#release-notes)
 - [License](#license)
 
@@ -215,6 +217,14 @@ Important: copy the whole `GuitarToolkit` plugin folder, not only `GuitarToolkit
 
 For FL Studio: open `Options -> Manage plugins`, make sure the common VST3 folder is scanned, then click `Find installed plugins`.
 
+## DAW Compatibility
+
+DAW-specific setup notes:
+
+- [FL Studio setup](docs/FL_STUDIO.md)
+- [Reaper setup](docs/REAPER.md)
+- [Supported DAWs](docs/SUPPORTED_DAWS.md)
+
 The repository intentionally includes several NuGet-sourced VST bridge/runtime files used for deployment and DAW loading:
 
 - `GuitarToolkit.PluginBridge.vst3`
@@ -242,13 +252,26 @@ Diagnostic logs are written to:
 %AppData%\GuitarToolkit\logs
 ```
 
+## Community and Contributing
+
+- [Contributing guide](CONTRIBUTING.md)
+- [Code of conduct](CODE_OF_CONDUCT.md)
+- [Security policy](SECURITY.md)
+- [Release checklist](RELEASE_CHECKLIST.md)
+- [Third-party notices](THIRD_PARTY_NOTICES.md)
+
+Bug reports, feature ideas, and DAW compatibility reports are welcome through
+the GitHub issue templates.
+
 ## Release Notes
 
 See [CHANGELOG.md](CHANGELOG.md) for release history and [ROADMAP.md](ROADMAP.md) for planned improvements.
 
 ## License
 
-Personal passion project. VST is a trademark of Steinberg Media Technologies GmbH.
+GuitarToolkit is released under the [MIT License](LICENSE).
+
+VST is a trademark of Steinberg Media Technologies GmbH.
 
 Third-party dependency notes are listed in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
 
