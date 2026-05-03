@@ -1,0 +1,56 @@
+title: "[Q&A]: "
+labels:
+  - question
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Ask setup, build, usage, Desktop, VST3, or DAW-related questions here.
+
+        Задавайте здесь вопросы по установке, сборке, использованию, Desktop, VST3 или DAW.
+  - type: textarea
+    id: question
+    attributes:
+      label: Question / Вопрос
+      description: What do you need help with? / С чем нужна помощь?
+      placeholder: |
+        Describe the question clearly.
+        Опишите вопрос понятно.
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area / Область
+      options:
+        - Installation / Установка
+        - Desktop app / Desktop-приложение
+        - VST3 plugin / VST3-плагин
+        - DAW setup / Настройка DAW
+        - Build from source / Сборка из исходников
+        - Tuner / Тюнер
+        - Metronome / Метроном
+        - Chords / Аккорды
+        - Scales and Fretboard / Гаммы и гриф
+        - Tabs / Табы
+        - Other / Другое
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment / Окружение
+      description: Fill this if the question is technical. / Заполните, если вопрос технический.
+      placeholder: |
+        GuitarToolkit version / версия GuitarToolkit:
+        Windows version / версия Windows:
+        Desktop or VST3 / Desktop или VST3:
+        DAW and version, if applicable / DAW и версия, если актуально:
+        Audio device, if relevant / аудиоустройство, если важно:
+  - type: textarea
+    id: tried
+    attributes:
+      label: What have you tried? / Что уже пробовали?
+      placeholder: |
+        Steps, commands, screenshots, logs, or links.
+        Шаги, команды, скриншоты, логи или ссылки.
