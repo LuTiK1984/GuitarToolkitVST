@@ -253,6 +253,7 @@ Diagnostic logs are written to:
 - [Discussions](https://github.com/LuTiK1984/GuitarToolkit/discussions) - questions, ideas, DAW compatibility reports, and community feedback.
 - [Support guide](SUPPORT.md) - where to ask for help and what information to include.
 - [Quick Start guide](docs/QUICK_START.md) - Desktop and VST3 installation walkthrough.
+- [Dependency policy](docs/DEPENDENCY_POLICY.md) - how Dependabot updates and risky dependency changes are reviewed.
 - [Contributing guide](CONTRIBUTING.md) - how to contribute safely and keep changes focused.
 - [Code of conduct](CODE_OF_CONDUCT.md) - community behavior expectations.
 - [Security policy](SECURITY.md) - how to report sensitive issues.
@@ -521,6 +522,7 @@ C:\Program Files\Common Files\VST3\GuitarToolkit\
 - [Discussions](https://github.com/LuTiK1984/GuitarToolkit/discussions) - вопросы, идеи, отчёты о совместимости DAW и обратная связь.
 - [Руководство по поддержке](SUPPORT.md) - куда писать и какую информацию прикладывать.
 - [Quick Start guide](docs/QUICK_START.md) - инструкция по установке Desktop и VST3.
+- [Политика зависимостей](docs/DEPENDENCY_POLICY.md) - как проверяются Dependabot updates и рискованные обновления зависимостей.
 - [Как участвовать в разработке](CONTRIBUTING.md) - как безопасно вносить изменения и держать PR сфокусированными.
 - [Кодекс поведения](CODE_OF_CONDUCT.md) - правила общения в сообществе.
 - [Политика безопасности](SECURITY.md) - как сообщать о чувствительных проблемах.
