@@ -257,6 +257,7 @@ Diagnostic logs are written to:
 - [Labels and milestones](docs/LABELS_AND_MILESTONES.md) - recommended labels, milestone scopes, and triage rules.
 - [Maintainer guide](docs/MAINTAINER_GUIDE.md) - how Issues, Discussions, labels, milestones, and routine triage are handled.
 - [Branching and protection](docs/BRANCHING_AND_PROTECTION.md) - branch workflow and recommended `master` protection settings.
+- [GitHub settings](docs/GITHUB_SETTINGS.md) - repository UI settings, expected checks, and external check troubleshooting.
 - [Repository presentation](docs/REPOSITORY_PRESENTATION.md) - ready-to-use About text, topics, pinned posts, and release descriptions.
 - [Dependency policy](docs/DEPENDENCY_POLICY.md) - how Dependabot updates and risky dependency changes are reviewed.
 - [Release process](docs/RELEASE_PROCESS.md) - how versions, release packages, and GitHub Releases are prepared.
@@ -532,6 +533,7 @@ C:\Program Files\Common Files\VST3\GuitarToolkit\
 - [Labels and milestones](docs/LABELS_AND_MILESTONES.md) - рекомендуемые labels, milestone scopes и triage rules.
 - [Maintainer guide](docs/MAINTAINER_GUIDE.md) - как работать с Issues, Discussions, labels, milestones и triage.
 - [Branching and protection](docs/BRANCHING_AND_PROTECTION.md) - branch workflow и рекомендуемые настройки защиты `master`.
+- [GitHub settings](docs/GITHUB_SETTINGS.md) - repository UI settings, expected checks и troubleshooting external checks.
 - [Repository presentation](docs/REPOSITORY_PRESENTATION.md) - готовые тексты About, topics, pinned posts и release descriptions.
 - [Политика зависимостей](docs/DEPENDENCY_POLICY.md) - как проверяются Dependabot updates и рискованные обновления зависимостей.
 - [Процесс релиза](docs/RELEASE_PROCESS.md) - как готовятся версии, release packages и GitHub Releases.
