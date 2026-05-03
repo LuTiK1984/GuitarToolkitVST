@@ -1,0 +1,29 @@
+title: "[Announcement]: "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Maintainer announcements only: releases, important changes, compatibility notes, and project news.
+
+        Только объявления мейнтейнера: релизы, важные изменения, заметки о совместимости и новости проекта.
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary / Кратко
+      description: What is being announced? / Что объявляется?
+    validations:
+      required: true
+  - type: textarea
+    id: details
+    attributes:
+      label: Details / Подробности
+      description: Add release notes, links, migration notes, or compatibility details. / Добавьте release notes, ссылки, заметки о миграции или совместимости.
+    validations:
+      required: true
+  - type: textarea
+    id: action
+    attributes:
+      label: User action, if needed / Что нужно сделать пользователям, если нужно
+      placeholder: |
+        Example: download the new ZIP, rescan VST3 plugins, update docs, report DAW results.
+        Пример: скачать новый ZIP, пересканировать VST3-плагины, обновить документацию, сообщить результат по DAW.
