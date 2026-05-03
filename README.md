@@ -26,7 +26,7 @@ GuitarToolkit is an active open-source passion project.
 
 ## Quick Start
 
-For a more detailed installation walkthrough, see the [Quick Start guide](docs/QUICK_START.md).
+For a more detailed installation walkthrough, see the [Quick Start guide](docs/user/QUICK_START.md).
 
 1. Download the latest build from [GitHub Releases](https://github.com/LuTiK1984/GuitarToolkit/releases).
 2. For Desktop: unzip `GuitarToolkit_DESKTOP_v.<version>.zip` and run the desktop executable.
@@ -217,9 +217,9 @@ Copy the whole `GuitarToolkit` plugin folder, not only `GuitarToolkit.PluginBrid
 
 DAW notes:
 
-- [FL Studio setup](docs/FL_STUDIO.md)
-- [Reaper setup](docs/REAPER.md)
-- [Supported DAWs](docs/SUPPORTED_DAWS.md)
+- [FL Studio setup](docs/user/FL_STUDIO.md)
+- [Reaper setup](docs/user/REAPER.md)
+- [Supported DAWs](docs/user/SUPPORTED_DAWS.md)
 
 The repository intentionally includes several NuGet-sourced VST bridge/runtime files used for deployment and DAW loading:
 
@@ -251,10 +251,10 @@ Diagnostic logs are written to:
 ## Community and Support
 
 - [Downloads / Releases](https://github.com/LuTiK1984/GuitarToolkit/releases) - download Desktop and VST3 builds.
-- [Quick Start](docs/QUICK_START.md) - install and launch GuitarToolkit.
+- [Quick Start](docs/user/QUICK_START.md) - install and launch GuitarToolkit.
 - [Documentation](docs/README.md) - full documentation index.
 - [Discussions](https://github.com/LuTiK1984/GuitarToolkit/discussions) - questions, ideas, DAW compatibility reports, and feedback.
-- [Support](SUPPORT.md) - where to ask for help and what details to include.
+- [Support](docs/user/SUPPORT.md) - where to ask for help and what details to include.
 - [Contributing](CONTRIBUTING.md) - how to contribute.
 - [Security](SECURITY.md) - how to report sensitive issues.
 
@@ -291,7 +291,7 @@ GuitarToolkit — активный open-source passion project.
 
 ## Быстрый старт
 
-Подробная инструкция по установке находится в [Quick Start guide](docs/QUICK_START.md).
+Подробная инструкция по установке находится в [Quick Start guide](docs/user/QUICK_START.md).
 
 1. Скачайте последнюю сборку на странице [GitHub Releases](https://github.com/LuTiK1984/GuitarToolkit/releases).
 2. Для Desktop: распакуйте `GuitarToolkit_DESKTOP_v.<version>.zip` и запустите desktop executable.
@@ -482,9 +482,9 @@ C:\Program Files\Common Files\VST3\GuitarToolkit\
 
 Инструкции по DAW:
 
-- [FL Studio](docs/FL_STUDIO.md)
-- [Reaper](docs/REAPER.md)
-- [Поддерживаемые DAW](docs/SUPPORTED_DAWS.md)
+- [FL Studio](docs/user/FL_STUDIO.md)
+- [Reaper](docs/user/REAPER.md)
+- [Поддерживаемые DAW](docs/user/SUPPORTED_DAWS.md)
 
 В корне репозитория намеренно лежат несколько NuGet-sourced VST bridge/runtime файлов, которые используются при деплое и загрузке в DAW:
 
@@ -516,10 +516,10 @@ C:\Program Files\Common Files\VST3\GuitarToolkit\
 ## Сообщество и поддержка
 
 - [Загрузка / Releases](https://github.com/LuTiK1984/GuitarToolkit/releases) - скачать Desktop и VST3 сборки.
-- [Quick Start](docs/QUICK_START.md) - установка и запуск GuitarToolkit.
+- [Quick Start](docs/user/QUICK_START.md) - установка и запуск GuitarToolkit.
 - [Документация](docs/README.md) - полный индекс документации.
 - [Discussions](https://github.com/LuTiK1984/GuitarToolkit/discussions) - вопросы, идеи, отчёты о совместимости DAW и обратная связь.
-- [Поддержка](SUPPORT.md) - куда писать за помощью и какие данные прикладывать.
+- [Поддержка](docs/user/SUPPORT.md) - куда писать за помощью и какие данные прикладывать.
 - [Участие в разработке](CONTRIBUTING.md) - как участвовать в проекте.
 - [Безопасность](SECURITY.md) - как сообщать о чувствительных проблемах.
 
