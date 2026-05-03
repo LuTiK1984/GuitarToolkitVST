@@ -1,11 +1,81 @@
+# Build outputs
 bin/
 obj/
+[Bb]in/
+[Oo]bj/
+artifacts/
+artifacts-*/
+release/
+releases/
+publish/
+
+# Visual Studio / Rider / IDE state
 .vs/
+.idea/
 *.user
 *.suo
-*.cache
+*.userosscache
+*.sln.docstates
+*.rsuser
+*.DotSettings.user
+.vscode/.ropeproject
+
+# .NET generated files
 *.pdb
-artifacts/
+*.mdb
+*.cache
+*.nupkg
+*.snupkg
+project.lock.json
+project.assets.json
+*.nuget.props
+*.nuget.targets
+.nuget/
+packages/
+
+# Test and coverage outputs
+TestResults/
+coverage/
+coverage-*/
+*.coverage
+*.coveragexml
+*.trx
+*.opencover.xml
+*.cobertura.xml
+
+# Logs and diagnostics
+*.log
+logs/
+crashdumps/
+*.dmp
+*.mdmp
+
+# Local app data / sample user files
 analysis_docs/
 reports/
 samples/tabs/
+*.gp3
+*.gp4
+*.gp5
+*.gpx
+*.musicxml
+*.mxl
+
+# Release archives and temporary packages
+*.zip
+*.7z
+*.rar
+*.tar
+*.tar.gz
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+*.orig
+*.rej
