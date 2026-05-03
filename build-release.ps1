@@ -1,5 +1,5 @@
 param(
-    [string]$Version = "1.2.0",
+    [string]$Version = "1.5.0",
     [string]$Configuration = "Release"
 )
 
@@ -17,6 +17,18 @@ $pluginOut = Join-Path $root "GuitarToolkit.Plugin\bin\x64\$Configuration\net8.0
 
 $desktopZip = Join-Path $releaseDir "GuitarToolkit_DESKTOP_v.$Version.zip"
 $pluginZip = Join-Path $releaseDir "GuitarToolkit_VST3_v.$Version.zip"
+
+$releaseDocs = @(
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md",
+    "THIRD_PARTY_NOTICES.md",
+    "docs\QUICK_START.md",
+    "docs\SUPPORTED_DAWS.md",
+    "docs\FL_STUDIO.md",
+    "docs\REAPER.md",
+    "KNOWN_TAB_IMPORT_ISSUES.md"
+)
 
 Write-Host "== GuitarToolkit release build v$Version =="
 Write-Host "Configuration: $Configuration"
@@ -47,6 +59,28 @@ function Assert-File {
     }
 }
 
+function Copy-ReleaseDocs {
+    param([string]$Destination)
+
+    $docsOut = Join-Path $Destination "docs"
+    New-Item -ItemType Directory -Path $docsOut -Force | Out-Null
+
+    foreach ($relativePath in $releaseDocs) {
+        $source = Join-Path $root $relativePath
+        if (Test-Path -LiteralPath $source) {
+            if ($relativePath -like "docs\*") {
+                Copy-Item -LiteralPath $source -Destination $docsOut -Force
+            }
+            else {
+                Copy-Item -LiteralPath $source -Destination $Destination -Force
+            }
+        }
+        else {
+            Write-Warning "Optional release document not found: $relativePath"
+        }
+    }
+}
+
 Write-Host
 Write-Host "Checking desktop output..."
 Assert-File (Join-Path $desktopOut "GuitarToolkit.Desktop.exe")
@@ -66,12 +100,12 @@ Assert-File (Join-Path $pluginOut "Ijwhost.dll")
 Write-Host
 Write-Host "Creating desktop archive..."
 Copy-Item -Path (Join-Path $desktopOut "*") -Destination $desktopPackage -Recurse -Force
-Copy-Item -Path (Join-Path $root "docs\INSTALL_RU.md"), (Join-Path $root "docs\INSTALL_EN.md") -Destination $desktopPackage -Force
+Copy-ReleaseDocs -Destination $desktopPackage
 Compress-Archive -Path (Join-Path $desktopPackage "*") -DestinationPath $desktopZip -Force
 
 Write-Host "Creating VST3 archive..."
 Copy-Item -Path (Join-Path $pluginOut "*") -Destination $pluginPackage -Recurse -Force
-Copy-Item -Path (Join-Path $root "docs\INSTALL_RU.md"), (Join-Path $root "docs\INSTALL_EN.md") -Destination $pluginPackage -Force
+Copy-ReleaseDocs -Destination $pluginPackage
 Compress-Archive -Path (Join-Path $pluginPackage "*") -DestinationPath $pluginZip -Force
 
 Write-Host
