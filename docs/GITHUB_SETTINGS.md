@@ -83,6 +83,38 @@ Expected checks from this repository:
 | `CI / Build and test` | Runs on push and pull request. Should pass. |
 | `CI / Release package check` | Runs only on manual `workflow_dispatch`. Skipped on normal push is expected. |
 
+## Automatic Dependency Submission
+
+GitHub may show a workflow named:
+
+```text
+Automatic Dependency Submission (NuGet)
+```
+
+with a job/check like:
+
+```text
+dynamic / submit-nuget
+```
+
+This is not defined in `.github/workflows/ci.yml`. It is created by GitHub's Automatic Dependency Submission feature for the Dependency Graph.
+
+For this project, it may fail because GuitarToolkit targets Windows/WPF and the automatic NuGet dependency submission job can run on a non-Windows environment.
+
+If the project does not need automatic NuGet dependency submission, disable it in the GitHub UI:
+
+```text
+Repository -> Settings -> Security and quality / Advanced Security -> Dependency graph -> Automatic dependency submission -> Disabled
+```
+
+Depending on GitHub UI wording, this setting may also appear under:
+
+```text
+Repository -> Settings -> Code security and analysis
+```
+
+This should not disable the normal dependency graph or Dependabot alerts unless those settings are changed separately.
+
 ## External checks
 
 If GitHub shows a check that is not defined in `.github/workflows/`, it usually comes from:
@@ -91,7 +123,8 @@ If GitHub shows a check that is not defined in `.github/workflows/`, it usually 
 - a repository ruleset;
 - branch protection required checks;
 - external CI/service integration;
-- a previous app configuration.
+- a previous app configuration;
+- GitHub Advanced Security / Dependency Graph features.
 
 Example:
 
@@ -125,7 +158,14 @@ Repository -> Settings -> Branches
 Repository -> Settings -> Rules -> Rulesets
 ```
 
-7. If the check is not relevant, remove it from required checks or disable the app/ruleset that creates it.
+7. Check Advanced Security / Code security settings:
+
+```text
+Repository -> Settings -> Security and quality / Advanced Security
+Repository -> Settings -> Code security and analysis
+```
+
+8. If the check is not relevant, remove it from required checks or disable the app/ruleset/security feature that creates it.
 
 ## What to require before merge
 
@@ -137,7 +177,7 @@ CI / Build and test
 
 Do not require `CI / Release package check` because it is a manual release verification job.
 
-Do not require external checks like `submit-nuget` unless the project intentionally starts publishing NuGet packages.
+Do not require external checks like `submit-nuget` unless the project intentionally starts publishing NuGet packages or relying on automatic dependency submission.
 
 ---
 
@@ -228,6 +268,38 @@ CI / Build and test
 | `CI / Build and test` | Запускается на push и pull request. Должен проходить. |
 | `CI / Release package check` | Запускается только вручную через `workflow_dispatch`. Skipped на обычном push — это нормально. |
 
+## Automatic Dependency Submission
+
+GitHub может показывать workflow:
+
+```text
+Automatic Dependency Submission (NuGet)
+```
+
+с job/check:
+
+```text
+dynamic / submit-nuget
+```
+
+Этот workflow не задан в `.github/workflows/ci.yml`. Его создаёт функция GitHub Automatic Dependency Submission для Dependency Graph.
+
+В этом проекте он может падать, потому что GuitarToolkit таргетит Windows/WPF, а automatic NuGet dependency submission может запускаться в non-Windows environment.
+
+Если проекту не нужна automatic NuGet dependency submission, отключите её в GitHub UI:
+
+```text
+Repository -> Settings -> Security and quality / Advanced Security -> Dependency graph -> Automatic dependency submission -> Disabled
+```
+
+В зависимости от версии GitHub UI настройка может находиться здесь:
+
+```text
+Repository -> Settings -> Code security and analysis
+```
+
+Это не должно отключить обычный dependency graph или Dependabot alerts, если не менять их отдельно.
+
 ## Внешние checks
 
 Если GitHub показывает check, которого нет в `.github/workflows/`, обычно он приходит от:
@@ -236,7 +308,8 @@ CI / Build and test
 - repository ruleset;
 - branch protection required checks;
 - внешнего CI/service integration;
-- старой настройки какого-то приложения.
+- старой настройки какого-то приложения;
+- GitHub Advanced Security / Dependency Graph features.
 
 Пример:
 
@@ -270,7 +343,14 @@ Repository -> Settings -> Branches
 Repository -> Settings -> Rules -> Rulesets
 ```
 
-7. Если check не нужен, убрать его из required checks или отключить app/ruleset, который его создаёт.
+7. Проверить Advanced Security / Code security settings:
+
+```text
+Repository -> Settings -> Security and quality / Advanced Security
+Repository -> Settings -> Code security and analysis
+```
+
+8. Если check не нужен, убрать его из required checks или отключить app/ruleset/security feature, который его создаёт.
 
 ## Что требовать перед merge
 
@@ -282,4 +362,4 @@ CI / Build and test
 
 Не делайте required check из `CI / Release package check`, потому что это ручная release verification job.
 
-Не требуйте внешние checks вроде `submit-nuget`, если проект намеренно не начинает публиковать NuGet packages.
+Не требуйте внешние checks вроде `submit-nuget`, если проект намеренно не начинает публиковать NuGet packages или полагаться на automatic dependency submission.
