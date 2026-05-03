@@ -2,7 +2,7 @@
 
 [Русская версия](#ru)
 
-This document describes the preferred release flow for GuitarToolkit. Use it together with the root `RELEASE_CHECKLIST.md`.
+This document describes the preferred release flow for GuitarToolkit. Use it together with [Release Checklist](RELEASE_CHECKLIST.md).
 
 GuitarToolkit ships as both a standalone Windows desktop app and a VST3 plugin, so every release should verify build output, documentation, and basic audio/DAW behavior.
 
@@ -135,7 +135,7 @@ After publishing:
 
 [English version](#release-process)
 
-Этот документ описывает рекомендуемый процесс релиза GuitarToolkit. Используйте его вместе с корневым `RELEASE_CHECKLIST.md`.
+Этот документ описывает рекомендуемый процесс релиза GuitarToolkit. Используйте его вместе с [Release Checklist](RELEASE_CHECKLIST.md).
 
 GuitarToolkit поставляется как standalone Windows desktop app и VST3 plugin, поэтому каждый релиз должен проверять сборку, документацию и базовое audio/DAW-поведение.
 
