@@ -7,7 +7,7 @@ using GuitarToolkit.Core.Models;
 
 namespace GuitarToolkit.UI;
 
-public partial class IntervalTrainerView : UserControl
+public partial class IntervalTrainerView : UserControl, IThemeAware
 {
     private IAudioPlayback? _audio;
     private readonly IntervalTrainer _trainer = new();
@@ -15,23 +15,28 @@ public partial class IntervalTrainerView : UserControl
     private bool _questionActive = false;
     private DispatcherTimer? _autoAdvanceTimer;
 
-    private static readonly SolidColorBrush BrushCorrect = new(Color.FromRgb(166, 227, 161));
-    private static readonly SolidColorBrush BrushWrong = new(Color.FromRgb(243, 139, 168));
-    private static readonly SolidColorBrush BrushAccent = new(Color.FromRgb(203, 166, 247));
-    private static readonly SolidColorBrush BrushBtn = new(Color.FromRgb(74, 56, 96));
-    private static readonly SolidColorBrush BrushPanelDark = new(Color.FromRgb(26, 21, 37));
-    private static readonly SolidColorBrush BrushText = new(Color.FromRgb(205, 214, 244));
-    private static readonly SolidColorBrush BrushDim = new(Color.FromRgb(124, 111, 150));
-
-    static IntervalTrainerView()
-    {
-        BrushCorrect.Freeze(); BrushWrong.Freeze(); BrushAccent.Freeze();
-        BrushBtn.Freeze(); BrushPanelDark.Freeze(); BrushText.Freeze(); BrushDim.Freeze();
-    }
+    private static SolidColorBrush BrushCorrect => ThemeManager.GetBrush("GoodBrush");
+    private static SolidColorBrush BrushWrong => ThemeManager.GetBrush("DangerBrush");
+    private static SolidColorBrush BrushAccent => ThemeManager.GetBrush("AccentBrush");
+    private static SolidColorBrush BrushBtn => ThemeManager.GetBrush("ControlBrush");
+    private static SolidColorBrush BrushButtonBorder => ThemeManager.GetBrush("PanelBorderBrush");
+    private static SolidColorBrush BrushPanelDark => ThemeManager.GetBrush("DarkBrush");
+    private static SolidColorBrush BrushText => ThemeManager.GetBrush("TextBrush");
+    private static SolidColorBrush BrushDim => ThemeManager.GetBrush("MutedTextBrush");
 
     public IntervalTrainerView()
     {
         InitializeComponent();
+    }
+
+    public void ApplyTheme()
+    {
+        ResetButtonColors();
+        if (!_questionActive)
+        {
+            ResultLabel.Foreground = BrushDim;
+            ResultBorder.Background = BrushPanelDark;
+        }
     }
 
     public void Initialize(IAudioPlayback audio)
@@ -63,7 +68,7 @@ public partial class IntervalTrainerView : UserControl
                 Width = 112, Height = 50,
                 FontSize = 12, FontWeight = FontWeights.Bold,
                 Background = BrushBtn, Foreground = BrushText,
-                BorderBrush = BrushBtn,
+                BorderBrush = BrushButtonBorder,
                 BorderThickness = new Thickness(1),
                 Cursor = System.Windows.Input.Cursors.Hand,
                 Margin = new Thickness(0, 0, 6, 6),
@@ -97,7 +102,7 @@ public partial class IntervalTrainerView : UserControl
             if (item is Button btn)
             {
                 btn.Background = BrushBtn;
-                btn.BorderBrush = BrushBtn;
+                btn.BorderBrush = BrushButtonBorder;
                 btn.Foreground = BrushText;
             }
         }
@@ -120,7 +125,7 @@ public partial class IntervalTrainerView : UserControl
 
         ResultLabel.Text = "Слушай и выбери интервал...";
         ResultLabel.Foreground = BrushAccent;
-        ResultBorder.Background = new SolidColorBrush(Color.FromArgb(30, 203, 166, 247));
+        ResultBorder.Background = AlphaBrush("AccentBrush", 30);
     }
 
     private void Play_Click(object sender, RoutedEventArgs e) => PlayNewQuestion();
@@ -167,13 +172,13 @@ public partial class IntervalTrainerView : UserControl
         {
             ResultLabel.Text = $"✓ Верно! {_trainer.CurrentInterval.Name}";
             ResultLabel.Foreground = BrushCorrect;
-            ResultBorder.Background = new SolidColorBrush(Color.FromArgb(30, 166, 227, 161));
+            ResultBorder.Background = AlphaBrush("GoodBrush", 30);
         }
         else
         {
             ResultLabel.Text = $"✗ Нет! Было: {_trainer.CurrentInterval.Name}";
             ResultLabel.Foreground = BrushWrong;
-            ResultBorder.Background = new SolidColorBrush(Color.FromArgb(30, 243, 139, 168));
+            ResultBorder.Background = AlphaBrush("DangerBrush", 30);
         }
 
         UpdateStats();
@@ -219,5 +224,12 @@ public partial class IntervalTrainerView : UserControl
         ResultLabel.Text = "Статистика сброшена. Нажми «Играть»";
         ResultLabel.Foreground = BrushDim;
         ResultBorder.Background = BrushPanelDark;
+    }
+
+    private static SolidColorBrush AlphaBrush(string resourceName, byte alpha)
+    {
+        Color color = ThemeManager.GetColor(resourceName);
+        color.A = alpha;
+        return new SolidColorBrush(color);
     }
 }

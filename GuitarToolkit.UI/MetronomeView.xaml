@@ -1,7 +1,7 @@
 <UserControl x:Class="GuitarToolkit.UI.MetronomeView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             Background="#1A1525">
+             Background="{DynamicResource AppBackgroundBrush}">
 
     <UserControl.Resources>
         <SolidColorBrush x:Key="PanelBrush" Color="#241B33"/>
@@ -16,27 +16,27 @@
         <SolidColorBrush x:Key="DarkBrush" Color="#1A1525"/>
 
         <Style x:Key="Panel" TargetType="{x:Type Border}">
-            <Setter Property="Background" Value="{StaticResource PanelBrush}"/>
-            <Setter Property="BorderBrush" Value="{StaticResource PanelBorderBrush}"/>
+            <Setter Property="Background" Value="{DynamicResource PanelBrush}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource PanelBorderBrush}"/>
             <Setter Property="BorderThickness" Value="1"/>
             <Setter Property="CornerRadius" Value="6"/>
             <Setter Property="Padding" Value="10"/>
         </Style>
 
         <Style x:Key="SectionPanel" TargetType="{x:Type Border}" BasedOn="{StaticResource Panel}">
-            <Setter Property="Background" Value="{StaticResource DarkBrush}"/>
+            <Setter Property="Background" Value="{DynamicResource DarkBrush}"/>
             <Setter Property="Padding" Value="10 8"/>
         </Style>
 
         <Style x:Key="GroupLabel" TargetType="{x:Type TextBlock}">
-            <Setter Property="Foreground" Value="{StaticResource MutedTextBrush}"/>
+            <Setter Property="Foreground" Value="{DynamicResource MutedTextBrush}"/>
             <Setter Property="FontSize" Value="11"/>
             <Setter Property="FontWeight" Value="Bold"/>
             <Setter Property="Margin" Value="0 0 0 4"/>
         </Style>
 
         <Style x:Key="MutedText" TargetType="{x:Type TextBlock}">
-            <Setter Property="Foreground" Value="{StaticResource MutedTextBrush}"/>
+            <Setter Property="Foreground" Value="{DynamicResource MutedTextBrush}"/>
             <Setter Property="FontSize" Value="12"/>
             <Setter Property="FontWeight" Value="Bold"/>
             <Setter Property="TextWrapping" Value="Wrap"/>
@@ -46,9 +46,9 @@
             <Setter Property="Height" Value="26"/>
             <Setter Property="MinWidth" Value="30"/>
             <Setter Property="Padding" Value="8 0"/>
-            <Setter Property="Background" Value="{StaticResource ControlBrush}"/>
-            <Setter Property="Foreground" Value="{StaticResource TextBrush}"/>
-            <Setter Property="BorderBrush" Value="{StaticResource ControlBrush}"/>
+            <Setter Property="Background" Value="{DynamicResource ControlBrush}"/>
+            <Setter Property="Foreground" Value="{DynamicResource TextBrush}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource ControlBrush}"/>
             <Setter Property="BorderThickness" Value="1"/>
             <Setter Property="FontSize" Value="12"/>
             <Setter Property="FontWeight" Value="Bold"/>
@@ -67,12 +67,12 @@
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="Chrome" Property="Background" Value="{StaticResource ControlHoverBrush}"/>
-                                <Setter TargetName="Chrome" Property="BorderBrush" Value="{StaticResource ControlHoverBrush}"/>
+                                <Setter TargetName="Chrome" Property="Background" Value="{DynamicResource ControlHoverBrush}"/>
+                                <Setter TargetName="Chrome" Property="BorderBrush" Value="{DynamicResource ControlHoverBrush}"/>
                             </Trigger>
                             <Trigger Property="IsPressed" Value="True">
-                                <Setter TargetName="Chrome" Property="Background" Value="{StaticResource AccentBrush}"/>
-                                <Setter Property="Foreground" Value="{StaticResource DarkBrush}"/>
+                                <Setter TargetName="Chrome" Property="Background" Value="{DynamicResource AccentBrush}"/>
+                                <Setter Property="Foreground" Value="{DynamicResource DarkBrush}"/>
                             </Trigger>
                             <Trigger Property="IsEnabled" Value="False">
                                 <Setter Property="Opacity" Value="0.55"/>
@@ -84,9 +84,9 @@
         </Style>
 
         <Style x:Key="PrimaryButton" TargetType="{x:Type Button}" BasedOn="{StaticResource MetroButton}">
-            <Setter Property="Background" Value="{StaticResource StartBrush}"/>
-            <Setter Property="BorderBrush" Value="{StaticResource StartBrush}"/>
-            <Setter Property="Foreground" Value="{StaticResource DarkBrush}"/>
+            <Setter Property="Background" Value="{DynamicResource StartBrush}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource StartBrush}"/>
+            <Setter Property="Foreground" Value="{DynamicResource DarkBrush}"/>
         </Style>
 
         <Style TargetType="{x:Type Slider}">
@@ -96,13 +96,13 @@
                     <ControlTemplate TargetType="{x:Type Slider}">
                         <Grid VerticalAlignment="Center">
                             <Border Height="4"
-                                    Background="{StaticResource ControlBrush}"
+                                    Background="{DynamicResource ControlBrush}"
                                     CornerRadius="2"
                                     VerticalAlignment="Center"/>
                             <Track x:Name="PART_Track">
                                 <Track.DecreaseRepeatButton>
                                     <RepeatButton Command="{x:Static Slider.DecreaseLarge}"
-                                                  Background="{StaticResource AccentBrush}"
+                                                  Background="{DynamicResource AccentBrush}"
                                                   BorderThickness="0"
                                                   Height="4"/>
                                 </Track.DecreaseRepeatButton>
@@ -115,7 +115,7 @@
                                 <Track.Thumb>
                                     <Thumb Width="12"
                                            Height="20"
-                                           Background="{StaticResource TextBrush}"/>
+                                           Background="{DynamicResource TextBrush}"/>
                                 </Track.Thumb>
                             </Track>
                         </Grid>
@@ -147,7 +147,9 @@
 
                 <TextBlock Grid.Row="0"
                            Text="Темп"
-                           Style="{StaticResource GroupLabel}"/>
+                           Style="{StaticResource GroupLabel}"
+                           HorizontalAlignment="Center"
+                           TextAlignment="Center"/>
 
                 <Border Grid.Row="2"
                         Style="{StaticResource SectionPanel}">
@@ -158,8 +160,8 @@
                         </Grid.ColumnDefinitions>
 
                         <Grid Grid.Column="0"
-                              Width="170"
-                              HorizontalAlignment="Left"
+                              Width="200"
+                              HorizontalAlignment="Center"
                               VerticalAlignment="Center">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto"/>
@@ -170,8 +172,9 @@
                                        Text="120"
                                        FontSize="60"
                                        FontWeight="Bold"
-                                       Foreground="{StaticResource TextBrush}"
+                                       Foreground="{DynamicResource TextBrush}"
                                        HorizontalAlignment="Left"
+                                       Margin="14 0 0 0"
                                        RenderTransformOrigin="0.5,0.5">
                                 <TextBlock.RenderTransform>
                                     <ScaleTransform x:Name="BpmScale" ScaleX="1" ScaleY="1"/>
@@ -183,7 +186,7 @@
                                        Width="{Binding ActualWidth, ElementName=BpmDisplay}"
                                        TextAlignment="Center"
                                        HorizontalAlignment="Left"
-                                       Margin="0 -6 0 0"/>
+                                       Margin="14 -6 0 0"/>
                         </Grid>
 
                         <Canvas Grid.Column="1"
@@ -203,13 +206,13 @@
                                       Y1="18"
                                       X2="60"
                                       Y2="116"
-                                      Stroke="{StaticResource AccentBrush}"
+                                      Stroke="{DynamicResource AccentBrush}"
                                       StrokeThickness="5"
                                       StrokeStartLineCap="Round"
                                       StrokeEndLineCap="Round"/>
                                 <Ellipse Width="30"
                                          Height="30"
-                                         Fill="{StaticResource AccentBrush}"
+                                         Fill="{DynamicResource AccentBrush}"
                                          Canvas.Left="45"
                                          Canvas.Top="101"
                                          RenderTransformOrigin="0.5,0.5">
@@ -226,11 +229,13 @@
 
                 <TextBlock Grid.Row="4"
                            Text="Доли"
-                           Style="{StaticResource GroupLabel}"/>
+                           Style="{StaticResource GroupLabel}"
+                           HorizontalAlignment="Center"
+                           TextAlignment="Center"/>
 
                 <ItemsControl x:Name="BeatIndicators"
                               Grid.Row="6"
-                              HorizontalAlignment="Left">
+                              HorizontalAlignment="Center">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
                             <WrapPanel/>
@@ -323,7 +328,7 @@
                                         Click="DecrBeats_Click"/>
                                 <TextBlock x:Name="BeatsLabel"
                                            Text="4"
-                                           Foreground="{StaticResource AccentBrush}"
+                                           Foreground="{DynamicResource AccentBrush}"
                                            FontSize="18"
                                            FontWeight="Bold"
                                            VerticalAlignment="Center"

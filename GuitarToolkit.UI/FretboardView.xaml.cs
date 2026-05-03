@@ -8,7 +8,7 @@ using System.Windows.Shapes;
 
 namespace GuitarToolkit.UI;
 
-public partial class FretboardView : UserControl
+public partial class FretboardView : UserControl, IThemeAware
 {
     private IAudioPlayback? _audio;
     private string _selectedRoot = "C";
@@ -18,15 +18,15 @@ public partial class FretboardView : UserControl
 
     private readonly List<Button> _rootButtons = new();
 
-    private static readonly Color RootColor = Color.FromRgb(166, 227, 161);
-    private static readonly Color NoteColor = Color.FromRgb(203, 166, 247);
-    private static readonly Color TextDark = Color.FromRgb(26, 21, 37);
-    private static readonly Color TextLight = Color.FromRgb(205, 214, 244);
-    private static readonly Color FretColor = Color.FromRgb(116, 93, 142);
-    private static readonly Color StringCol = Color.FromRgb(166, 173, 200);
-    private static readonly Color ActiveBg = Color.FromRgb(203, 166, 247);
-    private static readonly Color InactiveBg = Color.FromRgb(74, 56, 96);
-    private static readonly Color MarkerColor = Color.FromRgb(70, 54, 92);
+    private static Color RootColor => ThemeManager.GetColor("GoodBrush");
+    private static Color NoteColor => ThemeManager.GetColor("AccentBrush");
+    private static Color TextDark => ThemeManager.GetColor("DarkBrush");
+    private static Color TextLight => ThemeManager.GetColor("TextBrush");
+    private static Color FretColor => ThemeManager.GetColor("MutedTextBrush");
+    private static Color StringCol => ThemeManager.GetColor("MutedTextBrush");
+    private static Color ActiveBg => ThemeManager.GetColor("AccentBrush");
+    private static Color InactiveBg => ThemeManager.GetColor("ControlBrush");
+    private static Color MarkerColor => ThemeManager.GetColor("PanelBorderBrush");
 
     private const int FretCount = 17;
     private const int StringCount = 6;
@@ -44,6 +44,12 @@ public partial class FretboardView : UserControl
     }
 
     public void Initialize(IAudioPlayback audio) => Initialize(audio, null);
+
+    public void ApplyTheme()
+    {
+        HighlightRootButtons();
+        DrawFretboard();
+    }
 
     public void Initialize(IAudioPlayback audio, UserSettings? settings)
     {
@@ -178,7 +184,7 @@ public partial class FretboardView : UserControl
 
         double leftPad = 34;
         double topPad = 18;
-        double bottomPad = 28;
+        double bottomPad = 42;
         double gridW = canvasW - leftPad - 10;
         double gridH = Math.Min(canvasH - topPad - bottomPad, 238);
         double verticalOffset = Math.Max(0, (canvasH - topPad - bottomPad - gridH) / 2);
@@ -216,7 +222,7 @@ public partial class FretboardView : UserControl
                 TextAlignment = TextAlignment.Center, Width = fretW
             };
             Canvas.SetLeft(label, leftPad + (f - 1) * fretW);
-            Canvas.SetTop(label, topPad + gridH + 4);
+            Canvas.SetTop(label, topPad + gridH + 14);
             FretboardCanvas.Children.Add(label);
         }
 

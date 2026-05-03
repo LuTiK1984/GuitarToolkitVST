@@ -1,4 +1,5 @@
 using System.Windows;
+using System.Windows.Input;
 using GuitarToolkit.Core.Services;
 using GuitarToolkit.UI;
 
@@ -41,6 +42,45 @@ public partial class MainWindow : Window
             MessageBox.Show(ex.ToString(), "\u041E\u0448\u0438\u0431\u043A\u0430 \u0437\u0430\u043F\u0443\u0441\u043A\u0430");
             _audio = new AudioBridge();
         }
+    }
+
+    private void Minimize_Click(object sender, RoutedEventArgs e)
+    {
+        WindowState = WindowState.Minimized;
+    }
+
+    private void Maximize_Click(object sender, RoutedEventArgs e)
+    {
+        WindowState = WindowState == WindowState.Maximized ? WindowState.Normal : WindowState.Maximized;
+        UpdateMaximizeButton();
+    }
+
+    private void Close_Click(object sender, RoutedEventArgs e)
+    {
+        Close();
+    }
+
+    private void TitleBar_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+    {
+        if (e.ClickCount == 2)
+        {
+            Maximize_Click(sender, e);
+            return;
+        }
+
+        DragMove();
+    }
+
+    protected override void OnStateChanged(EventArgs e)
+    {
+        base.OnStateChanged(e);
+        UpdateMaximizeButton();
+    }
+
+    private void UpdateMaximizeButton()
+    {
+        if (MaximizeButton != null)
+            MaximizeButton.Content = WindowState == WindowState.Maximized ? "\u2750" : "\u25A1";
     }
 
     private void ToolkitView_InputDeviceSelected(object? sender, int deviceIndex)

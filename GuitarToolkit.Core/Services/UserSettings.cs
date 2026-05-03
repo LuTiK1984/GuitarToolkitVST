@@ -32,6 +32,8 @@ public class UserSettings
 
     // Desktop
     public int LastInputDevice { get; set; } = 0;
+    public string ThemeName { get; set; } = "Dark";
+    public string Language { get; set; } = "ru-RU";
 
     // Табы
     public string LastTabFilePath { get; set; } = "";

@@ -1,7 +1,7 @@
-﻿<UserControl x:Class="GuitarToolkit.UI.TunerView"
+<UserControl x:Class="GuitarToolkit.UI.TunerView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             Background="#1A1525">
+             Background="{DynamicResource AppBackgroundBrush}">
 
     <UserControl.Resources>
         <SolidColorBrush x:Key="PanelBrush" Color="#241B33"/>
@@ -17,27 +17,27 @@
         <SolidColorBrush x:Key="DarkBrush" Color="#1A1525"/>
 
         <Style x:Key="Panel" TargetType="{x:Type Border}">
-            <Setter Property="Background" Value="{StaticResource PanelBrush}"/>
-            <Setter Property="BorderBrush" Value="{StaticResource PanelBorderBrush}"/>
+            <Setter Property="Background" Value="{DynamicResource PanelBrush}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource PanelBorderBrush}"/>
             <Setter Property="BorderThickness" Value="1"/>
             <Setter Property="CornerRadius" Value="6"/>
             <Setter Property="Padding" Value="10"/>
         </Style>
 
         <Style x:Key="SectionPanel" TargetType="{x:Type Border}" BasedOn="{StaticResource Panel}">
-            <Setter Property="Background" Value="{StaticResource DarkBrush}"/>
+            <Setter Property="Background" Value="{DynamicResource DarkBrush}"/>
             <Setter Property="Padding" Value="10 8"/>
         </Style>
 
         <Style x:Key="GroupLabel" TargetType="{x:Type TextBlock}">
-            <Setter Property="Foreground" Value="{StaticResource MutedTextBrush}"/>
+            <Setter Property="Foreground" Value="{DynamicResource MutedTextBrush}"/>
             <Setter Property="FontSize" Value="11"/>
             <Setter Property="FontWeight" Value="Bold"/>
             <Setter Property="Margin" Value="0 0 0 4"/>
         </Style>
 
         <Style x:Key="MutedText" TargetType="{x:Type TextBlock}">
-            <Setter Property="Foreground" Value="{StaticResource MutedTextBrush}"/>
+            <Setter Property="Foreground" Value="{DynamicResource MutedTextBrush}"/>
             <Setter Property="FontSize" Value="12"/>
             <Setter Property="FontWeight" Value="Bold"/>
             <Setter Property="TextWrapping" Value="Wrap"/>
@@ -47,9 +47,9 @@
             <Setter Property="Height" Value="28"/>
             <Setter Property="MinWidth" Value="32"/>
             <Setter Property="Padding" Value="8 0"/>
-            <Setter Property="Background" Value="{StaticResource ControlBrush}"/>
-            <Setter Property="Foreground" Value="{StaticResource TextBrush}"/>
-            <Setter Property="BorderBrush" Value="{StaticResource ControlBrush}"/>
+            <Setter Property="Background" Value="{DynamicResource ControlBrush}"/>
+            <Setter Property="Foreground" Value="{DynamicResource TextBrush}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource ControlBrush}"/>
             <Setter Property="BorderThickness" Value="1"/>
             <Setter Property="FontSize" Value="12"/>
             <Setter Property="FontWeight" Value="Bold"/>
@@ -68,12 +68,12 @@
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="Chrome" Property="Background" Value="{StaticResource ControlHoverBrush}"/>
-                                <Setter TargetName="Chrome" Property="BorderBrush" Value="{StaticResource ControlHoverBrush}"/>
+                                <Setter TargetName="Chrome" Property="Background" Value="{DynamicResource ControlHoverBrush}"/>
+                                <Setter TargetName="Chrome" Property="BorderBrush" Value="{DynamicResource ControlHoverBrush}"/>
                             </Trigger>
                             <Trigger Property="IsPressed" Value="True">
-                                <Setter TargetName="Chrome" Property="Background" Value="{StaticResource AccentBrush}"/>
-                                <Setter Property="Foreground" Value="{StaticResource DarkBrush}"/>
+                                <Setter TargetName="Chrome" Property="Background" Value="{DynamicResource AccentBrush}"/>
+                                <Setter Property="Foreground" Value="{DynamicResource DarkBrush}"/>
                             </Trigger>
                             <Trigger Property="IsEnabled" Value="False">
                                 <Setter Property="Opacity" Value="0.55"/>
@@ -86,8 +86,8 @@
 
         <ControlTemplate x:Key="TunerComboToggle" TargetType="{x:Type ToggleButton}">
             <Border x:Name="Chrome"
-                    Background="{StaticResource ControlBrush}"
-                    BorderBrush="{StaticResource ControlBrush}"
+                    Background="{DynamicResource ControlBrush}"
+                    BorderBrush="{DynamicResource ControlBrush}"
                     BorderThickness="1"
                     CornerRadius="4">
                 <Grid>
@@ -101,7 +101,7 @@
                                       Margin="8 0 0 0"/>
                     <TextBlock Grid.Column="1"
                                Text="v"
-                               Foreground="{StaticResource TextBrush}"
+                               Foreground="{DynamicResource TextBrush}"
                                FontSize="11"
                                FontWeight="Bold"
                                HorizontalAlignment="Center"
@@ -110,15 +110,15 @@
             </Border>
             <ControlTemplate.Triggers>
                 <Trigger Property="IsMouseOver" Value="True">
-                    <Setter TargetName="Chrome" Property="Background" Value="{StaticResource ControlHoverBrush}"/>
-                    <Setter TargetName="Chrome" Property="BorderBrush" Value="{StaticResource ControlHoverBrush}"/>
+                    <Setter TargetName="Chrome" Property="Background" Value="{DynamicResource ControlHoverBrush}"/>
+                    <Setter TargetName="Chrome" Property="BorderBrush" Value="{DynamicResource ControlHoverBrush}"/>
                 </Trigger>
             </ControlTemplate.Triggers>
         </ControlTemplate>
 
         <Style TargetType="{x:Type ComboBox}">
             <Setter Property="Height" Value="28"/>
-            <Setter Property="Foreground" Value="{StaticResource TextBrush}"/>
+            <Setter Property="Foreground" Value="{DynamicResource TextBrush}"/>
             <Setter Property="FontSize" Value="12"/>
             <Setter Property="FontWeight" Value="Bold"/>
             <Setter Property="Template">
@@ -140,8 +140,8 @@
                                    AllowsTransparency="True"
                                    Focusable="False"
                                    PopupAnimation="Slide">
-                                <Border Background="{StaticResource PanelBrush}"
-                                        BorderBrush="{StaticResource PanelBorderBrush}"
+                                <Border Background="{DynamicResource PanelBrush}"
+                                        BorderBrush="{DynamicResource PanelBorderBrush}"
                                         BorderThickness="1"
                                         CornerRadius="4"
                                         Padding="3"
@@ -159,7 +159,7 @@
         </Style>
 
         <Style TargetType="{x:Type ComboBoxItem}">
-            <Setter Property="Foreground" Value="{StaticResource TextBrush}"/>
+            <Setter Property="Foreground" Value="{DynamicResource TextBrush}"/>
             <Setter Property="Background" Value="Transparent"/>
             <Setter Property="Padding" Value="9 6"/>
             <Setter Property="Cursor" Value="Hand"/>
@@ -174,12 +174,12 @@
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsHighlighted" Value="True">
-                                <Setter TargetName="Chrome" Property="Background" Value="{StaticResource AccentBrush}"/>
-                                <Setter Property="Foreground" Value="{StaticResource DarkBrush}"/>
+                                <Setter TargetName="Chrome" Property="Background" Value="{DynamicResource AccentBrush}"/>
+                                <Setter Property="Foreground" Value="{DynamicResource DarkBrush}"/>
                             </Trigger>
                             <Trigger Property="IsSelected" Value="True">
-                                <Setter TargetName="Chrome" Property="Background" Value="{StaticResource ControlBrush}"/>
-                                <Setter Property="Foreground" Value="{StaticResource AccentBrush}"/>
+                                <Setter TargetName="Chrome" Property="Background" Value="{DynamicResource ControlBrush}"/>
+                                <Setter Property="Foreground" Value="{DynamicResource AccentBrush}"/>
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -194,13 +194,13 @@
                     <ControlTemplate TargetType="{x:Type Slider}">
                         <Grid VerticalAlignment="Center">
                             <Border Height="4"
-                                    Background="{StaticResource ControlBrush}"
+                                    Background="{DynamicResource ControlBrush}"
                                     CornerRadius="2"
                                     VerticalAlignment="Center"/>
                             <Track x:Name="PART_Track">
                                 <Track.DecreaseRepeatButton>
                                     <RepeatButton Command="{x:Static Slider.DecreaseLarge}"
-                                                  Background="{StaticResource AccentBrush}"
+                                                  Background="{DynamicResource AccentBrush}"
                                                   BorderThickness="0"
                                                   Height="4"/>
                                 </Track.DecreaseRepeatButton>
@@ -213,7 +213,7 @@
                                 <Track.Thumb>
                                     <Thumb Width="12"
                                            Height="20"
-                                           Background="{StaticResource TextBrush}"/>
+                                           Background="{DynamicResource TextBrush}"/>
                                 </Track.Thumb>
                             </Track>
                         </Grid>
@@ -259,8 +259,8 @@
                                   Grid.Column="0"
                                   SelectionChanged="InputDeviceBox_SelectionChanged"/>
                         <Border Grid.Column="2"
-                                Background="{StaticResource DarkBrush}"
-                                BorderBrush="{StaticResource PanelBorderBrush}"
+                                Background="{DynamicResource DarkBrush}"
+                                BorderBrush="{DynamicResource PanelBorderBrush}"
                                 BorderThickness="1"
                                 CornerRadius="10"
                                 Padding="10 4"
@@ -293,7 +293,7 @@
                                        Text="—"
                                        FontSize="86"
                                        FontWeight="Bold"
-                                       Foreground="{StaticResource TextBrush}"
+                                       Foreground="{DynamicResource TextBrush}"
                                        HorizontalAlignment="Center"
                                        RenderTransformOrigin="0.5,0.5"/>
                             <TextBlock x:Name="FreqLabel"
@@ -307,32 +307,35 @@
                         <Grid Grid.Row="2"
                               Width="340"
                               Height="78"
+                              ClipToBounds="True"
                               HorizontalAlignment="Center">
                             <Border Height="6"
                                     VerticalAlignment="Center"
-                                    Background="{StaticResource ControlBrush}"
+                                    Background="{DynamicResource PanelBorderBrush}"
                                     CornerRadius="3"/>
                             <Border Width="4"
                                     Height="30"
                                     HorizontalAlignment="Center"
                                     VerticalAlignment="Center"
-                                    Background="{StaticResource GoodBrush}"
+                                    Background="{DynamicResource GoodBrush}"
                                     CornerRadius="2"/>
                             <Grid Margin="0 0 0 2"
                                   VerticalAlignment="Bottom">
-                                    <TextBlock Text="-50"
-                                               Style="{StaticResource MutedText}"
-                                               Width="32"
-                                               TextAlignment="Left"
-                                               HorizontalAlignment="Left"/>
+                                <TextBlock Text="-50"
+                                           Style="{StaticResource MutedText}"
+                                           Width="38"
+                                           TextAlignment="Left"
+                                           HorizontalAlignment="Left"
+                                           Margin="4 0 0 0"/>
                                 <TextBlock Text="0"
                                            Style="{StaticResource MutedText}"
                                            HorizontalAlignment="Center"/>
-                                    <TextBlock Text="+50"
-                                               Style="{StaticResource MutedText}"
-                                               Width="32"
-                                               TextAlignment="Right"
-                                               HorizontalAlignment="Right"/>
+                                <TextBlock Text="+50"
+                                           Style="{StaticResource MutedText}"
+                                           Width="38"
+                                           TextAlignment="Right"
+                                           HorizontalAlignment="Right"
+                                           Margin="0 0 4 0"/>
                             </Grid>
                             <Canvas x:Name="NeedleCanvas"
                                     Width="340"
@@ -341,7 +344,7 @@
                                     VerticalAlignment="Center">
                                 <Polygon x:Name="NeedleArrow"
                                          Points="0,-20 7,11 -7,11"
-                                         Fill="{StaticResource AccentBrush}">
+                                         Fill="{DynamicResource AccentBrush}">
                                     <Polygon.RenderTransform>
                                         <TranslateTransform x:Name="NeedleTranslate" X="170" Y="33"/>
                                     </Polygon.RenderTransform>
@@ -358,13 +361,13 @@
 
                         <Border x:Name="InTuneIndicator"
                                 Grid.Row="6"
-                                Background="{StaticResource ControlBrush}"
+                                Background="{DynamicResource ControlBrush}"
                                 CornerRadius="6"
                                 Padding="12 6"
                                 HorizontalAlignment="Center">
                             <TextBlock x:Name="InTuneLabel"
                                        Text="&#x41E;&#x436;&#x438;&#x434;&#x430;&#x43D;&#x438;&#x435; &#x441;&#x438;&#x433;&#x43D;&#x430;&#x43B;&#x430;"
-                                       Foreground="{StaticResource MutedTextBrush}"
+                                       Foreground="{DynamicResource MutedTextBrush}"
                                        FontSize="13"
                                        FontWeight="Bold"/>
                         </Border>
@@ -434,7 +437,7 @@
                                         Click="RefDown_Click"/>
                                 <TextBlock x:Name="RefLabel"
                                            Text="440"
-                                           Foreground="{StaticResource AccentBrush}"
+                                           Foreground="{DynamicResource AccentBrush}"
                                            FontSize="18"
                                            FontWeight="Bold"
                                            Width="46"
@@ -465,12 +468,13 @@
                                Style="{StaticResource GroupLabel}"/>
 
                     <Grid Grid.Row="2"
-                          Height="14">
-                        <Rectangle Fill="#1E3A2A"
+                          Height="12">
+                        <Rectangle Fill="{DynamicResource ControlBrush}"
                                    RadiusX="7"
                                    RadiusY="7"/>
                         <Rectangle x:Name="VolumeBar"
-                                   Fill="{StaticResource GoodBrush}"
+                                   Fill="{DynamicResource GoodBrush}"
+                                   Opacity="0.7"
                                    HorizontalAlignment="Left"
                                    Width="0"
                                    RadiusX="7"

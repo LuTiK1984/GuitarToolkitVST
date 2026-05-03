@@ -8,7 +8,7 @@ using GuitarToolkit.Core.Models;
 
 namespace GuitarToolkit.UI;
 
-public partial class CircleOfFifthsView : UserControl
+public partial class CircleOfFifthsView : UserControl, IThemeAware
 {
     private IAudioPlayback? _audio;
     private int _selectedIndex = 0;
@@ -20,15 +20,15 @@ public partial class CircleOfFifthsView : UserControl
     private static readonly int[] MajorScale = { 0, 2, 4, 5, 7, 9, 11 };
     private static readonly int[] MinorScale = { 0, 2, 3, 5, 7, 8, 10 };
 
-    private static readonly Color AccentColor = Color.FromRgb(203, 166, 247);
-    private static readonly Color InactiveBg = Color.FromRgb(75, 58, 100);
-    private static readonly Color HoverBg = Color.FromRgb(91, 70, 118);
-    private static readonly Color TextLight = Color.FromRgb(205, 214, 244);
-    private static readonly Color TextDark = Color.FromRgb(26, 21, 37);
-    private static readonly Color DimText = Color.FromRgb(155, 139, 184);
-    private static readonly Color PanelBorder = Color.FromRgb(53, 40, 71);
-    private static readonly Color RingColor = Color.FromRgb(36, 27, 51);
-    private static readonly Color GreenColor = Color.FromRgb(166, 227, 161);
+    private static Color AccentColor => ThemeManager.GetColor("AccentBrush");
+    private static Color InactiveBg => ThemeManager.GetColor("ControlBrush");
+    private static Color HoverBg => ThemeManager.GetColor("ControlHoverBrush");
+    private static Color TextLight => ThemeManager.GetColor("TextBrush");
+    private static Color TextDark => ThemeManager.GetColor("DarkBrush");
+    private static Color DimText => ThemeManager.GetColor("MutedTextBrush");
+    private static Color PanelBorder => ThemeManager.GetColor("PanelBorderBrush");
+    private static Color RingColor => ThemeManager.GetColor("PanelBrush");
+    private static Color GreenColor => ThemeManager.GetColor("GoodBrush");
 
     public CircleOfFifthsView()
     {
@@ -39,6 +39,12 @@ public partial class CircleOfFifthsView : UserControl
     public void Initialize(IAudioPlayback audio)
     {
         _audio = audio;
+    }
+
+    public void ApplyTheme()
+    {
+        DrawCircle();
+        UpdateInfo();
     }
 
     private static string FlatToSharp(string note)

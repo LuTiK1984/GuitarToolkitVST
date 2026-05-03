@@ -7,7 +7,7 @@ using GuitarToolkit.Core.Services;
 
 namespace GuitarToolkit.UI;
 
-public partial class MetronomeView : UserControl
+public partial class MetronomeView : UserControl, IThemeAware
 {
     private MetronomeEngine? _metronome;
     private bool _isRunning;
@@ -15,20 +15,20 @@ public partial class MetronomeView : UserControl
     private readonly List<DateTime> _taps = new();
     private readonly List<Ellipse> _dots = new();
 
-    private static readonly SolidColorBrush BrushDotOff = new(Color.FromRgb(45, 34, 64));
-    private static readonly SolidColorBrush BrushAccent = new(Color.FromRgb(166, 227, 161));
-    private static readonly SolidColorBrush BrushNormal = new(Color.FromRgb(203, 166, 247));
-    private static readonly SolidColorBrush BrushStroke = new(Color.FromRgb(124, 111, 150));
-
-    static MetronomeView()
-    {
-        BrushDotOff.Freeze(); BrushAccent.Freeze();
-        BrushNormal.Freeze(); BrushStroke.Freeze();
-    }
+    private static SolidColorBrush BrushDotOff => ThemeManager.GetBrush("ControlBrush");
+    private static SolidColorBrush BrushAccent => ThemeManager.GetBrush("GoodBrush");
+    private static SolidColorBrush BrushNormal => ThemeManager.GetBrush("AccentBrush");
+    private static SolidColorBrush BrushStroke => ThemeManager.GetBrush("MutedTextBrush");
 
     public MetronomeView()
     {
         InitializeComponent();
+    }
+
+    public void ApplyTheme()
+    {
+        BuildBeatDots();
+        UpdateStartStopVisual();
     }
 
     public void SaveTo(UserSettings settings)
@@ -96,7 +96,7 @@ public partial class MetronomeView : UserControl
                     if (i != beatIndex)
                     {
                         var fadeOut = new ColorAnimation(
-                            Color.FromRgb(45, 34, 64),
+                            ThemeManager.GetColor("ControlBrush"),
                             TimeSpan.FromMilliseconds(200));
                         _dots[i].Fill = new SolidColorBrush();
                         ((SolidColorBrush)_dots[i].Fill).BeginAnimation(
@@ -108,8 +108,8 @@ public partial class MetronomeView : UserControl
                 if (beatIndex < _dots.Count)
                 {
                     Color targetColor = beatIndex == 0
-                        ? Color.FromRgb(166, 227, 161)
-                        : Color.FromRgb(203, 166, 247);
+                        ? ThemeManager.GetColor("GoodBrush")
+                        : ThemeManager.GetColor("AccentBrush");
                     _dots[beatIndex].Fill = new SolidColorBrush(targetColor);
                 }
 
@@ -196,7 +196,7 @@ public partial class MetronomeView : UserControl
         {
             _metronome.Stop();
             StartStopButton.Content = "▶  СТАРТ";
-            StartStopButton.Background = new SolidColorBrush(Color.FromRgb(166, 227, 161));
+            StartStopButton.Background = ThemeManager.GetBrush("GoodBrush");
 
             foreach (var d in _dots)
                 d.Fill = BrushDotOff;
@@ -207,7 +207,7 @@ public partial class MetronomeView : UserControl
             _metronome.Volume = (float)VolumeSlider.Value;
             _metronome.Start();
             StartStopButton.Content = "⏹  СТОП";
-            StartStopButton.Background = new SolidColorBrush(Color.FromRgb(243, 139, 168));
+            StartStopButton.Background = ThemeManager.GetBrush("DangerBrush");
         }
 
         _isRunning = !_isRunning;
@@ -219,14 +219,14 @@ public partial class MetronomeView : UserControl
         if (_isRunning)
         {
             StartStopButton.Content = "■ Стоп";
-            StartStopButton.Background = new SolidColorBrush(Color.FromRgb(243, 139, 168));
-            StartStopButton.BorderBrush = new SolidColorBrush(Color.FromRgb(243, 139, 168));
+            StartStopButton.Background = ThemeManager.GetBrush("DangerBrush");
+            StartStopButton.BorderBrush = ThemeManager.GetBrush("DangerBrush");
         }
         else
         {
             StartStopButton.Content = "▶ Старт";
-            StartStopButton.Background = new SolidColorBrush(Color.FromRgb(166, 227, 161));
-            StartStopButton.BorderBrush = new SolidColorBrush(Color.FromRgb(166, 227, 161));
+            StartStopButton.Background = ThemeManager.GetBrush("GoodBrush");
+            StartStopButton.BorderBrush = ThemeManager.GetBrush("GoodBrush");
             PendulumRotate.BeginAnimation(RotateTransform.AngleProperty, new DoubleAnimation(0d, TimeSpan.FromMilliseconds(160)));
         }
     }

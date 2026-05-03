@@ -23,6 +23,8 @@ public partial class ToolkitHostView : UserControl
         ProgressionTab.Initialize(audioHost, _settings);
         CircleTab.Initialize(audioHost);
         FretboardTab.Initialize(audioHost, _settings);
+        SettingsTab.Initialize(_settings);
+        SettingsTab.ThemeChanged += SettingsTab_ThemeChanged;
 
         if (enableTabs)
         {
@@ -39,6 +41,24 @@ public partial class ToolkitHostView : UserControl
         Loaded += (s, e) => Focus();
         Unloaded += (s, e) => SaveSettings();
         PreviewKeyDown += OnKeyDown;
+    }
+
+    private void UserControl_Loaded(object sender, RoutedEventArgs e)
+    {
+        ApplyTheme(ThemeManager.Parse(_settings.ThemeName));
+    }
+
+    private void SettingsTab_ThemeChanged(object? sender, ToolkitTheme theme)
+    {
+        ApplyTheme(theme);
+    }
+
+    private void ApplyTheme(ToolkitTheme theme)
+    {
+        if (Window.GetWindow(this) is Window window)
+            ThemeManager.Apply(window, theme);
+        else
+            ThemeManager.Apply(this, theme);
     }
 
     public event EventHandler<int> InputDeviceSelected

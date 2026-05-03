@@ -4,6 +4,35 @@ All notable changes to GuitarToolkit are documented here.
 
 ## [Unreleased]
 
+### Added
+
+- Added a desktop custom title bar using WPF `WindowChrome`, with custom minimize, maximize, and close controls.
+- Added a Settings tab with theme controls and a language-selection placeholder.
+
+### Fixed
+
+- Fixed a startup crash in the first light-theme mapper caused by duplicate reverse color mappings.
+- Fixed custom title-bar maximize glyph encoding and enlarged the window-control icons.
+- Restored custom title-bar hover hit testing for minimize, maximize, and close buttons.
+- Fixed sidebar tab text encoding and protected selected-tab highlighting from global theme remapping.
+- Replaced the fragile global element recoloring pass with resource-only theme application so dark theme keeps the original UI colors.
+- Moved custom title-bar dragging out of the `WindowChrome` caption area so window-control hover states remain interactive.
+- Applied theme resources across the shared tabs instead of limiting the light/dark switch to the Settings surface.
+- Rebuilt the About tab with theme-aware resources and clean text encoding.
+- Applied theme resources directly to each tab view so unselected tabs also pick up the active palette when opened.
+- Added a narrow legacy-color remap for code-created controls, diagrams, beat indicators, tuner string cards, and other non-XAML brushes.
+- Made the custom desktop title bar use the active dark/light palette so the light theme also changes the window frame.
+- Made code-created Interval Trainer, Scales, Progressions, and Circle of Fifths controls redraw from the active theme palette.
+- Polished light-theme tuner, metronome, chord, scale, and interval details before the 1.5 release pass.
+- Refined the chord header alignment, fret-number spacing, current-progression outline, and theme-aware window frame styling.
+
+### Changed
+
+- Added a saved light theme option that keeps the main purple identity and accent color while remapping the interface to a lighter palette.
+- Restyled the desktop custom title bar toward a glassy purple frame with soft highlights and rounded window controls.
+- Reworked theme application toward explicit dark/light resource palettes instead of relying on fragile reverse color inference.
+- Converted the host sidebar and settings surface to dynamic theme resources for a more predictable dark/light split.
+
 ## [1.4.0] - 2026-05-03
 
 ### Changed

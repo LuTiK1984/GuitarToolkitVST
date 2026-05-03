@@ -7,32 +7,30 @@ using GuitarToolkit.Core.Services;
 
 namespace GuitarToolkit.UI;
 
-public partial class TunerView : UserControl
+public partial class TunerView : UserControl, IThemeAware
 {
     private TunerEngine? _tuner;
     private string _displayedNote = "\u2014";
     private bool _isUpdatingInputDevices;
 
-    private static readonly SolidColorBrush BrushGreen = new(Color.FromRgb(166, 227, 161));
-    private static readonly SolidColorBrush BrushYellow = new(Color.FromRgb(249, 226, 175));
-    private static readonly SolidColorBrush BrushRed = new(Color.FromRgb(243, 139, 168));
-    private static readonly SolidColorBrush BrushAccent = new(Color.FromRgb(203, 166, 247));
-    private static readonly SolidColorBrush BrushDim = new(Color.FromRgb(124, 111, 150));
-    private static readonly SolidColorBrush BrushCard = new(Color.FromRgb(45, 34, 64));
-    private static readonly SolidColorBrush BrushCardActive = new(Color.FromRgb(30, 60, 80));
-    private static readonly SolidColorBrush BrushText = new(Color.FromRgb(205, 214, 244));
-    private static readonly SolidColorBrush BrushInTuneBg = new(Color.FromRgb(30, 50, 35));
-    private static readonly SolidColorBrush BrushDefaultBg = new(Color.FromRgb(52, 38, 70));
-
-    static TunerView()
-    {
-        BrushGreen.Freeze(); BrushYellow.Freeze(); BrushRed.Freeze();
-        BrushAccent.Freeze(); BrushDim.Freeze(); BrushCard.Freeze();
-        BrushCardActive.Freeze(); BrushText.Freeze();
-        BrushInTuneBg.Freeze(); BrushDefaultBg.Freeze();
-    }
+    private static SolidColorBrush BrushGreen => ThemeManager.GetBrush("GoodBrush");
+    private static SolidColorBrush BrushYellow => ThemeManager.GetBrush("WarnBrush");
+    private static SolidColorBrush BrushRed => ThemeManager.GetBrush("DangerBrush");
+    private static SolidColorBrush BrushAccent => ThemeManager.GetBrush("AccentBrush");
+    private static SolidColorBrush BrushDim => ThemeManager.GetBrush("MutedTextBrush");
+    private static SolidColorBrush BrushCard => ThemeManager.GetBrush("ControlBrush");
+    private static SolidColorBrush BrushCardActive => ThemeManager.GetBrush("ControlHoverBrush");
+    private static SolidColorBrush BrushText => ThemeManager.GetBrush("TextBrush");
+    private static SolidColorBrush BrushInTuneBg => ThemeManager.GetBrush("DarkBrush");
+    private static SolidColorBrush BrushDefaultBg => ThemeManager.GetBrush("ControlBrush");
 
     public TunerView() { InitializeComponent(); }
+
+    public void ApplyTheme()
+    {
+        SetInputStatus(InputStatusLabel?.Text ?? "", InputStatusLabel?.Text?.Contains("\u0417\u0430\u043F\u0438\u0441\u044C") == true);
+        BuildStrings();
+    }
 
     public event EventHandler<int>? InputDeviceSelected;
 
@@ -136,8 +134,8 @@ public partial class TunerView : UserControl
             _displayedNote = "\u2014";
         }
 
-        double x = 170 + (cents / 50.0) * 165;
-        x = Math.Clamp(x, 5, 335);
+        double x = 170 + (cents / 50.0) * 158;
+        x = Math.Clamp(x, 8, 332);
 
         NeedleTranslate.BeginAnimation(TranslateTransform.XProperty,
             new DoubleAnimation { To = x, Duration = TimeSpan.FromMilliseconds(110) });
@@ -173,6 +171,7 @@ public partial class TunerView : UserControl
         double width = Math.Clamp(volume * maxWidth * 1.9, 0, maxWidth);
         VolumeBar.Width = width;
         VolumeBar.Fill = width < maxWidth * 0.6 ? BrushGreen : width < maxWidth * 0.85 ? BrushYellow : BrushRed;
+        VolumeBar.Opacity = ThemeManager.CurrentTheme == ToolkitTheme.Light ? 0.68 : 1.0;
     }
 
     private void GainSlider_ValueChanged(object s, RoutedPropertyChangedEventArgs<double> e)
@@ -280,5 +279,5 @@ public partial class TunerView : UserControl
         RefLabel.Text = _tuner.ReferenceA.ToString("F0");
     }
 
-    private static bool IsNoNote(string note) => note == "\u2014" || note == "вЂ”";
+    private static bool IsNoNote(string note) => note == "\u2014";
 }

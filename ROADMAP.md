@@ -35,6 +35,8 @@ GuitarToolkit is a personal, idea-driven guitar toolkit for Windows, available a
   - make tabs, buttons, and mode controls clearly named and visually distinguishable;
   - add an interface language switch and prepare UI text for localization;
   - move input device selection into the Tuner tab instead of keeping it global on every page;
+  - replace the first theme-mapping pass with proper shared theme resources across all WPF views;
+  - expand Settings into the home for language, theme, audio, tab library paths, diagnostics, and reset actions;
   - improve visual hierarchy across Desktop and VST without breaking workflows.
 - Improve first-run clarity:
   - short quick-start guidance in README;

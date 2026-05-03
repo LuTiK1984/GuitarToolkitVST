@@ -8,7 +8,7 @@ using System.Windows.Shapes;
 
 namespace GuitarToolkit.UI;
 
-public partial class ChordView : UserControl
+public partial class ChordView : UserControl, IThemeAware
 {
     private IAudioPlayback? _audioHost;
     private string _selectedRoot = "C";
@@ -22,14 +22,14 @@ public partial class ChordView : UserControl
     private readonly List<Button> _rootButtons = new();
     private readonly List<Button> _typeButtons = new();
 
-    private static readonly Color AccentColor = Color.FromRgb(203, 166, 247);
-    private static readonly Color InactiveBg = Color.FromRgb(74, 56, 96);
-    private static readonly Color TextLight = Color.FromRgb(205, 214, 244);
-    private static readonly Color TextDark = Color.FromRgb(26, 21, 37);
-    private static readonly Color StringColor = Color.FromRgb(166, 173, 200);
-    private static readonly Color DotColor = Color.FromRgb(203, 166, 247);
-    private static readonly Color MutedColor = Color.FromRgb(243, 139, 168);
-    private static readonly Color FavColor = Color.FromRgb(249, 226, 175);
+    private static Color AccentColor => ThemeManager.GetColor("AccentBrush");
+    private static Color InactiveBg => ThemeManager.GetColor("ControlBrush");
+    private static Color TextLight => ThemeManager.GetColor("TextBrush");
+    private static Color TextDark => ThemeManager.GetColor("DarkBrush");
+    private static Color StringColor => ThemeManager.GetColor("MutedTextBrush");
+    private static Color DotColor => ThemeManager.GetColor("AccentBrush");
+    private static Color MutedColor => ThemeManager.GetColor("DangerBrush");
+    private static Color FavColor => ThemeManager.GetColor("FavBrush");
 
     private static readonly Dictionary<string, string> TypeLabels = new()
     {
@@ -47,6 +47,14 @@ public partial class ChordView : UserControl
     {
         settings.LastChordRoot = _selectedRoot;
         settings.LastChordType = _selectedType;
+    }
+
+    public void ApplyTheme()
+    {
+        HighlightButtons(_rootButtons, _selectedRoot);
+        HighlightTypeButtons();
+        UpdateFilterButtons();
+        ShowCurrentVoicing();
     }
 
     public void Initialize(IAudioPlayback audioHost) => Initialize(audioHost, null);
@@ -79,19 +87,24 @@ public partial class ChordView : UserControl
     private void SetFilter(string filter)
     {
         _filter = filter;
-        FilterAllBtn.Background = new SolidColorBrush(filter == "all" ? AccentColor : InactiveBg);
-        FilterAllBtn.BorderBrush = new SolidColorBrush(filter == "all" ? AccentColor : InactiveBg);
-        FilterAllBtn.Foreground = new SolidColorBrush(filter == "all" ? TextDark : TextLight);
-        FilterEasyBtn.Background = new SolidColorBrush(filter == "easy" ? AccentColor : InactiveBg);
-        FilterEasyBtn.BorderBrush = new SolidColorBrush(filter == "easy" ? AccentColor : InactiveBg);
-        FilterEasyBtn.Foreground = new SolidColorBrush(filter == "easy" ? TextDark : TextLight);
-        FilterBarreBtn.Background = new SolidColorBrush(filter == "barre" ? AccentColor : InactiveBg);
-        FilterBarreBtn.BorderBrush = new SolidColorBrush(filter == "barre" ? AccentColor : InactiveBg);
-        FilterBarreBtn.Foreground = new SolidColorBrush(filter == "barre" ? TextDark : TextLight);
-        FilterFavBtn.Background = new SolidColorBrush(filter == "fav" ? FavColor : InactiveBg);
-        FilterFavBtn.BorderBrush = new SolidColorBrush(filter == "fav" ? FavColor : InactiveBg);
-        FilterFavBtn.Foreground = new SolidColorBrush(filter == "fav" ? TextDark : TextLight);
+        UpdateFilterButtons();
         UpdateChord();
+    }
+
+    private void UpdateFilterButtons()
+    {
+        FilterAllBtn.Background = new SolidColorBrush(_filter == "all" ? AccentColor : InactiveBg);
+        FilterAllBtn.BorderBrush = new SolidColorBrush(_filter == "all" ? AccentColor : InactiveBg);
+        FilterAllBtn.Foreground = new SolidColorBrush(_filter == "all" ? TextDark : TextLight);
+        FilterEasyBtn.Background = new SolidColorBrush(_filter == "easy" ? AccentColor : InactiveBg);
+        FilterEasyBtn.BorderBrush = new SolidColorBrush(_filter == "easy" ? AccentColor : InactiveBg);
+        FilterEasyBtn.Foreground = new SolidColorBrush(_filter == "easy" ? TextDark : TextLight);
+        FilterBarreBtn.Background = new SolidColorBrush(_filter == "barre" ? AccentColor : InactiveBg);
+        FilterBarreBtn.BorderBrush = new SolidColorBrush(_filter == "barre" ? AccentColor : InactiveBg);
+        FilterBarreBtn.Foreground = new SolidColorBrush(_filter == "barre" ? TextDark : TextLight);
+        FilterFavBtn.Background = new SolidColorBrush(_filter == "fav" ? FavColor : InactiveBg);
+        FilterFavBtn.BorderBrush = new SolidColorBrush(_filter == "fav" ? FavColor : InactiveBg);
+        FilterFavBtn.Foreground = new SolidColorBrush(_filter == "fav" ? TextDark : TextLight);
     }
 
     // ── Кнопки выбора ────────────────────────────────────────

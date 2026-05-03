@@ -7,7 +7,7 @@ using System.Windows.Media;
 
 namespace GuitarToolkit.UI;
 
-public partial class ProgressionView : UserControl
+public partial class ProgressionView : UserControl, IThemeAware
 {
     private IAudioPlayback? _audio;
     private string _selectedKey = "C";
@@ -18,13 +18,14 @@ public partial class ProgressionView : UserControl
     private int _bpm = 120;
     private bool _placeholderActive = true;
 
-    private static readonly Color AccentColor = Color.FromRgb(203, 166, 247);
-    private static readonly Color InactiveBg = Color.FromRgb(75, 58, 100);
-    private static readonly Color DarkBg = Color.FromRgb(26, 21, 37);
-    private static readonly Color TextLight = Color.FromRgb(205, 214, 244);
-    private static readonly Color TextDark = Color.FromRgb(26, 21, 37);
-    private static readonly Color MutedText = Color.FromRgb(155, 139, 184);
-    private static readonly Color DeleteColor = Color.FromRgb(243, 139, 168);
+    private static Color AccentColor => ThemeManager.GetColor("AccentBrush");
+    private static Color InactiveBg => ThemeManager.GetColor("ControlBrush");
+    private static Color InactiveBorder => ThemeManager.GetColor("PanelBorderBrush");
+    private static Color DarkBg => ThemeManager.GetColor("DarkBrush");
+    private static Color TextLight => ThemeManager.GetColor("TextBrush");
+    private static Color TextDark => ThemeManager.GetColor("DarkBrush");
+    private static Color MutedText => ThemeManager.GetColor("MutedTextBrush");
+    private static Color DeleteColor => ThemeManager.GetColor("DangerBrush");
 
     public ProgressionView()
     {
@@ -34,6 +35,13 @@ public partial class ProgressionView : UserControl
     }
 
     public void Initialize(IAudioPlayback audio) => Initialize(audio, null);
+
+    public void ApplyTheme()
+    {
+        HighlightKeyButtons();
+        UpdateDiatonicChords();
+        PresetNameBox.Foreground = new SolidColorBrush(_placeholderActive ? MutedText : TextLight);
+    }
 
     public void Initialize(IAudioPlayback audio, UserSettings? settings)
     {
@@ -339,7 +347,7 @@ public partial class ProgressionView : UserControl
             var border = new Border
             {
                 Background = new SolidColorBrush(InactiveBg),
-                BorderBrush = new SolidColorBrush(InactiveBg),
+                BorderBrush = new SolidColorBrush(InactiveBorder),
                 BorderThickness = new Thickness(1),
                 CornerRadius = new CornerRadius(4),
                 Padding = new Thickness(8, 4, 8, 4),

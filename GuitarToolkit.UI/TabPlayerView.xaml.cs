@@ -1,4 +1,4 @@
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.Globalization;
 using System.IO;
 using System.Windows;
@@ -525,7 +525,7 @@ public partial class TabPlayerView : UserControl
         catch (Exception ex)
         {
             AppLogger.Warning("Failed to render selected tab track.", ex);
-            StatusText.Text = "Р”РѕСЂРѕР¶РєР° РЅРµ СЃРјРѕРіР»Р° РѕС‚СЂРёСЃРѕРІР°С‚СЊСЃСЏ";
+            StatusText.Text = "\u0414\u043E\u0440\u043E\u0436\u043A\u0430 \u043D\u0435 \u0441\u043C\u043E\u0433\u043B\u0430 \u043E\u0442\u0440\u0438\u0441\u043E\u0432\u0430\u0442\u044C\u0441\u044F";
         }
     }
 
@@ -1230,3 +1230,4 @@ public partial class TabPlayerView : UserControl
         }
     }
 }
+

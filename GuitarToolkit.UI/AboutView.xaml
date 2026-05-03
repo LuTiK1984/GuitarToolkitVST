@@ -1,44 +1,44 @@
 <UserControl x:Class="GuitarToolkit.UI.AboutView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             Background="#1A1525">
+             Background="{DynamicResource AppBackgroundBrush}">
     <UserControl.Resources>
-        <Style x:Key="SectionTitle" TargetType="TextBlock">
+        <Style x:Key="SectionTitle" TargetType="{x:Type TextBlock}">
             <Setter Property="FontSize" Value="17"/>
             <Setter Property="FontWeight" Value="SemiBold"/>
-            <Setter Property="Foreground" Value="#CDD6F4"/>
+            <Setter Property="Foreground" Value="{DynamicResource TextBrush}"/>
             <Setter Property="Margin" Value="0 0 0 12"/>
         </Style>
 
-        <Style x:Key="MutedText" TargetType="TextBlock">
-            <Setter Property="Foreground" Value="#9B8BB8"/>
+        <Style x:Key="MutedText" TargetType="{x:Type TextBlock}">
+            <Setter Property="Foreground" Value="{DynamicResource MutedTextBrush}"/>
             <Setter Property="FontSize" Value="13"/>
             <Setter Property="LineHeight" Value="20"/>
             <Setter Property="TextWrapping" Value="Wrap"/>
         </Style>
 
-        <Style x:Key="Panel" TargetType="Border">
-            <Setter Property="Background" Value="#241B33"/>
-            <Setter Property="BorderBrush" Value="#352847"/>
+        <Style x:Key="Panel" TargetType="{x:Type Border}">
+            <Setter Property="Background" Value="{DynamicResource PanelBrush}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource PanelBorderBrush}"/>
             <Setter Property="BorderThickness" Value="1"/>
             <Setter Property="CornerRadius" Value="6"/>
             <Setter Property="Padding" Value="18"/>
         </Style>
 
-        <Style x:Key="PrimaryButton" TargetType="Button">
+        <Style x:Key="PrimaryButton" TargetType="{x:Type Button}">
             <Setter Property="Height" Value="36"/>
             <Setter Property="MinWidth" Value="132"/>
             <Setter Property="Padding" Value="16 0"/>
-            <Setter Property="Background" Value="#CBA6F7"/>
-            <Setter Property="Foreground" Value="#1A1525"/>
+            <Setter Property="Background" Value="{DynamicResource AccentBrush}"/>
+            <Setter Property="Foreground" Value="{DynamicResource DarkBrush}"/>
             <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="FontWeight" Value="Bold"/>
             <Setter Property="Cursor" Value="Hand"/>
         </Style>
 
-        <Style x:Key="SecondaryButton" TargetType="Button" BasedOn="{StaticResource PrimaryButton}">
-            <Setter Property="Background" Value="#4A3860"/>
-            <Setter Property="Foreground" Value="#CDD6F4"/>
+        <Style x:Key="SecondaryButton" TargetType="{x:Type Button}" BasedOn="{StaticResource PrimaryButton}">
+            <Setter Property="Background" Value="{DynamicResource ControlBrush}"/>
+            <Setter Property="Foreground" Value="{DynamicResource TextBrush}"/>
         </Style>
     </UserControl.Resources>
 
@@ -50,10 +50,7 @@
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
 
-            <Border Grid.Row="0"
-                    Style="{StaticResource Panel}"
-                    Padding="24"
-                    Margin="0 0 0 16">
+            <Border Grid.Row="0" Style="{StaticResource Panel}" Padding="24" Margin="0 0 0 16">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
@@ -64,26 +61,24 @@
                         <TextBlock Text="GuitarToolkit"
                                    FontSize="38"
                                    FontWeight="Bold"
-                                   Foreground="#CDD6F4"
+                                   Foreground="{DynamicResource TextBrush}"
                                    Margin="0 0 0 4"/>
-
                         <TextBlock x:Name="VersionText"
                                    FontSize="14"
                                    FontWeight="Bold"
-                                   Foreground="#CBA6F7"
+                                   Foreground="{DynamicResource AccentBrush}"
                                    Margin="0 0 0 18"/>
-
                         <TextBlock Text="Гитарный набор инструментов для практики, набросков и работы в DAW. Один общий интерфейс объединяет Desktop-приложение и VST3-плагин."
                                    FontSize="16"
                                    LineHeight="24"
                                    TextWrapping="Wrap"
-                                   Foreground="#CDD6F4"
+                                   Foreground="{DynamicResource TextBrush}"
                                    MaxWidth="590"/>
                     </StackPanel>
 
                     <Border Grid.Column="1"
-                            Background="#1A1525"
-                            BorderBrush="#4A3860"
+                            Background="{DynamicResource DarkBrush}"
+                            BorderBrush="{DynamicResource ControlBrush}"
                             BorderThickness="1"
                             CornerRadius="6"
                             Padding="16">
@@ -91,7 +86,7 @@
                             <TextBlock Text="Проект для души"
                                        FontSize="15"
                                        FontWeight="Bold"
-                                       Foreground="#A6E3A1"
+                                       Foreground="{DynamicResource GoodBrush}"
                                        Margin="0 0 0 8"/>
                             <TextBlock Text="Практичный инструмент, который постепенно растет в полноценный продукт."
                                        Style="{StaticResource MutedText}"
@@ -114,53 +109,41 @@
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
 
-                <Border Grid.Column="0"
-                        Style="{StaticResource Panel}"
-                        Margin="0 0 8 0">
+                <Border Grid.Column="0" Style="{StaticResource Panel}" Margin="0 0 8 0">
                     <StackPanel>
-                        <TextBlock Text="Возможности"
-                                   Style="{StaticResource SectionTitle}"/>
-
+                        <TextBlock Text="Возможности" Style="{StaticResource SectionTitle}"/>
                         <UniformGrid Columns="2">
-                            <TextBlock Text="Тюнер" Foreground="#CDD6F4" Margin="0 0 0 8"/>
-                            <TextBlock Text="Метроном" Foreground="#CDD6F4" Margin="0 0 0 8"/>
-                            <TextBlock Text="Аккорды" Foreground="#CDD6F4" Margin="0 0 0 8"/>
-                            <TextBlock Text="Гаммы" Foreground="#CDD6F4" Margin="0 0 0 8"/>
-                            <TextBlock Text="Интервалы" Foreground="#CDD6F4" Margin="0 0 0 8"/>
-                            <TextBlock Text="Прогрессии" Foreground="#CDD6F4" Margin="0 0 0 8"/>
-                            <TextBlock Text="Круг квинт" Foreground="#CDD6F4" Margin="0 0 0 8"/>
-                            <TextBlock Text="Табы" Foreground="#CDD6F4" Margin="0 0 0 8"/>
+                            <TextBlock Text="Тюнер" Foreground="{DynamicResource TextBrush}" Margin="0 0 0 8"/>
+                            <TextBlock Text="Метроном" Foreground="{DynamicResource TextBrush}" Margin="0 0 0 8"/>
+                            <TextBlock Text="Аккорды" Foreground="{DynamicResource TextBrush}" Margin="0 0 0 8"/>
+                            <TextBlock Text="Гаммы" Foreground="{DynamicResource TextBrush}" Margin="0 0 0 8"/>
+                            <TextBlock Text="Интервалы" Foreground="{DynamicResource TextBrush}" Margin="0 0 0 8"/>
+                            <TextBlock Text="Прогрессии" Foreground="{DynamicResource TextBrush}" Margin="0 0 0 8"/>
+                            <TextBlock Text="Круг квинт" Foreground="{DynamicResource TextBrush}" Margin="0 0 0 8"/>
+                            <TextBlock Text="Табы" Foreground="{DynamicResource TextBrush}" Margin="0 0 0 8"/>
                         </UniformGrid>
-
                         <TextBlock Text="Guitar Pro и MusicXML, дорожки, воспроизведение, solo/mute, recent files, избранное и папка библиотеки."
                                    Style="{StaticResource MutedText}"
                                    Margin="0 10 0 0"/>
                     </StackPanel>
                 </Border>
 
-                <Border Grid.Column="1"
-                        Style="{StaticResource Panel}"
-                        Margin="8 0 0 0">
+                <Border Grid.Column="1" Style="{StaticResource Panel}" Margin="8 0 0 0">
                     <StackPanel>
-                        <TextBlock Text="Диагностика"
-                                   Style="{StaticResource SectionTitle}"/>
+                        <TextBlock Text="Диагностика" Style="{StaticResource SectionTitle}"/>
                         <TextBlock Text="Папка логов"
                                    FontSize="12"
                                    FontWeight="Bold"
-                                   Foreground="#A894C8"
+                                   Foreground="{DynamicResource MutedTextBrush}"
                                    Margin="0 0 0 4"/>
-                        <TextBlock x:Name="LogPathText"
-                                   Style="{StaticResource MutedText}"
-                                   Margin="0 0 0 16"/>
-
+                        <TextBlock x:Name="LogPathText" Style="{StaticResource MutedText}" Margin="0 0 0 16"/>
                         <TextBlock Text="Если VST или Desktop ведут себя странно, сюда первым делом попадает техническая подсказка для отладки."
                                    Style="{StaticResource MutedText}"/>
                     </StackPanel>
                 </Border>
             </Grid>
 
-            <Border Grid.Row="2"
-                    Style="{StaticResource Panel}">
+            <Border Grid.Row="2" Style="{StaticResource Panel}">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
@@ -168,24 +151,15 @@
                     </Grid.ColumnDefinitions>
 
                     <StackPanel Grid.Column="0" Margin="0 0 18 0">
-                        <TextBlock Text="Технологии"
-                                   Style="{StaticResource SectionTitle}"/>
-                        <TextBlock Text="AudioPlugSharp / AudioPlugSharpWPF — VST3 bridge"
-                                   Style="{StaticResource MutedText}"
-                                   Margin="0 0 0 5"/>
-                        <TextBlock Text="NAudio — desktop audio input/output"
-                                   Style="{StaticResource MutedText}"
-                                   Margin="0 0 0 5"/>
-                        <TextBlock Text="alphaTab / AlphaSkia — Guitar Pro и MusicXML"
-                                   Style="{StaticResource MutedText}"
-                                   Margin="0 0 0 5"/>
-                        <TextBlock Text="xUnit — automated tests"
-                                   Style="{StaticResource MutedText}"/>
+                        <TextBlock Text="Технологии" Style="{StaticResource SectionTitle}"/>
+                        <TextBlock Text="AudioPlugSharp / AudioPlugSharpWPF - VST3 bridge" Style="{StaticResource MutedText}" Margin="0 0 0 5"/>
+                        <TextBlock Text="NAudio - desktop audio input/output" Style="{StaticResource MutedText}" Margin="0 0 0 5"/>
+                        <TextBlock Text="alphaTab / AlphaSkia - Guitar Pro и MusicXML" Style="{StaticResource MutedText}" Margin="0 0 0 5"/>
+                        <TextBlock Text="xUnit - automated tests" Style="{StaticResource MutedText}"/>
                     </StackPanel>
 
                     <StackPanel Grid.Column="1">
-                        <TextBlock Text="Примечания"
-                                   Style="{StaticResource SectionTitle}"/>
+                        <TextBlock Text="Примечания" Style="{StaticResource SectionTitle}"/>
                         <TextBlock Text="VST is a trademark of Steinberg Media Technologies GmbH. Third-party libraries belong to their respective authors."
                                    Style="{StaticResource MutedText}"/>
                     </StackPanel>

@@ -1,7 +1,7 @@
 <UserControl x:Class="GuitarToolkit.UI.ProgressionView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             Background="#1A1525">
+             Background="{DynamicResource AppBackgroundBrush}">
 
     <UserControl.Resources>
         <SolidColorBrush x:Key="PanelBrush" Color="#241B33"/>
@@ -15,27 +15,32 @@
         <SolidColorBrush x:Key="DarkBrush" Color="#1A1525"/>
 
         <Style x:Key="Panel" TargetType="{x:Type Border}">
-            <Setter Property="Background" Value="{StaticResource PanelBrush}"/>
-            <Setter Property="BorderBrush" Value="{StaticResource PanelBorderBrush}"/>
+            <Setter Property="Background" Value="{DynamicResource PanelBrush}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource PanelBorderBrush}"/>
             <Setter Property="BorderThickness" Value="1"/>
             <Setter Property="CornerRadius" Value="6"/>
             <Setter Property="Padding" Value="10"/>
         </Style>
 
         <Style x:Key="SectionPanel" TargetType="{x:Type Border}" BasedOn="{StaticResource Panel}">
-            <Setter Property="Background" Value="{StaticResource DarkBrush}"/>
+            <Setter Property="Background" Value="{DynamicResource DarkBrush}"/>
             <Setter Property="Padding" Value="10 8"/>
         </Style>
 
+        <Style x:Key="ProgressionDisplayPanel" TargetType="{x:Type Border}" BasedOn="{StaticResource SectionPanel}">
+            <Setter Property="BorderBrush" Value="{DynamicResource PanelBorderBrush}"/>
+            <Setter Property="BorderThickness" Value="1.5"/>
+        </Style>
+
         <Style x:Key="GroupLabel" TargetType="{x:Type TextBlock}">
-            <Setter Property="Foreground" Value="{StaticResource MutedTextBrush}"/>
+            <Setter Property="Foreground" Value="{DynamicResource MutedTextBrush}"/>
             <Setter Property="FontSize" Value="11"/>
             <Setter Property="FontWeight" Value="Bold"/>
             <Setter Property="Margin" Value="0 0 0 4"/>
         </Style>
 
         <Style x:Key="MutedText" TargetType="{x:Type TextBlock}">
-            <Setter Property="Foreground" Value="{StaticResource MutedTextBrush}"/>
+            <Setter Property="Foreground" Value="{DynamicResource MutedTextBrush}"/>
             <Setter Property="FontSize" Value="12"/>
             <Setter Property="FontWeight" Value="Bold"/>
             <Setter Property="TextWrapping" Value="Wrap"/>
@@ -45,9 +50,9 @@
             <Setter Property="Height" Value="26"/>
             <Setter Property="MinWidth" Value="30"/>
             <Setter Property="Padding" Value="8 0"/>
-            <Setter Property="Background" Value="{StaticResource ControlBrush}"/>
-            <Setter Property="Foreground" Value="{StaticResource TextBrush}"/>
-            <Setter Property="BorderBrush" Value="{StaticResource ControlBrush}"/>
+            <Setter Property="Background" Value="{DynamicResource ControlBrush}"/>
+            <Setter Property="Foreground" Value="{DynamicResource TextBrush}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource ControlBrush}"/>
             <Setter Property="BorderThickness" Value="1"/>
             <Setter Property="FontSize" Value="12"/>
             <Setter Property="FontWeight" Value="Bold"/>
@@ -66,12 +71,12 @@
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="Chrome" Property="Background" Value="{StaticResource ControlHoverBrush}"/>
-                                <Setter TargetName="Chrome" Property="BorderBrush" Value="{StaticResource ControlHoverBrush}"/>
+                                <Setter TargetName="Chrome" Property="Background" Value="{DynamicResource ControlHoverBrush}"/>
+                                <Setter TargetName="Chrome" Property="BorderBrush" Value="{DynamicResource ControlHoverBrush}"/>
                             </Trigger>
                             <Trigger Property="IsPressed" Value="True">
-                                <Setter TargetName="Chrome" Property="Background" Value="{StaticResource AccentBrush}"/>
-                                <Setter Property="Foreground" Value="{StaticResource DarkBrush}"/>
+                                <Setter TargetName="Chrome" Property="Background" Value="{DynamicResource AccentBrush}"/>
+                                <Setter Property="Foreground" Value="{DynamicResource DarkBrush}"/>
                             </Trigger>
                             <Trigger Property="IsEnabled" Value="False">
                                 <Setter Property="Opacity" Value="0.55"/>
@@ -83,22 +88,22 @@
         </Style>
 
         <Style x:Key="PrimaryButton" TargetType="{x:Type Button}" BasedOn="{StaticResource ProgressionButton}">
-            <Setter Property="Background" Value="{StaticResource AccentBrush}"/>
-            <Setter Property="BorderBrush" Value="{StaticResource AccentBrush}"/>
-            <Setter Property="Foreground" Value="{StaticResource DarkBrush}"/>
+            <Setter Property="Background" Value="{DynamicResource AccentBrush}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}"/>
+            <Setter Property="Foreground" Value="{DynamicResource DarkBrush}"/>
         </Style>
 
         <Style x:Key="DangerButton" TargetType="{x:Type Button}" BasedOn="{StaticResource ProgressionButton}">
-            <Setter Property="Background" Value="{StaticResource DangerBrush}"/>
-            <Setter Property="BorderBrush" Value="{StaticResource DangerBrush}"/>
-            <Setter Property="Foreground" Value="{StaticResource DarkBrush}"/>
+            <Setter Property="Background" Value="{DynamicResource DangerBrush}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource DangerBrush}"/>
+            <Setter Property="Foreground" Value="{DynamicResource DarkBrush}"/>
         </Style>
 
         <Style x:Key="ProgressionTextBox" TargetType="{x:Type TextBox}">
             <Setter Property="Height" Value="26"/>
-            <Setter Property="Background" Value="{StaticResource ControlBrush}"/>
-            <Setter Property="Foreground" Value="{StaticResource TextBrush}"/>
-            <Setter Property="BorderBrush" Value="{StaticResource ControlBrush}"/>
+            <Setter Property="Background" Value="{DynamicResource ControlBrush}"/>
+            <Setter Property="Foreground" Value="{DynamicResource TextBrush}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource ControlBrush}"/>
             <Setter Property="BorderThickness" Value="1"/>
             <Setter Property="FontSize" Value="12"/>
             <Setter Property="FontWeight" Value="Bold"/>
@@ -118,7 +123,7 @@
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsKeyboardFocused" Value="True">
-                                <Setter TargetName="Chrome" Property="BorderBrush" Value="{StaticResource AccentBrush}"/>
+                                <Setter TargetName="Chrome" Property="BorderBrush" Value="{DynamicResource AccentBrush}"/>
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -128,8 +133,8 @@
 
         <ControlTemplate x:Key="ProgressionComboToggleTemplate" TargetType="{x:Type ToggleButton}">
             <Border x:Name="Chrome"
-                    Background="{StaticResource ControlBrush}"
-                    BorderBrush="{StaticResource ControlBrush}"
+                    Background="{DynamicResource ControlBrush}"
+                    BorderBrush="{DynamicResource ControlBrush}"
                     BorderThickness="1"
                     CornerRadius="4">
                 <Grid>
@@ -143,7 +148,7 @@
                                       VerticalAlignment="Center"/>
                     <Path Grid.Column="1"
                           Data="M 0 0 L 4 4 L 8 0 Z"
-                          Fill="{StaticResource TextBrush}"
+                          Fill="{DynamicResource TextBrush}"
                           Width="8"
                           Height="4"
                           HorizontalAlignment="Center"
@@ -152,20 +157,20 @@
             </Border>
             <ControlTemplate.Triggers>
                 <Trigger Property="IsMouseOver" Value="True">
-                    <Setter TargetName="Chrome" Property="Background" Value="{StaticResource ControlHoverBrush}"/>
-                    <Setter TargetName="Chrome" Property="BorderBrush" Value="{StaticResource ControlHoverBrush}"/>
+                    <Setter TargetName="Chrome" Property="Background" Value="{DynamicResource ControlHoverBrush}"/>
+                    <Setter TargetName="Chrome" Property="BorderBrush" Value="{DynamicResource ControlHoverBrush}"/>
                 </Trigger>
                 <Trigger Property="IsChecked" Value="True">
-                    <Setter TargetName="Chrome" Property="BorderBrush" Value="{StaticResource AccentBrush}"/>
+                    <Setter TargetName="Chrome" Property="BorderBrush" Value="{DynamicResource AccentBrush}"/>
                 </Trigger>
             </ControlTemplate.Triggers>
         </ControlTemplate>
 
         <Style TargetType="{x:Type ComboBox}">
             <Setter Property="Height" Value="26"/>
-            <Setter Property="Background" Value="{StaticResource ControlBrush}"/>
-            <Setter Property="Foreground" Value="{StaticResource TextBrush}"/>
-            <Setter Property="BorderBrush" Value="{StaticResource ControlBrush}"/>
+            <Setter Property="Background" Value="{DynamicResource ControlBrush}"/>
+            <Setter Property="Foreground" Value="{DynamicResource TextBrush}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource ControlBrush}"/>
             <Setter Property="FontSize" Value="12"/>
             <Setter Property="FontWeight" Value="Bold"/>
             <Setter Property="Template">
@@ -188,8 +193,8 @@
                                    AllowsTransparency="True"
                                    Focusable="False"
                                    PopupAnimation="Fade">
-                                <Border Background="{StaticResource PanelBrush}"
-                                        BorderBrush="{StaticResource AccentBrush}"
+                                <Border Background="{DynamicResource PanelBrush}"
+                                        BorderBrush="{DynamicResource AccentBrush}"
                                         BorderThickness="1"
                                         CornerRadius="4"
                                         MinWidth="{Binding ActualWidth, RelativeSource={RelativeSource TemplatedParent}}"
@@ -208,7 +213,7 @@
         </Style>
 
         <Style TargetType="{x:Type ComboBoxItem}">
-            <Setter Property="Foreground" Value="{StaticResource TextBrush}"/>
+            <Setter Property="Foreground" Value="{DynamicResource TextBrush}"/>
             <Setter Property="Background" Value="Transparent"/>
             <Setter Property="FontSize" Value="12"/>
             <Setter Property="FontWeight" Value="Bold"/>
@@ -224,11 +229,11 @@
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsHighlighted" Value="True">
-                                <Setter TargetName="Chrome" Property="Background" Value="{StaticResource ControlHoverBrush}"/>
+                                <Setter TargetName="Chrome" Property="Background" Value="{DynamicResource ControlHoverBrush}"/>
                             </Trigger>
                             <Trigger Property="IsSelected" Value="True">
-                                <Setter TargetName="Chrome" Property="Background" Value="{StaticResource AccentBrush}"/>
-                                <Setter Property="Foreground" Value="{StaticResource DarkBrush}"/>
+                                <Setter TargetName="Chrome" Property="Background" Value="{DynamicResource AccentBrush}"/>
+                                <Setter Property="Foreground" Value="{DynamicResource DarkBrush}"/>
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -243,13 +248,13 @@
                     <ControlTemplate TargetType="{x:Type Slider}">
                         <Grid VerticalAlignment="Center">
                             <Border Height="4"
-                                    Background="{StaticResource ControlBrush}"
+                                    Background="{DynamicResource ControlBrush}"
                                     CornerRadius="2"
                                     VerticalAlignment="Center"/>
                             <Track x:Name="PART_Track">
                                 <Track.DecreaseRepeatButton>
                                     <RepeatButton Command="{x:Static Slider.DecreaseLarge}"
-                                                  Background="{StaticResource AccentBrush}"
+                                                  Background="{DynamicResource AccentBrush}"
                                                   BorderThickness="0"
                                                   Height="4"/>
                                 </Track.DecreaseRepeatButton>
@@ -262,7 +267,7 @@
                                 <Track.Thumb>
                                     <Thumb Width="12"
                                            Height="20"
-                                           Background="{StaticResource TextBrush}"/>
+                                           Background="{DynamicResource TextBrush}"/>
                                 </Track.Thumb>
                             </Track>
                         </Grid>
@@ -273,7 +278,7 @@
 
         <Style TargetType="{x:Type CheckBox}">
             <Setter Property="Height" Value="18"/>
-            <Setter Property="Foreground" Value="{StaticResource TextBrush}"/>
+            <Setter Property="Foreground" Value="{DynamicResource TextBrush}"/>
             <Setter Property="FontSize" Value="12"/>
             <Setter Property="FontWeight" Value="Bold"/>
             <Setter Property="VerticalAlignment" Value="Center"/>
@@ -287,14 +292,14 @@
                             <Border x:Name="Box"
                                     Width="15"
                                     Height="15"
-                                    Background="{StaticResource DarkBrush}"
-                                    BorderBrush="{StaticResource ControlBrush}"
+                                    Background="{DynamicResource DarkBrush}"
+                                    BorderBrush="{DynamicResource ControlBrush}"
                                     BorderThickness="1"
                                     CornerRadius="3"
                                     Margin="0 1 6 0">
                                 <TextBlock x:Name="Mark"
                                            Text="✓"
-                                           Foreground="{StaticResource DarkBrush}"
+                                           Foreground="{DynamicResource DarkBrush}"
                                            FontSize="11"
                                            FontWeight="Bold"
                                            HorizontalAlignment="Center"
@@ -311,7 +316,7 @@
                                 <Setter TargetName="Mark" Property="Visibility" Value="Visible"/>
                             </Trigger>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="Box" Property="BorderBrush" Value="{StaticResource AccentBrush}"/>
+                                <Setter TargetName="Box" Property="BorderBrush" Value="{DynamicResource AccentBrush}"/>
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -382,7 +387,7 @@
                                 ValueChanged="Bpm_Changed"/>
                         <TextBlock x:Name="BpmLabel"
                                    Text="120 BPM"
-                                   Foreground="{StaticResource TextBrush}"
+                                   Foreground="{DynamicResource TextBrush}"
                                    FontSize="12"
                                    FontWeight="Bold"
                                    VerticalAlignment="Center"
@@ -527,7 +532,7 @@
                     </Grid>
 
                     <Border Grid.Row="1"
-                            Style="{StaticResource SectionPanel}"
+                            Style="{StaticResource ProgressionDisplayPanel}"
                             Margin="0 8 0 0">
                         <ScrollViewer VerticalScrollBarVisibility="Auto">
                             <ItemsControl x:Name="ProgressionDisplay">
