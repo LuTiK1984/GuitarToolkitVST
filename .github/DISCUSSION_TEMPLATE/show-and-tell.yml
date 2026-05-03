@@ -1,0 +1,30 @@
+title: "[Show and Tell]: "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Share screenshots, setups, demos, workflows, songs, practice routines, or ways you use GuitarToolkit.
+
+        Делитесь скриншотами, сетапами, демо, workflow, песнями, практикой или примерами использования GuitarToolkit.
+  - type: textarea
+    id: showcase
+    attributes:
+      label: What are you sharing? / Чем делитесь?
+      placeholder: |
+        Describe your setup, workflow, screenshot, video, or result.
+        Опишите сетап, workflow, скриншот, видео или результат.
+    validations:
+      required: true
+  - type: textarea
+    id: setup
+    attributes:
+      label: Setup / Сетап
+      placeholder: |
+        GuitarToolkit version / версия GuitarToolkit:
+        Desktop or VST3 / Desktop или VST3:
+        DAW, if used / DAW, если использовалась:
+        Guitar/audio interface / гитара/аудиоинтерфейс:
+  - type: textarea
+    id: links
+    attributes:
+      label: Links, screenshots, attachments / Ссылки, скриншоты, вложения
