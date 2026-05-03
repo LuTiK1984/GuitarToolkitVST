@@ -7,10 +7,56 @@ on:
   pull_request:
     branches:
       - master
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version to use for manual release package check"
+        required: false
+        default: "ci"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   build-and-test:
+    name: Build and test
     runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Show .NET info
+        run: dotnet --info
+
+      - name: Restore
+        run: dotnet restore GuitarToolkit.sln
+
+      - name: Build Debug
+        run: dotnet build GuitarToolkit.sln --configuration Debug --no-restore
+
+      - name: Test Debug
+        run: dotnet test GuitarToolkit.sln --configuration Debug --no-build --verbosity normal --logger "trx;LogFileName=test-results.trx"
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: "**/TestResults/*.trx"
+          if-no-files-found: ignore
+
+  release-package-check:
+    name: Release package check
+    runs-on: windows-latest
+    needs: build-and-test
+    if: github.event_name == 'workflow_dispatch'
 
     steps:
       - name: Checkout
@@ -24,8 +70,13 @@ jobs:
       - name: Restore
         run: dotnet restore GuitarToolkit.sln
 
-      - name: Build
-        run: dotnet build GuitarToolkit.sln --configuration Debug --no-restore
+      - name: Build release packages
+        shell: pwsh
+        run: .\build-release.ps1 -Version "${{ github.event.inputs.version }}" -Configuration Release
 
-      - name: Test
-        run: dotnet test GuitarToolkit.sln --configuration Debug --no-build --verbosity normal
+      - name: Upload release package artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-packages-${{ github.event.inputs.version }}
+          path: artifacts/release/*.zip
+          if-no-files-found: error
