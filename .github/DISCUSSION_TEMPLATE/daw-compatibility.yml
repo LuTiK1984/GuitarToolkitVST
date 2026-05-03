@@ -1,0 +1,70 @@
+title: "[DAW]: "
+labels:
+  - daw
+  - vst3
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this form to report how the VST3 plugin behaves in a specific DAW.
+
+        Используйте эту форму для отчёта о поведении VST3-плагина в конкретной DAW.
+  - type: input
+    id: daw
+    attributes:
+      label: DAW and version / DAW и версия
+      placeholder: FL Studio 24, Reaper 7, Cubase, Ableton Live...
+    validations:
+      required: true
+  - type: input
+    id: guitartoolkit_version
+    attributes:
+      label: GuitarToolkit version / Версия GuitarToolkit
+      placeholder: v1.5.0
+    validations:
+      required: true
+  - type: dropdown
+    id: result
+    attributes:
+      label: Result / Результат
+      options:
+        - Works / Работает
+        - Loads but has issues / Загружается, но есть проблемы
+        - Does not load / Не загружается
+        - Crashes DAW / Роняет DAW
+        - Not sure / Не уверен
+    validations:
+      required: true
+  - type: textarea
+    id: tested
+    attributes:
+      label: Tested workflow / Проверенный сценарий
+      placeholder: |
+        1. Installed/copied the plugin folder.
+        2. Rescanned plugins.
+        3. Added GuitarToolkit to a track.
+        4. Assigned input.
+        5. Tested tuner/metronome/tabs/etc.
+
+        1. Установил/скопировал папку плагина.
+        2. Пересканировал плагины.
+        3. Добавил GuitarToolkit на дорожку.
+        4. Назначил вход.
+        5. Проверил тюнер/метроном/табы/etc.
+    validations:
+      required: true
+  - type: textarea
+    id: audio_setup
+    attributes:
+      label: Audio setup / Аудионастройки
+      placeholder: |
+        Windows version / версия Windows:
+        Audio interface / аудиоинтерфейс:
+        Input type / тип входа:
+        Buffer size / размер буфера:
+        Sample rate / частота дискретизации:
+  - type: textarea
+    id: details
+    attributes:
+      label: Details, logs, screenshots / Детали, логи, скриншоты
+      description: Add anything useful, especially logs from %AppData%\GuitarToolkit\logs. / Добавьте всё полезное, особенно логи из %AppData%\GuitarToolkit\logs.
