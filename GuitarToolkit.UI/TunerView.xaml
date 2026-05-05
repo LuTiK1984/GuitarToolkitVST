@@ -550,7 +550,6 @@
                         </Border>
                     </WrapPanel>
                     <TextBlock Grid.Row="4"
-                               Text="&#x424;&#x443;&#x43D;&#x43A;&#x446;&#x438;&#x43E;&#x43D;&#x430;&#x43B; &#x437;&#x430;&#x444;&#x438;&#x43A;&#x441;&#x438;&#x440;&#x43E;&#x432;&#x430;&#x43D; &#x432; roadmap, &#x434;&#x43E;&#x431;&#x430;&#x432;&#x438;&#x43C; &#x43F;&#x43E;&#x441;&#x43B;&#x435; &#x43F;&#x440;&#x43E;&#x445;&#x43E;&#x434;&#x430; &#x43F;&#x43E; GUI."
                                Style="{StaticResource MutedText}"/>
                 </Grid>
             </Border>

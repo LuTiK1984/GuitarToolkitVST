@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="GuitarToolkit.UI.SettingsView"
+<UserControl x:Class="GuitarToolkit.UI.SettingsView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              Background="{DynamicResource AppBackgroundBrush}">
@@ -237,9 +237,9 @@
                            FontSize="28"
                            FontWeight="Bold"
                            Margin="0 0 0 8"/>
-                <TextBlock Text="&#x421;&#x44E;&#x434;&#x430; &#x43F;&#x43E;&#x441;&#x442;&#x435;&#x43F;&#x435;&#x43D;&#x43D;&#x43E; &#x43F;&#x435;&#x440;&#x435;&#x435;&#x434;&#x443;&#x442; &#x43E;&#x431;&#x449;&#x438;&#x435; &#x43F;&#x430;&#x440;&#x430;&#x43C;&#x435;&#x442;&#x440;&#x44B;: &#x44F;&#x437;&#x44B;&#x43A;, &#x442;&#x435;&#x43C;&#x430;, &#x430;&#x443;&#x434;&#x438;&#x43E;, &#x43F;&#x443;&#x442;&#x438; &#x431;&#x438;&#x431;&#x43B;&#x438;&#x43E;&#x442;&#x435;&#x43A; &#x438; &#x434;&#x438;&#x430;&#x433;&#x43D;&#x43E;&#x441;&#x442;&#x438;&#x43A;&#x430;."
+                <TextBlock
                            Style="{StaticResource MutedText}"
-                           FontSize="13"/>
+                           FontSize="13"><Run Language="ru-ru" Text="                                                                                                                                                                            "/></TextBlock>
             </StackPanel>
         </Border>
     </Grid>

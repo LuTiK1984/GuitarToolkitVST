@@ -424,7 +424,7 @@
                     </WrapPanel>
 
                     <TextBlock Grid.Row="4"
-                               Text="Дальше сюда просится count-in, смена звука клика, тренировка постепенного ускорения и режимы акцента."
+                               Text=""
                                Style="{StaticResource MutedText}"/>
                 </Grid>
             </Border>
