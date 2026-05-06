@@ -12,6 +12,7 @@ All notable changes to GuitarToolkit are documented here.
 - Added refreshed GitHub screenshot set for dark and light themes.
 - Added the Ideas tab skeleton for ONNX-first progression inspiration, with Core generation contracts, a demo fallback model, and playback through existing chord synthesis.
 - Added maintainer documentation for the Inspiration Engine model contract, runtime model location, vocabulary shape, and training/export workflow.
+- Added the first ML tooling layer for `ProgressionNextTokenModel`: stable vocabulary, sample JSONL dataset, GRU/LSTM training script, ONNX export script, and local artifact ignores.
 
 ### Changed
 

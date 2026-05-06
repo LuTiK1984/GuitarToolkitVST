@@ -182,7 +182,7 @@
                     <TextBlock Grid.Row="0" Grid.Column="2" Text="Настроение" Style="{StaticResource GroupLabel}"/>
                     <ComboBox x:Name="MoodBox" Grid.Row="1" Grid.Column="2"/>
 
-                    <TextBlock Grid.Row="3" Grid.Column="0" Text="Temperature" Style="{StaticResource GroupLabel}"/>
+                    <TextBlock Grid.Row="3" Grid.Column="0" Text="Вариативность" Style="{StaticResource GroupLabel}"/>
                     <Slider x:Name="TemperatureSlider"
                             Grid.Row="4"
                             Grid.Column="0"
@@ -197,7 +197,7 @@
                                    Width="44"
                                    FontWeight="Bold"
                                    VerticalAlignment="Center"/>
-                        <TextBlock Text="Top-K"
+                        <TextBlock Text="Выборка"
                                    Style="{StaticResource GroupLabel}"
                                    Margin="8 0 6 0"
                                    VerticalAlignment="Center"/>
@@ -240,12 +240,14 @@
                 <ColumnDefinition Width="42*"/>
             </Grid.ColumnDefinitions>
 
-            <Border Grid.Column="0" Style="{StaticResource Panel}">
+                <Border Grid.Column="0" Style="{StaticResource Panel}">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="8"/>
                         <RowDefinition Height="*"/>
+                        <RowDefinition Height="8"/>
+                        <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
                     <TextBlock Text="Сгенерированная прогрессия"
                                Style="{StaticResource GroupLabel}"/>
@@ -260,11 +262,20 @@
                             </ItemsControl>
                         </ScrollViewer>
                     </Border>
+                    <Border Grid.Row="4" Style="{StaticResource Panel}" Padding="10 8">
+                        <StackPanel>
+                            <TextBlock Text="Что делает эта страница" Style="{StaticResource GroupLabel}"/>
+                            <TextBlock Style="{StaticResource MutedText}"
+                                       Text="Это черновой генератор музыкальных идей. Модель предлагает последовательность римских ступеней, а GuitarToolkit переводит ее в реальные аккорды выбранной тональности и проигрывает встроенным синтезом."/>
+                        </StackPanel>
+                    </Border>
                 </Grid>
             </Border>
 
             <Grid Grid.Column="2">
                 <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="8"/>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="8"/>
                     <RowDefinition Height="*"/>
@@ -280,6 +291,16 @@
                 </Border>
 
                 <Border Grid.Row="2" Style="{StaticResource Panel}">
+                    <StackPanel>
+                        <TextBlock Text="Настройки генерации" Style="{StaticResource GroupLabel}"/>
+                        <TextBlock Style="{StaticResource MutedText}" Text="Тоника и лад задают гармоническое поле, в которое будут переведены римские ступени модели." Margin="0 0 0 6"/>
+                        <TextBlock Style="{StaticResource MutedText}" Text="Стиль и настроение идут во вход модели как управляющие токены. Сейчас demo fallback использует их ограниченно, будущая ONNX-модель должна учитывать их при выборе следующей ступени." Margin="0 0 0 6"/>
+                        <TextBlock Style="{StaticResource MutedText}" Text="Такты определяют длину идеи. Seed-ступени позволяют начать с заданного хода, например: i, VI." Margin="0 0 0 6"/>
+                        <TextBlock Style="{StaticResource MutedText}" Text="Вариативность повышает или снижает смелость выбора. Выборка ограничивает число наиболее вероятных вариантов, из которых выбирается следующий аккорд."/>
+                    </StackPanel>
+                </Border>
+
+                <Border Grid.Row="4" Style="{StaticResource Panel}">
                     <StackPanel>
                         <TextBlock Text="Как использовать идею" Style="{StaticResource GroupLabel}"/>
                         <TextBlock x:Name="ScaleText"

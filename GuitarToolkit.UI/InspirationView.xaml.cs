@@ -68,19 +68,19 @@ public partial class InspirationView : UserControl, IThemeAware
         ModeBox.SelectedIndex = 0;
 
         StyleBox.Items.Clear();
-        StyleBox.Items.Add(new OptionItem("Metal", "Metal"));
-        StyleBox.Items.Add(new OptionItem("Rock", "Rock"));
-        StyleBox.Items.Add(new OptionItem("Pop", "Pop"));
-        StyleBox.Items.Add(new OptionItem("Ambient", "Ambient"));
-        StyleBox.Items.Add(new OptionItem("Blues", "Blues"));
+        StyleBox.Items.Add(new OptionItem("Metal", "Метал"));
+        StyleBox.Items.Add(new OptionItem("Rock", "Рок"));
+        StyleBox.Items.Add(new OptionItem("Pop", "Поп"));
+        StyleBox.Items.Add(new OptionItem("Ambient", "Эмбиент"));
+        StyleBox.Items.Add(new OptionItem("Blues", "Блюз"));
         StyleBox.SelectedIndex = 0;
 
         MoodBox.Items.Clear();
-        MoodBox.Items.Add(new OptionItem("Dark", "Dark"));
-        MoodBox.Items.Add(new OptionItem("Epic", "Epic"));
-        MoodBox.Items.Add(new OptionItem("Bright", "Bright"));
-        MoodBox.Items.Add(new OptionItem("Calm", "Calm"));
-        MoodBox.Items.Add(new OptionItem("Tense", "Tense"));
+        MoodBox.Items.Add(new OptionItem("Dark", "Темное"));
+        MoodBox.Items.Add(new OptionItem("Epic", "Эпичное"));
+        MoodBox.Items.Add(new OptionItem("Bright", "Светлое"));
+        MoodBox.Items.Add(new OptionItem("Calm", "Спокойное"));
+        MoodBox.Items.Add(new OptionItem("Tense", "Напряженное"));
         MoodBox.SelectedIndex = 0;
 
         BarsBox.Items.Clear();

@@ -17,7 +17,7 @@ public sealed class OnnxProgressionModel : IProgressionNextTokenModel
             {
                 ModelName = "ProgressionNextTokenModel.onnx",
                 IsAvailable = false,
-                Status = "ONNX model file is not configured yet. Demo fallback is used."
+                Status = "ONNX-файл модели пока не настроен. Используется демонстрационный fallback."
             };
         }
 
@@ -25,7 +25,7 @@ public sealed class OnnxProgressionModel : IProgressionNextTokenModel
         {
             ModelName = Path.GetFileName(ModelPath),
             IsAvailable = false,
-            Status = "ONNX Runtime adapter is reserved for the trained model integration."
+            Status = "Файл модели найден, но ONNX Runtime адаптер еще не подключен."
         };
     }
 }

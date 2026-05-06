@@ -1,0 +1,50 @@
+{
+  "version": 1,
+  "task": "ProgressionNextTokenModel",
+  "style_tokens": [
+    "STYLE_METAL",
+    "STYLE_ROCK",
+    "STYLE_POP",
+    "STYLE_AMBIENT",
+    "STYLE_BLUES"
+  ],
+  "mode_tokens": [
+    "MODE_MAJOR",
+    "MODE_NATURAL_MINOR",
+    "MODE_DORIAN",
+    "MODE_PHRYGIAN",
+    "MODE_HARMONIC_MINOR"
+  ],
+  "mood_tokens": [
+    "MOOD_DARK",
+    "MOOD_EPIC",
+    "MOOD_BRIGHT",
+    "MOOD_CALM",
+    "MOOD_TENSE"
+  ],
+  "progression_tokens": [
+    "I",
+    "ii",
+    "iii",
+    "IV",
+    "V",
+    "vi",
+    "vii°",
+    "i",
+    "ii°",
+    "III",
+    "iv",
+    "v",
+    "VI",
+    "VII",
+    "bII",
+    "bVI",
+    "bVII"
+  ],
+  "special_tokens": [
+    "<PAD>",
+    "<BOS>",
+    "<EOS>",
+    "<UNK>"
+  ]
+}

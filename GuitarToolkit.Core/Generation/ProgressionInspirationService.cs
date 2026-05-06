@@ -61,14 +61,29 @@ public sealed class ProgressionInspirationService
         {
             Chords = chords,
             RomanNumerals = chords.Select(chord => chord.RomanNumeral).ToArray(),
-            SuggestedScale = $"{request.RootNote} {request.Mode}",
-            Explanation = "Model tokens are converted into roman numerals, validated against the selected key/mode, then mapped to GuitarToolkit chords.",
+            SuggestedScale = $"{request.RootNote} {DescribeMode(request.Mode)}",
+            Explanation = "Модель возвращает не звук, а символы: римские ступени аккордов. GuitarToolkit проверяет их относительно выбранной тональности, переводит в реальные аккорды и уже своими средствами может проиграть или показать результат.",
             GuitarHint = request.Style.Contains("metal", StringComparison.OrdinalIgnoreCase)
-                ? "Try palm-muted power-chord versions first, then add full voicings for color."
-                : "Start with simple chord voicings and move to richer shapes when the progression feels stable.",
+                ? "Для метал-идеи сначала попробуй palm mute и power-chord версии, потом добавь полные аппликатуры для цвета."
+                : "Начни с простых аппликатур, а когда ход станет понятен на слух, усложняй обращения и фактуру.",
             UsedPrimaryModel = usedPrimary,
-            ModelStatus = usedPrimary ? "Primary ONNX model was used." : status
+            ModelStatus = usedPrimary ? "Использована основная ONNX-модель." : status
         };
+    }
+
+    private static string DescribeMode(string mode)
+    {
+        if (mode.Contains("harmonic", StringComparison.OrdinalIgnoreCase))
+            return "гармонический минор";
+        if (mode.Contains("dorian", StringComparison.OrdinalIgnoreCase))
+            return "дорийский лад";
+        if (mode.Contains("phrygian", StringComparison.OrdinalIgnoreCase))
+            return "фригийский лад";
+        if (mode.Contains("major", StringComparison.OrdinalIgnoreCase))
+            return "мажор";
+        if (IsMinor(mode))
+            return "натуральный минор";
+        return mode;
     }
 
     private static GeneratedChord ToGeneratedChord(string token, IReadOnlyList<ProgressionStep> diatonic)

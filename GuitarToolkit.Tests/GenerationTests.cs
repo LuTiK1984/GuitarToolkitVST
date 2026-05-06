@@ -6,6 +6,19 @@ namespace GuitarToolkit.Tests;
 public class GenerationTests
 {
     [Fact]
+    public void DefaultVocabulary_UsesStableTokenOrder()
+    {
+        var vocabulary = ProgressionVocabulary.Default;
+
+        Assert.Equal(36, vocabulary.Count);
+        Assert.Equal(0, vocabulary.GetIdOrUnknown("<PAD>"));
+        Assert.Equal(1, vocabulary.GetIdOrUnknown("<BOS>"));
+        Assert.Equal(7, vocabulary.GetIdOrUnknown("STYLE_AMBIENT"));
+        Assert.True(vocabulary.IsProgressionToken("bVII"));
+        Assert.False(vocabulary.IsProgressionToken("STYLE_METAL"));
+    }
+
+    [Fact]
     public void ProgressionService_GeneratesRequestedChordCount()
     {
         var service = new ProgressionInspirationService(
@@ -44,7 +57,7 @@ public class GenerationTests
         });
 
         Assert.False(result.UsedPrimaryModel);
-        Assert.Contains("ONNX model file is not configured", result.ModelStatus);
+        Assert.Contains("ONNX-файл модели пока не настроен", result.ModelStatus);
         Assert.Equal(4, result.Chords.Count);
     }
 

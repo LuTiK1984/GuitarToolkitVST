@@ -1,0 +1,5 @@
+{"style":"STYLE_METAL","mode":"MODE_NATURAL_MINOR","mood":"MOOD_DARK","tokens":["<BOS>","i","VI","VII","i","<EOS>"]}
+{"style":"STYLE_METAL","mode":"MODE_NATURAL_MINOR","mood":"MOOD_EPIC","tokens":["<BOS>","i","VII","VI","VII","<EOS>"]}
+{"style":"STYLE_ROCK","mode":"MODE_MAJOR","mood":"MOOD_BRIGHT","tokens":["<BOS>","I","V","vi","IV","<EOS>"]}
+{"style":"STYLE_POP","mode":"MODE_MAJOR","mood":"MOOD_CALM","tokens":["<BOS>","I","vi","IV","V","<EOS>"]}
+{"style":"STYLE_BLUES","mode":"MODE_MAJOR","mood":"MOOD_TENSE","tokens":["<BOS>","I","IV","I","V","<EOS>"]}
