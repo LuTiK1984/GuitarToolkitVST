@@ -10,6 +10,7 @@ This section contains documentation for maintaining the GitHub project and repos
 - [Project Structure](PROJECT_STRUCTURE.md) - where files belong and what should not be committed.
 - [GitHub Settings](GITHUB_SETTINGS.md) - repository UI settings, expected checks, and external check troubleshooting.
 - [Repository Presentation](REPOSITORY_PRESENTATION.md) - About text, topics, pinned posts, and release descriptions.
+- [Inspiration Engine Model](INSPIRATION_ENGINE_MODEL.md) - ONNX-first generation contract, model location, and training workflow.
 
 ## Workflow and governance
 
@@ -41,3 +42,4 @@ This section contains documentation for maintaining the GitHub project and repos
 - [Labels and Milestones](LABELS_AND_MILESTONES.md) - labels, milestone scopes и triage rules.
 - [Dependency Policy](DEPENDENCY_POLICY.md) - правила dependency и Dependabot updates.
 - [Discussions Guide](DISCUSSIONS.md) - настройка GitHub Discussions и категорий.
+- [Inspiration Engine Model](INSPIRATION_ENGINE_MODEL.md) - ONNX-first контракт генерации, путь модели и workflow обучения.

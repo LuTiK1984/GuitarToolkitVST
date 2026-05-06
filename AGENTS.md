@@ -61,6 +61,7 @@ Maintainer documentation:
 - `docs/maintainer/DEPENDENCY_POLICY.md` - dependency and Dependabot update rules.
 - `docs/maintainer/DISCUSSIONS.md` - GitHub Discussions categories and guidance.
 - `docs/maintainer/ROADMAP.md` - product direction and longer-term plans.
+- `docs/maintainer/INSPIRATION_ENGINE_MODEL.md` - ONNX-first generation contract and training workflow.
 
 Release documentation:
 

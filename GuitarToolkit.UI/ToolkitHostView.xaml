@@ -229,6 +229,12 @@
             </ScrollViewer>
         </TabItem>
 
+        <TabItem Header="&#x2726; &#x418;&#x434;&#x435;&#x438;">
+            <ScrollViewer>
+                <local:InspirationView x:Name="InspirationTab"/>
+            </ScrollViewer>
+        </TabItem>
+
         <TabItem Header="&#x25CB; &#x41A;&#x440;&#x443;&#x433; &#x43A;&#x432;&#x438;&#x43D;&#x442;">
             <local:CircleOfFifthsView x:Name="CircleTab"/>
         </TabItem>

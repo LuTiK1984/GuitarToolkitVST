@@ -29,6 +29,7 @@ This directory contains extended documentation for GuitarToolkit. The main proje
 | [GitHub Settings](maintainer/GITHUB_SETTINGS.md) | Repository UI settings, expected checks, and external check troubleshooting. |
 | [Repository Presentation](maintainer/REPOSITORY_PRESENTATION.md) | Ready-to-use About text, topics, pinned posts, and release descriptions. |
 | [Discussions Guide](maintainer/DISCUSSIONS.md) | GitHub Discussions setup and category guidance. |
+| [Inspiration Engine Model](maintainer/INSPIRATION_ENGINE_MODEL.md) | ONNX-first generation contract, model location, and training workflow. |
 
 ## Release documentation
 
@@ -132,4 +133,5 @@ Some project files intentionally stay in the repository root because GitHub expe
 | [Roadmap](maintainer/ROADMAP.md) | Направление развития. |
 | [THIRD_PARTY_NOTICES](../THIRD_PARTY_NOTICES.md) | Уведомления о сторонних зависимостях и лицензиях. |
 | [Discussions Guide](maintainer/DISCUSSIONS.md) | Настройка GitHub Discussions. |
+| [Inspiration Engine Model](maintainer/INSPIRATION_ENGINE_MODEL.md) | ONNX-first контракт генерации, путь модели и workflow обучения. |
 | [AGENTS](../AGENTS.md) | Заметки для AI/coding agents и границы проекта. |

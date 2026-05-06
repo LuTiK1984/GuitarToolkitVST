@@ -10,6 +10,8 @@ All notable changes to GuitarToolkit are documented here.
 - Added DAW documentation for FL Studio, Reaper, and supported-host compatibility tracking.
 - Added bilingual English/Russian README, contributor documentation, security policy, code of conduct, PR template, issue templates, release checklist, quick-start setup guide, and DAW setup guides.
 - Added refreshed GitHub screenshot set for dark and light themes.
+- Added the Ideas tab skeleton for ONNX-first progression inspiration, with Core generation contracts, a demo fallback model, and playback through existing chord synthesis.
+- Added maintainer documentation for the Inspiration Engine model contract, runtime model location, vocabulary shape, and training/export workflow.
 
 ### Changed
 
