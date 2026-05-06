@@ -12,7 +12,7 @@ Thanks for helping improve GuitarToolkit. This project is a Windows guitar toolk
 - `GuitarToolkit.Plugin` is the VST3 entry point and uses AudioPlugSharp.
 - `GuitarToolkit.Tests` contains xUnit tests for Core behavior.
 
-For detailed file-placement rules, see the [project structure guide](docs/PROJECT_STRUCTURE.md).
+For detailed file-placement rules, see the [project structure guide](docs/maintainer/PROJECT_STRUCTURE.md).
 
 ## Development Setup
 
@@ -46,7 +46,7 @@ For VST-related changes, build and test as `x64`.
 
 Dependency updates are reviewed with extra care because GuitarToolkit includes audio, UI, and VST3 behavior that CI cannot fully verify.
 
-Use the [dependency update policy](docs/DEPENDENCY_POLICY.md) when reviewing Dependabot PRs or manually updating NuGet/GitHub Actions dependencies.
+Use the [dependency update policy](docs/maintainer/DEPENDENCY_POLICY.md) when reviewing Dependabot PRs or manually updating NuGet/GitHub Actions dependencies.
 
 In short:
 
@@ -95,7 +95,7 @@ For Guitar Pro or MusicXML import issues, mention the file format and whether th
 - `GuitarToolkit.Plugin` - точка входа VST3-плагина, использует AudioPlugSharp.
 - `GuitarToolkit.Tests` - xUnit-тесты поведения Core.
 
-Подробные правила размещения файлов описаны в [project structure guide](docs/PROJECT_STRUCTURE.md).
+Подробные правила размещения файлов описаны в [project structure guide](docs/maintainer/PROJECT_STRUCTURE.md).
 
 ## Подготовка окружения
 
@@ -129,7 +129,7 @@ dotnet test GuitarToolkit.sln --no-restore --configuration Debug
 
 Обновления зависимостей проверяются особенно аккуратно, потому что GuitarToolkit содержит audio, UI и VST3-поведение, которое CI не может полностью проверить.
 
-Используйте [политику обновления зависимостей](docs/DEPENDENCY_POLICY.md) при проверке Dependabot PR или ручном обновлении NuGet/GitHub Actions dependencies.
+Используйте [политику обновления зависимостей](docs/maintainer/DEPENDENCY_POLICY.md) при проверке Dependabot PR или ручном обновлении NuGet/GitHub Actions dependencies.
 
 Кратко:
 

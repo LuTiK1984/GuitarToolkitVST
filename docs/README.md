@@ -58,10 +58,10 @@ Some project files intentionally stay in the repository root because GitHub expe
 | [SUPPORT](../SUPPORT.md) | Support routing recognized by GitHub. |
 | [SECURITY](../SECURITY.md) | Security policy recognized by GitHub. |
 | [CODE_OF_CONDUCT](../CODE_OF_CONDUCT.md) | Community rules recognized by GitHub. |
-| [RELEASE_CHECKLIST](../RELEASE_CHECKLIST.md) | Short release checklist. |
-| [ROADMAP](../ROADMAP.md) | Product direction. |
+| [Release Checklist](releases/RELEASE_CHECKLIST.md) | Short release checklist. |
+| [Roadmap](maintainer/ROADMAP.md) | Product direction. |
 | [THIRD_PARTY_NOTICES](../THIRD_PARTY_NOTICES.md) | Third-party dependency/license notes. |
-| [DISCUSSIONS](../DISCUSSIONS.md) | GitHub Discussions setup guide. |
+| [Discussions Guide](maintainer/DISCUSSIONS.md) | GitHub Discussions setup guide. |
 | [AGENTS](../AGENTS.md) | Development notes for AI/coding agents and project boundaries. |
 
 ---
@@ -128,8 +128,8 @@ Some project files intentionally stay in the repository root because GitHub expe
 | [SUPPORT](../SUPPORT.md) | Support routing, распознаётся GitHub. |
 | [SECURITY](../SECURITY.md) | Security policy, распознаётся GitHub. |
 | [CODE_OF_CONDUCT](../CODE_OF_CONDUCT.md) | Правила сообщества, распознаётся GitHub. |
-| [RELEASE_CHECKLIST](../RELEASE_CHECKLIST.md) | Короткий чеклист релиза. |
-| [ROADMAP](../ROADMAP.md) | Направление развития. |
+| [Release Checklist](releases/RELEASE_CHECKLIST.md) | Короткий чеклист релиза. |
+| [Roadmap](maintainer/ROADMAP.md) | Направление развития. |
 | [THIRD_PARTY_NOTICES](../THIRD_PARTY_NOTICES.md) | Уведомления о сторонних зависимостях и лицензиях. |
-| [DISCUSSIONS](../DISCUSSIONS.md) | Настройка GitHub Discussions. |
+| [Discussions Guide](maintainer/DISCUSSIONS.md) | Настройка GitHub Discussions. |
 | [AGENTS](../AGENTS.md) | Заметки для AI/coding agents и границы проекта. |
