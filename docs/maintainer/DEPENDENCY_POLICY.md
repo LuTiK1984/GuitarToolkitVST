@@ -13,6 +13,7 @@ This project uses Dependabot to propose dependency and GitHub Actions updates. E
 | Desktop audio | `NAudio` | Medium to high | CI must pass. Manual Desktop audio smoke test is required. |
 | VST/plugin bridge | `AudioPlugSharp`, VST bridge/runtime packages | High | CI must pass. Manual VST3/DAW smoke test is required. |
 | Tabs/rendering | `alphaTab`, `AlphaSkia` | Medium to high | CI must pass. Manual Tabs loading/playback test is required. |
+| Local ML inference | `Microsoft.ML.OnnxRuntime` | Medium | CI must pass. Manual Ideas tab generation smoke test is required. |
 | UI/WPF-related packages | WPF helpers, UI dependencies | Medium | CI must pass. Manual Desktop and VST editor smoke test is recommended. |
 
 ## Merge rules
@@ -121,6 +122,7 @@ Postpone or close a Dependabot PR when:
 | Desktop-аудио | `NAudio` | Средний/высокий | CI должен пройти. Нужна ручная Desktop audio smoke test. |
 | VST/plugin bridge | `AudioPlugSharp`, VST bridge/runtime packages | Высокий | CI должен пройти. Нужна ручная VST3/DAW smoke test. |
 | Tabs/rendering | `alphaTab`, `AlphaSkia` | Средний/высокий | CI должен пройти. Нужна ручная проверка загрузки и playback табов. |
+| Local ML inference | `Microsoft.ML.OnnxRuntime` | Средний | CI должен пройти. Нужна ручная проверка генерации во вкладке "Идеи". |
 | UI/WPF-зависимости | WPF helpers, UI dependencies | Средний | CI должен пройти. Желательна ручная проверка Desktop и VST editor. |
 
 ## Правила merge

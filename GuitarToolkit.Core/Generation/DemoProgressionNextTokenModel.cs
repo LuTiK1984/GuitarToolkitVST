@@ -59,7 +59,7 @@ public sealed class DemoProgressionNextTokenModel : IProgressionNextTokenModel
         {
             ModelName = "DemoProgressionNextTokenModel",
             IsAvailable = true,
-            Status = "Демонстрационная символическая модель. После обучения ее заменит ProgressionNextTokenModel.onnx.",
+            Status = "Локальная ONNX-модель недоступна. Используется встроенный генератор.",
             NextTokenProbabilities = probabilities
         };
     }

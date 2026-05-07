@@ -4,6 +4,8 @@ All notable changes to GuitarToolkit are documented here.
 
 ## [Unreleased]
 
+## [1.6.0] - 2026-05-07
+
 ### Added
 
 - Added MIT license, contributing guide, code of conduct, security policy, pull request template, CODEOWNERS, Dependabot config, and EditorConfig.

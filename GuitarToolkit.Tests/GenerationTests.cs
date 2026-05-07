@@ -57,7 +57,7 @@ public class GenerationTests
         });
 
         Assert.False(result.UsedPrimaryModel);
-        Assert.Contains("ONNX-файл модели пока не настроен", result.ModelStatus);
+        Assert.Contains("ONNX-файл модели не найден", result.ModelStatus);
         Assert.Equal(4, result.Chords.Count);
     }
 

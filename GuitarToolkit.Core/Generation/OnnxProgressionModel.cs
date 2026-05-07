@@ -31,7 +31,7 @@ public sealed class OnnxProgressionModel : IProgressionNextTokenModel, IDisposab
             {
                 ModelName = "ProgressionNextTokenModel.onnx",
                 IsAvailable = false,
-                Status = "ONNX-файл модели пока не настроен. Используется демонстрационный fallback."
+                Status = "ONNX-файл модели не найден. Используется встроенный генератор."
             };
         }
 
