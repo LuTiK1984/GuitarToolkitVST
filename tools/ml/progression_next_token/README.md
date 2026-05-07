@@ -29,6 +29,25 @@ python -m venv .venv
 
 `sample_dataset.jsonl` нужен только для проверки пайплайна. Для настоящей модели понадобится отдельный датасет.
 
+## Rich dataset режим
+
+По умолчанию генератор теперь балансирует допустимые пары `style/mode` и добавляет больше гармонических вариантов: каденции, замены, более длинные формы и разные реакции на mood. Это лучше для дальнейшего обучения, чем просто бесконечно гонять старый датасет.
+
+Рекомендуемый следующий датасет:
+
+```powershell
+.\.venv\Scripts\python generate_synthetic_dataset.py --output synthetic_dataset_rich_40000.jsonl --count 40000 --seed 4096
+.\.venv\Scripts\python validate_dataset.py --dataset synthetic_dataset_rich_40000.jsonl
+```
+
+Для сравнения со старым случайным распределением можно добавить `--random-context`, но для основной модели лучше оставлять balanced-режим по умолчанию.
+
+Осторожный fine-tune от текущего победителя:
+
+```powershell
+.\.venv\Scripts\python train.py --dataset synthetic_dataset_rich_40000.jsonl --epochs 20 --batch-size 128 --learning-rate 0.0002 --output-dir runs/progression_rich_ft --resume runs/progression_ft_lr0003/best_model.pt --reset-optimizer --save-every 5
+```
+
 ## Выход
 
 Обучение пишет:
