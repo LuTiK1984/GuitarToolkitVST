@@ -25,6 +25,10 @@ class Vocabulary:
     def unk_id(self) -> int:
         return self.token_to_id["<UNK>"]
 
+    @property
+    def output_token_ids(self) -> list[int]:
+        return [self.token_to_id[token] for token in [*self.progression_tokens, "<EOS>"]]
+
     @classmethod
     def load(cls, path: str | Path) -> "Vocabulary":
         data = json.loads(Path(path).read_text(encoding="utf-8"))

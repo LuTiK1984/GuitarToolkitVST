@@ -20,7 +20,10 @@
 cd tools/ml/progression_next_token
 python -m venv .venv
 .\.venv\Scripts\pip install -r requirements.txt
-.\.venv\Scripts\python train.py --dataset sample_dataset.jsonl --epochs 5
+.\.venv\Scripts\python generate_synthetic_dataset.py --output synthetic_dataset.jsonl --count 5000
+.\.venv\Scripts\python validate_dataset.py --dataset synthetic_dataset.jsonl
+.\.venv\Scripts\python train.py --dataset synthetic_dataset.jsonl --epochs 40
+.\.venv\Scripts\python inspect_checkpoint.py --previous "<BOS>,i,VI"
 .\.venv\Scripts\python export_onnx.py
 ```
 
@@ -33,6 +36,7 @@ python -m venv .venv
 ```text
 runs/progression_next_token/ProgressionNextTokenModel.pt
 runs/progression_next_token/training_config.json
+runs/progression_next_token/metrics.json
 ```
 
 Экспорт пишет:
@@ -50,3 +54,17 @@ runs/progression_next_token/ProgressionNextTokenModel.onnx
 ## Почему так
 
 Модель не генерирует звук. Она генерирует вероятности следующего музыкального токена. GuitarToolkit сам выбирает токен через temperature/top-k, проверяет результат и проигрывает аккорды встроенными инструментами.
+
+## Как фиксировать победу
+
+Первую победу считаем не по красоте интерфейса, а по повторяемому ML-контуру:
+
+- training loss падает;
+- validation loss падает или стабилизируется без резкого разлета;
+- `top3_accuracy` заметно выше случайного выбора;
+- `inspect_checkpoint.py` на seed вроде `<BOS>,i,VI` показывает музыкально ожидаемые варианты: `VII`, `III`, `iv`, `V`;
+- в top-k не появляются служебные токены вроде `STYLE_*`, `MOOD_*`, `<PAD>` или `<UNK>`;
+- ONNX экспорт проходит без ошибки;
+- после подключения ONNX Runtime программа получает не demo fallback, а ответ реальной модели.
+
+На синтетике хороший результат не доказывает “умную музыку”, но доказывает, что пайплайн живой. После этого главным улучшением становится качество датасета.

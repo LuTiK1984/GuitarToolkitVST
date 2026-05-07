@@ -42,10 +42,10 @@ def export(args: argparse.Namespace) -> None:
         input_names=["style_id", "mode_id", "mood_id", "previous_tokens"],
         output_names=["next_token_logits"],
         dynamic_axes={
-            "previous_tokens": {1: "sequence_length"},
-            "next_token_logits": {1: "vocabulary_size"},
+            "previous_tokens": {1: "sequence_length"}
         },
         opset_version=17,
+        dynamo=False,
     )
     print(f"exported={output_path}")
 
