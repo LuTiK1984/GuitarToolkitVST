@@ -62,6 +62,27 @@ public class GenerationTests
     }
 
     [Fact]
+    public void ProgressionService_MapsBorrowedFlatTokensToPlayableChords()
+    {
+        var service = new ProgressionInspirationService(
+            new FixedProgressionModel("bII"),
+            new DemoProgressionNextTokenModel());
+
+        var result = service.Generate(new GenerationRequest
+        {
+            RootNote = "E",
+            Mode = "NaturalMinor",
+            Bars = 2,
+            Seed = 11
+        });
+
+        var borrowedChord = result.Chords[1];
+        Assert.Equal("bII", borrowedChord.RomanNumeral);
+        Assert.Equal("F", borrowedChord.Root);
+        Assert.Equal("Major", borrowedChord.ChordType);
+    }
+
+    [Fact]
     public void TemperatureSampler_RespectsTopK()
     {
         var sampler = new TemperatureSampler();
@@ -76,6 +97,26 @@ public class GenerationTests
         {
             string token = sampler.Sample(probabilities, temperature: 1.0, topK: 1, new Random(i));
             Assert.Equal("I", token);
+        }
+    }
+
+    private sealed class FixedProgressionModel : IProgressionNextTokenModel
+    {
+        private readonly string _token;
+
+        public FixedProgressionModel(string token)
+        {
+            _token = token;
+        }
+
+        public ProgressionModelOutput PredictNext(ProgressionModelInput input)
+        {
+            return new ProgressionModelOutput
+            {
+                ModelName = "Fixed",
+                IsAvailable = true,
+                NextTokenProbabilities = new[] { new ModelTokenProbability(_token, 1.0) }
+            };
         }
     }
 }

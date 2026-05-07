@@ -4,6 +4,9 @@ namespace GuitarToolkit.Core.Generation;
 
 public sealed class ProgressionInspirationService
 {
+    private static readonly string[] NoteNames =
+        { "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B" };
+
     private readonly IProgressionNextTokenModel _primaryModel;
     private readonly IProgressionNextTokenModel _fallbackModel;
     private readonly TemperatureSampler _sampler;
@@ -54,7 +57,7 @@ public sealed class ProgressionInspirationService
         var diatonic = ProgressionBuilder.GetDiatonicChords(request.RootNote, ResolveModeIndex(request.Mode));
         var chords = tokens
             .Take(length)
-            .Select(token => ToGeneratedChord(token, diatonic))
+            .Select(token => ToGeneratedChord(token, request.RootNote, diatonic))
             .ToArray();
 
         return new GeneratedProgression
@@ -86,14 +89,53 @@ public sealed class ProgressionInspirationService
         return mode;
     }
 
-    private static GeneratedChord ToGeneratedChord(string token, IReadOnlyList<ProgressionStep> diatonic)
+    private static GeneratedChord ToGeneratedChord(string token, string rootNote, IReadOnlyList<ProgressionStep> diatonic)
     {
         string normalized = NormalizeRoman(token);
         var step = diatonic.FirstOrDefault(item => NormalizeRoman(item.Degree) == normalized)
+            ?? TryBuildBorrowedChord(token, rootNote)
             ?? diatonic.FirstOrDefault(item => NormalizeRoman(item.Degree).Equals("i", StringComparison.OrdinalIgnoreCase))
             ?? diatonic[0];
 
         return new GeneratedChord(token, step.Root, step.ChordType);
+    }
+
+    private static ProgressionStep? TryBuildBorrowedChord(string token, string rootNote)
+    {
+        string clean = token.Replace("В°", "", StringComparison.Ordinal)
+            .Replace("°", "", StringComparison.Ordinal)
+            .Replace("+", "", StringComparison.Ordinal)
+            .Trim();
+
+        int semitone = clean.ToUpperInvariant() switch
+        {
+            "BII" => 1,
+            "II" => 2,
+            "BIII" => 3,
+            "III" => 4,
+            "IV" => 5,
+            "BV" => 6,
+            "V" => 7,
+            "BVI" => 8,
+            "VI" => 9,
+            "BVII" => 10,
+            "VII" => 11,
+            _ => -1
+        };
+
+        if (semitone < 0)
+            return null;
+
+        int rootIndex = Array.IndexOf(NoteNames, rootNote);
+        if (rootIndex < 0)
+            rootIndex = 0;
+
+        string qualityToken = clean.StartsWith("b", StringComparison.OrdinalIgnoreCase)
+            ? clean[1..]
+            : clean;
+        string chordType = char.IsLower(qualityToken.FirstOrDefault(char.IsLetter)) ? "m" : "Major";
+        string chordRoot = NoteNames[(rootIndex + semitone) % NoteNames.Length];
+        return new ProgressionStep(token, chordRoot, chordType);
     }
 
     private static int ResolveModeIndex(string mode)

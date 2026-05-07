@@ -16,12 +16,14 @@ All notable changes to GuitarToolkit are documented here.
 - Added a 5,000-example synthetic progression dataset, dataset validator, checkpoint inspector, output-token masking, validation metrics, and a verified first local GRU training/export pass.
 - Added resumable progression-model training with optimizer-state checkpoints, `best_model.pt`, metrics history, and optional periodic checkpoint snapshots.
 - Expanded the synthetic progression generator with balanced context coverage, richer harmonic templates, cadences, substitutions, and mood-aware variation for the next training passes.
+- Added ONNX Runtime inference for the Inspiration Engine progression model and a helper script for installing freshly exported models into the app runtime folder.
 
 ### Changed
 
 - Linked community, security, release, and DAW documentation from the README and release checklist.
 - Reworked README as a full bilingual project overview with release links, architecture notes, feature descriptions, VST3 deployment guidance, and updated screenshots.
 - Clarified the Inspiration Engine roadmap around two specialized ONNX model tracks: GRU/LSTM for progressions and a small Transformer for short melody/riff phrases.
+- Improved generated progression mapping for borrowed/altered roman-numeral tokens such as `bII`, `bVI`, and `bVII`.
 
 ## [1.5.0] - 2026-05-03
 

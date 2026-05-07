@@ -26,7 +26,7 @@ Important types:
 - `ProgressionModelOutput` - model probabilities for the next token.
 - `GeneratedProgression` - validated result returned to the UI.
 - `ProgressionInspirationService` - orchestration layer that samples tokens and maps them to GuitarToolkit chords.
-- `OnnxProgressionModel` - reserved adapter for the future ONNX Runtime integration.
+- `OnnxProgressionModel` - ONNX Runtime adapter for an installed local model file.
 - `DemoProgressionNextTokenModel` - deterministic fallback used while no trained model is installed.
 
 The UI tab does not expect audio from the model. It expects roman-numeral tokens such as:
@@ -45,13 +45,22 @@ That means the model can stay small, symbolic, and safe. GuitarToolkit remains r
 
 ## Model file location
 
-The current placeholder adapter looks for:
+The runtime adapter looks for:
 
 ```text
 %AppData%\GuitarToolkit\models\ProgressionNextTokenModel.onnx
 ```
 
-Until the ONNX Runtime adapter is implemented, the app falls back to `DemoProgressionNextTokenModel` and shows that status in the Ideas tab.
+If the file is missing or cannot be loaded, the app falls back to `DemoProgressionNextTokenModel` and shows that status in the Ideas tab. The adapter reloads the model when the installed file timestamp changes, so a new export can be copied into that path and tested immediately from the app's generation UI.
+
+The helper script for the current training sandbox is:
+
+```powershell
+cd tools\ml\progression_next_token
+powershell -ExecutionPolicy Bypass -File .\install_model.ps1 -Checkpoint runs\progression_rich_ft\best_model.pt -Python C:\Users\anikj\AppData\Local\Programs\Python\Python311\python.exe
+```
+
+That script exports the checkpoint to ONNX and copies it to the runtime model folder.
 
 Do not commit trained model files or datasets until their license, source, and release policy are clear.
 
@@ -95,9 +104,9 @@ Keep a stable `vocab.json` beside the training code and export metadata with the
 4. Train `ProgressionNextTokenModel` as next-token prediction.
 5. Export to ONNX with fixed input names and output names.
 6. Validate ONNX outputs against PyTorch outputs on the same examples.
-7. Add the ONNX Runtime package and implement `OnnxProgressionModel`.
-8. Add tests for token mapping, sampling, fallback behavior, and model-output validation.
-9. Only then ship a model file in a release or document how users can install it.
+7. Export and install the candidate with `install_model.ps1`.
+8. Compare app behavior against checkpoint inspection examples.
+9. Only ship a model file in a release when its license, dataset source, and quality notes are clear.
 
 Recommended ONNX input names for the first adapter:
 
