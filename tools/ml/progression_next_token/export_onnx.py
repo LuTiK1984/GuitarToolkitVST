@@ -52,7 +52,7 @@ def export(args: argparse.Namespace) -> None:
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Export ProgressionNextTokenModel checkpoint to ONNX.")
-    parser.add_argument("--checkpoint", default="runs/progression_next_token/ProgressionNextTokenModel.pt")
+    parser.add_argument("--checkpoint", default="runs/progression_next_token/best_model.pt")
     parser.add_argument("--vocab", default="vocab.json")
     parser.add_argument("--output", default="runs/progression_next_token/ProgressionNextTokenModel.onnx")
     return parser.parse_args()

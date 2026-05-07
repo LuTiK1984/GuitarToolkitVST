@@ -48,7 +48,7 @@ def inspect(args: argparse.Namespace) -> None:
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Inspect top-k next-token predictions from a checkpoint.")
-    parser.add_argument("--checkpoint", default="runs/progression_next_token/ProgressionNextTokenModel.pt")
+    parser.add_argument("--checkpoint", default="runs/progression_next_token/best_model.pt")
     parser.add_argument("--vocab", default="vocab.json")
     parser.add_argument("--style", default="STYLE_METAL")
     parser.add_argument("--mode", default="MODE_NATURAL_MINOR")

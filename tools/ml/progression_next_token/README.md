@@ -35,8 +35,33 @@ python -m venv .venv
 
 ```text
 runs/progression_next_token/ProgressionNextTokenModel.pt
+runs/progression_next_token/best_model.pt
 runs/progression_next_token/training_config.json
 runs/progression_next_token/metrics.json
+```
+
+`ProgressionNextTokenModel.pt` - последний checkpoint. `best_model.pt` - лучший checkpoint по validation loss. `inspect_checkpoint.py` и `export_onnx.py` по умолчанию берут именно `best_model.pt`.
+
+## Накопительное обучение
+
+Чтобы продолжить обучение уже существующей модели, используй `--resume`:
+
+```powershell
+.\.venv\Scripts\python train.py --dataset synthetic_dataset.jsonl --epochs 20 --resume runs/progression_next_token/ProgressionNextTokenModel.pt
+```
+
+Это не начинает с нуля. Скрипт загружает веса модели, состояние optimizer, номер прошлой эпохи и лучший validation loss, а затем добавляет новые эпохи поверх старых.
+
+Если нужно продолжить с весов, но пересоздать optimizer, добавь:
+
+```powershell
+.\.venv\Scripts\python train.py --dataset synthetic_dataset.jsonl --epochs 20 --resume runs/progression_next_token/ProgressionNextTokenModel.pt --reset-optimizer
+```
+
+Для регулярных снапшотов:
+
+```powershell
+.\.venv\Scripts\python train.py --dataset synthetic_dataset.jsonl --epochs 40 --save-every 10
 ```
 
 Экспорт пишет:

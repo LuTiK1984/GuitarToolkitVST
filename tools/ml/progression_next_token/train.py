@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import shutil
 from dataclasses import asdict, dataclass
 from pathlib import Path
 
@@ -80,6 +81,10 @@ def collate_batch(batch: list[tuple[int, int, int, list[int], int]], pad_id: int
 
 
 def train(args: argparse.Namespace) -> None:
+    resume_checkpoint = Path(args.resume) if args.resume else None
+    checkpoint = load_checkpoint(resume_checkpoint) if resume_checkpoint else None
+    checkpoint_config = checkpoint.get("config") if checkpoint else None
+
     config = TrainConfig(
         embedding_size=args.embedding_size,
         hidden_size=args.hidden_size,
@@ -93,6 +98,15 @@ def train(args: argparse.Namespace) -> None:
         validation_ratio=args.validation_ratio,
         seed=args.seed,
     )
+    if checkpoint_config:
+        resumed_config = dict(checkpoint_config)
+        resumed_config["epochs"] = args.epochs
+        resumed_config["batch_size"] = args.batch_size
+        resumed_config["learning_rate"] = args.learning_rate
+        resumed_config["validation_ratio"] = args.validation_ratio
+        resumed_config["seed"] = args.seed
+        config = TrainConfig(**resumed_config)
+
     torch.manual_seed(config.seed)
     vocab = Vocabulary.load(args.vocab)
     dataset = ProgressionDataset(Path(args.dataset), vocab, config.max_sequence_length)
@@ -131,12 +145,32 @@ def train(args: argparse.Namespace) -> None:
     ).to(device)
 
     optimizer = torch.optim.AdamW(model.parameters(), lr=config.learning_rate)
+    start_epoch = 0
+    best_validation_loss = float("inf")
+    metrics: list[dict[str, float | int | str]] = []
+
+    if checkpoint:
+        if checkpoint["vocabulary_size"] != len(vocab.id_to_token):
+            raise RuntimeError("Checkpoint vocabulary size does not match vocab.json.")
+
+        model.load_state_dict(checkpoint["model_state"])
+        if not args.reset_optimizer and "optimizer_state" in checkpoint:
+            optimizer.load_state_dict(checkpoint["optimizer_state"])
+
+        start_epoch = int(checkpoint.get("epoch", 0))
+        best_validation_loss = float(checkpoint.get("best_validation_loss", float("inf")))
+        metrics = load_existing_metrics(Path(args.output_dir))
+        print(f"resumed={resume_checkpoint} start_epoch={start_epoch} best_val_loss={best_validation_loss:.4f}")
+
     loss_fn = nn.CrossEntropyLoss(ignore_index=vocab.pad_id)
     output_mask = build_output_mask(len(vocab.id_to_token), vocab.output_token_ids, device)
-    metrics: list[dict[str, float | int]] = []
-    best_validation_loss = float("inf")
 
-    for epoch in range(1, config.epochs + 1):
+    output_dir = Path(args.output_dir)
+    output_dir.mkdir(parents=True, exist_ok=True)
+    total_target_epoch = start_epoch + config.epochs
+
+    for local_epoch in range(1, config.epochs + 1):
+        epoch = start_epoch + local_epoch
         model.train()
         total_loss = 0.0
         total_items = 0
@@ -159,35 +193,105 @@ def train(args: argparse.Namespace) -> None:
 
         train_loss = total_loss / max(total_items, 1)
         validation_loss, accuracy, top3_accuracy = evaluate(model, validation_loader, loss_fn, device, output_mask)
+        improved = validation_loss < best_validation_loss
+        if improved:
+            best_validation_loss = validation_loss
+
         metrics.append(
             {
                 "epoch": epoch,
+                "local_epoch": local_epoch,
                 "train_loss": train_loss,
                 "validation_loss": validation_loss,
                 "accuracy": accuracy,
                 "top3_accuracy": top3_accuracy,
+                "mode": "resume" if checkpoint else "fresh",
             }
         )
-        best_validation_loss = min(best_validation_loss, validation_loss)
 
         print(
-            f"epoch={epoch:03d} "
+            f"epoch={epoch:03d}/{total_target_epoch:03d} "
             f"train_loss={train_loss:.4f} "
             f"val_loss={validation_loss:.4f} "
             f"acc={accuracy:.3f} "
-            f"top3={top3_accuracy:.3f}"
+            f"top3={top3_accuracy:.3f} "
+            f"{'best' if improved else ''}"
         )
 
-    output_dir = Path(args.output_dir)
-    output_dir.mkdir(parents=True, exist_ok=True)
-    torch.save(
-        {
-            "model_state": model.state_dict(),
-            "config": asdict(config),
-            "vocabulary_size": len(vocab.id_to_token),
-        },
-        output_dir / "ProgressionNextTokenModel.pt",
+        checkpoint_data = build_checkpoint(
+            model,
+            optimizer,
+            config,
+            vocabulary_size=len(vocab.id_to_token),
+            epoch=epoch,
+            best_validation_loss=best_validation_loss,
+        )
+        latest_path = output_dir / "ProgressionNextTokenModel.pt"
+        torch.save(checkpoint_data, latest_path)
+        if improved:
+            torch.save(checkpoint_data, output_dir / "best_model.pt")
+        if args.save_every > 0 and epoch % args.save_every == 0:
+            torch.save(checkpoint_data, output_dir / f"checkpoint_epoch_{epoch:04d}.pt")
+
+    latest_path = output_dir / "ProgressionNextTokenModel.pt"
+    if not (output_dir / "best_model.pt").exists():
+        shutil.copy2(latest_path, output_dir / "best_model.pt")
+
+    write_training_files(
+        output_dir,
+        config,
+        metrics,
+        best_validation_loss,
+        latest_path,
+        output_dir / "best_model.pt",
     )
+    print(f"saved={latest_path}")
+    print(f"best={output_dir / 'best_model.pt'}")
+
+
+def load_checkpoint(path: Path | None) -> dict[str, object] | None:
+    if path is None:
+        return None
+    if not path.exists():
+        raise FileNotFoundError(path)
+    return torch.load(path, map_location="cpu", weights_only=False)
+
+
+def load_existing_metrics(output_dir: Path) -> list[dict[str, float | int | str]]:
+    metrics_path = output_dir / "metrics.json"
+    if not metrics_path.exists():
+        return []
+
+    data = json.loads(metrics_path.read_text(encoding="utf-8"))
+    return data.get("epochs", [])
+
+
+def build_checkpoint(
+    model: ProgressionNextTokenModel,
+    optimizer: torch.optim.Optimizer,
+    config: TrainConfig,
+    vocabulary_size: int,
+    epoch: int,
+    best_validation_loss: float,
+) -> dict[str, object]:
+    return {
+        "model_state": model.state_dict(),
+        "optimizer_state": optimizer.state_dict(),
+        "config": asdict(config),
+        "vocabulary_size": vocabulary_size,
+        "epoch": epoch,
+        "best_validation_loss": best_validation_loss,
+    }
+
+
+def write_training_files(
+    output_dir: Path,
+    config: TrainConfig,
+    metrics: list[dict[str, float | int | str]],
+    best_validation_loss: float,
+    latest_path: Path,
+    best_path: Path,
+) -> None:
     (output_dir / "training_config.json").write_text(
         json.dumps(asdict(config), indent=2, ensure_ascii=False),
         encoding="utf-8",
@@ -197,6 +301,8 @@ def train(args: argparse.Namespace) -> None:
             {
                 "best_validation_loss": best_validation_loss,
                 "last": metrics[-1],
+                "latest_checkpoint": str(latest_path),
+                "best_checkpoint": str(best_path),
                 "epochs": metrics,
             },
             indent=2,
@@ -204,7 +310,6 @@ def train(args: argparse.Namespace) -> None:
         ),
         encoding="utf-8",
     )
-    print(f"saved={output_dir / 'ProgressionNextTokenModel.pt'}")
 
 
 @torch.no_grad()
@@ -268,6 +373,9 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--max-sequence-length", type=int, default=16)
     parser.add_argument("--validation-ratio", type=float, default=0.15)
     parser.add_argument("--seed", type=int, default=1984)
+    parser.add_argument("--resume", default=None, help="Path to an existing .pt checkpoint to continue training.")
+    parser.add_argument("--reset-optimizer", action="store_true", help="Resume weights but start with a fresh optimizer.")
+    parser.add_argument("--save-every", type=int, default=0, help="Save numbered checkpoints every N global epochs.")
     parser.add_argument("--cpu", action="store_true")
     return parser.parse_args()
 

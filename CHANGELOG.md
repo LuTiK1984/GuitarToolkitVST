@@ -14,6 +14,7 @@ All notable changes to GuitarToolkit are documented here.
 - Added maintainer documentation for the Inspiration Engine model contract, runtime model location, vocabulary shape, and training/export workflow.
 - Added the first ML tooling layer for `ProgressionNextTokenModel`: stable vocabulary, sample JSONL dataset, GRU/LSTM training script, ONNX export script, and local artifact ignores.
 - Added a 5,000-example synthetic progression dataset, dataset validator, checkpoint inspector, output-token masking, validation metrics, and a verified first local GRU training/export pass.
+- Added resumable progression-model training with optimizer-state checkpoints, `best_model.pt`, metrics history, and optional periodic checkpoint snapshots.
 
 ### Changed
 
