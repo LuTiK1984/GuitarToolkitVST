@@ -165,8 +165,9 @@ def train(args: argparse.Namespace) -> None:
         metrics = load_existing_metrics(Path(args.output_dir))
         print(f"resumed={resume_checkpoint} start_epoch={start_epoch} best_val_loss={best_validation_loss:.4f}")
 
-    loss_fn = nn.CrossEntropyLoss(ignore_index=vocab.pad_id, label_smoothing=config.label_smoothing)
-    output_mask = build_output_mask(len(vocab.id_to_token), vocab.output_token_ids, device)
+    loss_fn = nn.CrossEntropyLoss(ignore_index=-1, label_smoothing=config.label_smoothing)
+    output_token_ids = torch.tensor(vocab.output_token_ids, dtype=torch.long, device=device)
+    output_index_map = build_output_index_map(len(vocab.id_to_token), vocab.output_token_ids, device)
 
     output_dir = Path(args.output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -186,8 +187,9 @@ def train(args: argparse.Namespace) -> None:
             targets = targets.to(device)
 
             optimizer.zero_grad(set_to_none=True)
-            logits = apply_output_mask(model(style_id, mode_id, mood_id, previous_tokens), output_mask)
-            loss = loss_fn(logits, targets)
+            logits = model(style_id, mode_id, mood_id, previous_tokens).index_select(1, output_token_ids)
+            target_classes = output_index_map[targets]
+            loss = loss_fn(logits, target_classes)
             loss.backward()
             optimizer.step()
 
@@ -195,7 +197,7 @@ def train(args: argparse.Namespace) -> None:
             total_items += targets.numel()
 
         train_loss = total_loss / max(total_items, 1)
-        validation_loss, accuracy, top3_accuracy = evaluate(model, validation_loader, loss_fn, device, output_mask)
+        validation_loss, accuracy, top3_accuracy = evaluate(model, validation_loader, loss_fn, device, output_token_ids, output_index_map)
         improved = validation_loss < best_validation_loss
         if improved:
             best_validation_loss = validation_loss
@@ -321,7 +323,8 @@ def evaluate(
     loader: DataLoader,
     loss_fn: nn.CrossEntropyLoss,
     device: torch.device,
-    output_mask: torch.Tensor,
+    output_token_ids: torch.Tensor,
+    output_index_map: torch.Tensor,
 ) -> tuple[float, float, float]:
     model.eval()
     total_loss = 0.0
@@ -336,28 +339,29 @@ def evaluate(
         previous_tokens = previous_tokens.to(device)
         targets = targets.to(device)
 
-        logits = apply_output_mask(model(style_id, mode_id, mood_id, previous_tokens), output_mask)
-        loss = loss_fn(logits, targets)
+        logits = model(style_id, mode_id, mood_id, previous_tokens).index_select(1, output_token_ids)
+        target_classes = output_index_map[targets]
+        loss = loss_fn(logits, target_classes)
         total_loss += float(loss.item()) * targets.numel()
         total_items += targets.numel()
 
         predictions = logits.argmax(dim=1)
-        correct += int((predictions == targets).sum().item())
+        correct += int((predictions == target_classes).sum().item())
         top3 = logits.topk(k=min(3, logits.shape[1]), dim=1).indices
-        top3_correct += int((top3 == targets.unsqueeze(1)).any(dim=1).sum().item())
+        top3_correct += int((top3 == target_classes.unsqueeze(1)).any(dim=1).sum().item())
 
     total_items = max(total_items, 1)
     return total_loss / total_items, correct / total_items, top3_correct / total_items
 
 
-def build_output_mask(vocabulary_size: int, output_token_ids: list[int], device: torch.device) -> torch.Tensor:
-    mask = torch.full((vocabulary_size,), -1_000_000.0, dtype=torch.float32, device=device)
-    mask[output_token_ids] = 0.0
-    return mask
-
-
-def apply_output_mask(logits: torch.Tensor, output_mask: torch.Tensor) -> torch.Tensor:
-    return logits + output_mask.unsqueeze(0)
+def build_output_index_map(vocabulary_size: int, output_token_ids: list[int], device: torch.device) -> torch.Tensor:
+    output_index_map = torch.full((vocabulary_size,), -1, dtype=torch.long, device=device)
+    output_index_map[torch.tensor(output_token_ids, dtype=torch.long, device=device)] = torch.arange(
+        len(output_token_ids),
+        dtype=torch.long,
+        device=device,
+    )
+    return output_index_map
 
 
 def parse_args() -> argparse.Namespace:

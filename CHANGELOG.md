@@ -7,6 +7,7 @@ All notable changes to GuitarToolkit are documented here.
 ### Added
 
 - Added diverse progression dataset generation profiles, checkpoint diversity evaluation prompts, and label smoothing support for the next Inspiration Engine training passes.
+- Fixed progression-model label smoothing so loss is computed only across valid output tokens instead of masked vocabulary entries.
 
 ## [1.6.0] - 2026-05-07
 
