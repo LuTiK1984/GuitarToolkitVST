@@ -21,6 +21,7 @@ All notable changes to GuitarToolkit are documented here.
 
 - Linked community, security, release, and DAW documentation from the README and release checklist.
 - Reworked README as a full bilingual project overview with release links, architecture notes, feature descriptions, VST3 deployment guidance, and updated screenshots.
+- Clarified the Inspiration Engine roadmap around two specialized ONNX model tracks: GRU/LSTM for progressions and a small Transformer for short melody/riff phrases.
 
 ## [1.5.0] - 2026-05-03
 
