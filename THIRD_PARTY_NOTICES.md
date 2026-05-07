@@ -10,6 +10,7 @@ GuitarToolkit uses several open-source libraries and runtime components. This fi
 | --- | --- | --- | --- | --- |
 | alphaTab / AlphaTab.Windows | 1.8.2 | Guitar Pro and MusicXML rendering/playback | MPL-2.0 | https://github.com/CoderLine/alphaTab |
 | AudioPlugSharp / AudioPlugSharpWPF | 0.7.9 | VST3 plugin bridge and WPF hosting | MIT | https://github.com/mikeoliphant/AudioPlugSharp |
+| Microsoft.ML.OnnxRuntime | 1.20.1 | Local ONNX model inference for the Inspiration Engine | MIT | https://github.com/microsoft/onnxruntime |
 | NAudio | 2.2.1 | Desktop audio input/output | MIT | https://github.com/naudio/NAudio |
 | .NET / WPF | 8.0 | Application runtime and desktop UI | Microsoft/.NET licenses | https://dotnet.microsoft.com/ |
 
@@ -42,6 +43,7 @@ GuitarToolkit использует несколько open-source библиот
 | --- | --- | --- | --- | --- |
 | alphaTab / AlphaTab.Windows | 1.8.2 | Рендеринг и воспроизведение Guitar Pro / MusicXML | MPL-2.0 | https://github.com/CoderLine/alphaTab |
 | AudioPlugSharp / AudioPlugSharpWPF | 0.7.9 | VST3 bridge и WPF hosting | MIT | https://github.com/mikeoliphant/AudioPlugSharp |
+| Microsoft.ML.OnnxRuntime | 1.20.1 | Локальный ONNX inference для Inspiration Engine | MIT | https://github.com/microsoft/onnxruntime |
 | NAudio | 2.2.1 | Desktop audio input/output | MIT | https://github.com/naudio/NAudio |
 | .NET / WPF | 8.0 | Runtime приложения и desktop UI | Microsoft/.NET licenses | https://dotnet.microsoft.com/ |
 

@@ -4,17 +4,28 @@ All notable changes to GuitarToolkit are documented here.
 
 ## [Unreleased]
 
+## [1.6.0] - 2026-05-07
+
 ### Added
 
 - Added MIT license, contributing guide, code of conduct, security policy, pull request template, CODEOWNERS, Dependabot config, and EditorConfig.
 - Added DAW documentation for FL Studio, Reaper, and supported-host compatibility tracking.
 - Added bilingual English/Russian README, contributor documentation, security policy, code of conduct, PR template, issue templates, release checklist, quick-start setup guide, and DAW setup guides.
 - Added refreshed GitHub screenshot set for dark and light themes.
+- Added the Ideas tab skeleton for ONNX-first progression inspiration, with Core generation contracts, a demo fallback model, and playback through existing chord synthesis.
+- Added maintainer documentation for the Inspiration Engine model contract, runtime model location, vocabulary shape, and training/export workflow.
+- Added the first ML tooling layer for `ProgressionNextTokenModel`: stable vocabulary, sample JSONL dataset, GRU/LSTM training script, ONNX export script, and local artifact ignores.
+- Added a 5,000-example synthetic progression dataset, dataset validator, checkpoint inspector, output-token masking, validation metrics, and a verified first local GRU training/export pass.
+- Added resumable progression-model training with optimizer-state checkpoints, `best_model.pt`, metrics history, and optional periodic checkpoint snapshots.
+- Expanded the synthetic progression generator with balanced context coverage, richer harmonic templates, cadences, substitutions, and mood-aware variation for the next training passes.
+- Added ONNX Runtime inference for the Inspiration Engine progression model and a helper script for installing freshly exported models into the app runtime folder.
 
 ### Changed
 
 - Linked community, security, release, and DAW documentation from the README and release checklist.
 - Reworked README as a full bilingual project overview with release links, architecture notes, feature descriptions, VST3 deployment guidance, and updated screenshots.
+- Clarified the Inspiration Engine roadmap around two specialized ONNX model tracks: GRU/LSTM for progressions and a small Transformer for short melody/riff phrases.
+- Improved generated progression mapping for borrowed/altered roman-numeral tokens such as `bII`, `bVI`, and `bVII`.
 
 ## [1.5.0] - 2026-05-03
 

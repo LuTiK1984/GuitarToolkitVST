@@ -21,6 +21,7 @@ public partial class ToolkitHostView : UserControl
         ChordTab.Initialize(audioHost, _settings);
         IntervalTab.Initialize(audioHost);
         ProgressionTab.Initialize(audioHost, _settings);
+        InspirationTab.Initialize(audioHost);
         CircleTab.Initialize(audioHost);
         FretboardTab.Initialize(audioHost, _settings);
         SettingsTab.Initialize(_settings);

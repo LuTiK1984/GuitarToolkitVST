@@ -43,6 +43,16 @@ coverage-*/
 *.opencover.xml
 *.cobertura.xml
 
+# Local ML training outputs
+tools/ml/**/.venv/
+tools/ml/**/runs/
+tools/ml/**/__pycache__/
+tools/ml/**/synthetic_dataset_*.jsonl
+tools/ml/**/*.pt
+tools/ml/**/*.onnx
+tools/ml/**/*.pth
+tools/ml/**/*.ckpt
+
 # Logs and diagnostics
 *.log
 logs/

@@ -47,8 +47,8 @@ C:\Program Files\Common Files\VST3\GuitarToolkit\
 
 Get the latest build from [GitHub Releases](https://github.com/LuTiK1984/GuitarToolkit/releases).
 
-- `GuitarToolkit_DESKTOP_v.1.5.0.zip` - standalone Windows desktop app.
-- `GuitarToolkit_VST3_v.1.5.0.zip` - VST3 plugin package for DAW hosts.
+- `GuitarToolkit_DESKTOP_v.1.6.0.zip` - standalone Windows desktop app.
+- `GuitarToolkit_VST3_v.1.6.0.zip` - VST3 plugin package for DAW hosts.
 
 ## Screenshots
 
@@ -191,7 +191,7 @@ dotnet test GuitarToolkit.sln --configuration Debug
 Release package build:
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File .\build-release.ps1 -Version 1.5.0 -Configuration Release
+powershell -ExecutionPolicy Bypass -File .\build-release.ps1 -Version 1.6.0 -Configuration Release
 ```
 
 Current verification status:
@@ -312,8 +312,8 @@ C:\Program Files\Common Files\VST3\GuitarToolkit\
 
 Актуальная версия доступна на странице [GitHub Releases](https://github.com/LuTiK1984/GuitarToolkit/releases).
 
-- `GuitarToolkit_DESKTOP_v.1.5.0.zip` - standalone-приложение для Windows.
-- `GuitarToolkit_VST3_v.1.5.0.zip` - пакет VST3-плагина для DAW.
+- `GuitarToolkit_DESKTOP_v.1.6.0.zip` - standalone-приложение для Windows.
+- `GuitarToolkit_VST3_v.1.6.0.zip` - пакет VST3-плагина для DAW.
 
 ## Скриншоты
 
@@ -456,7 +456,7 @@ dotnet test GuitarToolkit.sln --configuration Debug
 Сборка релизных архивов:
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File .\build-release.ps1 -Version 1.5.0 -Configuration Release
+powershell -ExecutionPolicy Bypass -File .\build-release.ps1 -Version 1.6.0 -Configuration Release
 ```
 
 Текущее состояние проверки:
