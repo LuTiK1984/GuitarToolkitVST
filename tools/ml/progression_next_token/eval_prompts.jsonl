@@ -1,0 +1,10 @@
+{"name":"minor_dark_after_i_vi","style":"STYLE_METAL","mode":"MODE_NATURAL_MINOR","mood":"MOOD_DARK","previous":["<BOS>","i","VI"]}
+{"name":"major_pop_after_i_v","style":"STYLE_POP","mode":"MODE_MAJOR","mood":"MOOD_BRIGHT","previous":["<BOS>","I","V"]}
+{"name":"phrygian_tense_after_i_bii","style":"STYLE_METAL","mode":"MODE_PHRYGIAN","mood":"MOOD_TENSE","previous":["<BOS>","i","bII"]}
+{"name":"dorian_calm_after_i_iv","style":"STYLE_AMBIENT","mode":"MODE_DORIAN","mood":"MOOD_CALM","previous":["<BOS>","i","IV"]}
+{"name":"harmonic_minor_epic_cadence","style":"STYLE_METAL","mode":"MODE_HARMONIC_MINOR","mood":"MOOD_EPIC","previous":["<BOS>","i","iv"]}
+{"name":"rock_major_borrowed","style":"STYLE_ROCK","mode":"MODE_MAJOR","mood":"MOOD_TENSE","previous":["<BOS>","I","bVII"]}
+{"name":"blues_major_turnaround","style":"STYLE_BLUES","mode":"MODE_MAJOR","mood":"MOOD_CALM","previous":["<BOS>","I","IV","I"]}
+{"name":"minor_dark_longer_context","style":"STYLE_ROCK","mode":"MODE_NATURAL_MINOR","mood":"MOOD_DARK","previous":["<BOS>","i","VII","VI"]}
+{"name":"ambient_major_soft","style":"STYLE_AMBIENT","mode":"MODE_MAJOR","mood":"MOOD_CALM","previous":["<BOS>","I","vi"]}
+{"name":"phrygian_epic_motion","style":"STYLE_METAL","mode":"MODE_PHRYGIAN","mood":"MOOD_EPIC","previous":["<BOS>","i","VI"]}

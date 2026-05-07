@@ -23,6 +23,7 @@ class TrainConfig:
     epochs: int = 40
     batch_size: int = 16
     learning_rate: float = 0.001
+    label_smoothing: float = 0.0
     max_sequence_length: int = 16
     validation_ratio: float = 0.15
     seed: int = 1984
@@ -94,6 +95,7 @@ def train(args: argparse.Namespace) -> None:
         epochs=args.epochs,
         batch_size=args.batch_size,
         learning_rate=args.learning_rate,
+        label_smoothing=args.label_smoothing,
         max_sequence_length=args.max_sequence_length,
         validation_ratio=args.validation_ratio,
         seed=args.seed,
@@ -103,6 +105,7 @@ def train(args: argparse.Namespace) -> None:
         resumed_config["epochs"] = args.epochs
         resumed_config["batch_size"] = args.batch_size
         resumed_config["learning_rate"] = args.learning_rate
+        resumed_config["label_smoothing"] = args.label_smoothing
         resumed_config["validation_ratio"] = args.validation_ratio
         resumed_config["seed"] = args.seed
         config = TrainConfig(**resumed_config)
@@ -162,7 +165,7 @@ def train(args: argparse.Namespace) -> None:
         metrics = load_existing_metrics(Path(args.output_dir))
         print(f"resumed={resume_checkpoint} start_epoch={start_epoch} best_val_loss={best_validation_loss:.4f}")
 
-    loss_fn = nn.CrossEntropyLoss(ignore_index=vocab.pad_id)
+    loss_fn = nn.CrossEntropyLoss(ignore_index=vocab.pad_id, label_smoothing=config.label_smoothing)
     output_mask = build_output_mask(len(vocab.id_to_token), vocab.output_token_ids, device)
 
     output_dir = Path(args.output_dir)
@@ -370,6 +373,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--epochs", type=int, default=40)
     parser.add_argument("--batch-size", type=int, default=16)
     parser.add_argument("--learning-rate", type=float, default=0.001)
+    parser.add_argument("--label-smoothing", type=float, default=0.0, help="Softens one-hot targets so the model can keep plausible alternatives alive.")
     parser.add_argument("--max-sequence-length", type=int, default=16)
     parser.add_argument("--validation-ratio", type=float, default=0.15)
     parser.add_argument("--seed", type=int, default=1984)
