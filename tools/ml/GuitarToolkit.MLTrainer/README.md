@@ -20,7 +20,7 @@ This tool wraps the Python scripts in `tools/ml/progression_next_token` so train
 
 Use the `mood` dataset profile when the current model is already musical enough but does not react strongly enough to `MOOD_*` conditions.
 
-The second tab reserves the workflow for the future melody/riff Transformer model. It is intentionally non-executing until the transformer dataset and training scripts exist.
+The second tab reserves the workflow for the future melody/riff Transformer model. The first Python skeleton now lives in `tools/ml/melody_phrase_transformer`; GUI execution can be wired after the command-line pipeline is stable.
 
 ## Run
 

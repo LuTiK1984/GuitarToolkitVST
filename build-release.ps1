@@ -50,6 +50,19 @@ $mlTrainerToolFiles = @(
     "vocab.json"
 )
 
+$melodyTransformerToolFiles = @(
+    "export_onnx.py",
+    "generate_synthetic_dataset.py",
+    "inspect_checkpoint.py",
+    "model.py",
+    "README.md",
+    "requirements.txt",
+    "sample_dataset.jsonl",
+    "train.py",
+    "validate_dataset.py",
+    "vocab.json"
+)
+
 Write-Host "== GuitarToolkit release build v$Version =="
 Write-Host "Configuration: $Configuration"
 Write-Host
@@ -144,6 +157,17 @@ foreach ($fileName in $mlTrainerToolFiles) {
     }
     else {
         Write-Warning "Optional ML Trainer tool file not found: $fileName"
+    }
+}
+$melodyToolsPackage = Join-Path $trainerPackage "melody_phrase_transformer"
+New-Item -ItemType Directory -Path $melodyToolsPackage -Force | Out-Null
+foreach ($fileName in $melodyTransformerToolFiles) {
+    $source = Join-Path $root "tools\ml\melody_phrase_transformer\$fileName"
+    if (Test-Path -LiteralPath $source) {
+        Copy-Item -LiteralPath $source -Destination $melodyToolsPackage -Force
+    }
+    else {
+        Write-Warning "Optional Melody Transformer tool file not found: $fileName"
     }
 }
 Copy-ReleaseDocs -Destination $trainerPackage
