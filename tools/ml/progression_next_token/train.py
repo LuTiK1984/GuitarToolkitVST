@@ -181,7 +181,8 @@ def train(args: argparse.Namespace) -> None:
         total_loss = 0.0
         total_items = 0
 
-        for style_id, mode_id, mood_id, previous_tokens, targets in train_loader:
+        total_batches = len(train_loader)
+        for batch_index, (style_id, mode_id, mood_id, previous_tokens, targets) in enumerate(train_loader, start=1):
             style_id = style_id.to(device)
             mode_id = mode_id.to(device)
             mood_id = mood_id.to(device)
@@ -197,6 +198,16 @@ def train(args: argparse.Namespace) -> None:
 
             total_loss += float(loss.item()) * targets.numel()
             total_items += targets.numel()
+            if args.progress_every > 0 and (batch_index % args.progress_every == 0 or batch_index == total_batches):
+                progress = batch_index / max(total_batches, 1) * 100.0
+                running_loss = total_loss / max(total_items, 1)
+                print(
+                    f"train_progress epoch={epoch:03d}/{total_target_epoch:03d} "
+                    f"batch={batch_index}/{total_batches} "
+                    f"percent={progress:.1f} "
+                    f"train_loss={running_loss:.4f}",
+                    flush=True,
+                )
 
         train_loss = total_loss / max(total_items, 1)
         validation_loss, accuracy, top3_accuracy = evaluate(model, validation_loader, loss_fn, device, output_token_ids, output_index_map)
@@ -387,6 +398,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--resume", default=None, help="Path to an existing .pt checkpoint to continue training.")
     parser.add_argument("--reset-optimizer", action="store_true", help="Resume weights but start with a fresh optimizer.")
     parser.add_argument("--save-every", type=int, default=0, help="Save numbered checkpoints every N global epochs.")
+    parser.add_argument("--progress-every", type=int, default=100, help="Print in-epoch progress every N training batches. Use 0 to disable.")
     parser.add_argument("--cpu", action="store_true")
     return parser.parse_args()
 

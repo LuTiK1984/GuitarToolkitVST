@@ -10,6 +10,9 @@ public sealed class TrainerForm : Form
     private static readonly Regex EpochRegex = new(
         @"epoch=(?<epoch>\d+)/(?<total>\d+)\s+train_loss=(?<train>[0-9.]+)\s+val_loss=(?<val>[0-9.]+)\s+acc=(?<acc>[0-9.]+)\s+top3=(?<top3>[0-9.]+)",
         RegexOptions.Compiled);
+    private static readonly Regex ProgressRegex = new(
+        @"train_progress\s+epoch=(?<epoch>\d+)/(?<total>\d+)\s+batch=(?<batch>\d+)/(?<batches>\d+)\s+percent=(?<percent>[0-9.]+)\s+train_loss=(?<loss>[0-9.]+)",
+        RegexOptions.Compiled);
 
     private readonly ProcessRunner _runner = new();
     private readonly CancellationTokenSource _shutdown = new();
@@ -32,8 +35,12 @@ public sealed class TrainerForm : Form
     private readonly NumericUpDown _batchBox = new() { Minimum = 1, Maximum = 4096, Value = 256 };
     private readonly NumericUpDown _learningRateBox = new() { DecimalPlaces = 5, Minimum = 0.00001M, Maximum = 1, Increment = 0.00005M, Value = 0.00010M };
     private readonly NumericUpDown _labelSmoothingBox = new() { DecimalPlaces = 3, Minimum = 0, Maximum = 0.5M, Increment = 0.005M, Value = 0.040M };
-    private readonly CheckBox _resetOptimizerBox = new() { Text = "Сбросить optimizer", Checked = true };
-    private readonly CheckBox _cpuBox = new() { Text = "Принудительно CPU" };
+    private readonly NumericUpDown _progressEveryBox = new() { Minimum = 0, Maximum = 10000, Value = 100, Increment = 10 };
+    private readonly CheckBox _resetOptimizerBox = new() { Text = "Начать с новым optimizer при дообучении", Checked = true, AutoSize = true };
+    private readonly CheckBox _cpuBox = new() { Text = "Отключить GPU и обучать на CPU", AutoSize = true };
+    private readonly ProgressBar _trainProgress = new() { Minimum = 0, Maximum = 1000, Dock = DockStyle.Top, Height = 18 };
+    private readonly Label _progressLabel = new() { Text = "Прогресс эпохи: ожидание запуска", AutoSize = true };
+    private readonly ToolTip _toolTip = new();
 
     private readonly TextBox _checkpointBox = new() { Text = @"runs\progression_gui\best_model.pt" };
     private readonly TextBox _previousBox = new() { Text = "<BOS>,i,VI" };
@@ -56,6 +63,7 @@ public sealed class TrainerForm : Form
         _modeBox.SelectedItem = "MODE_NATURAL_MINOR";
         _moodBox.Items.AddRange(["MOOD_DARK", "MOOD_EPIC", "MOOD_BRIGHT", "MOOD_CALM", "MOOD_TENSE"]);
         _moodBox.SelectedItem = "MOOD_DARK";
+        ConfigureToolTips();
 
         Controls.Add(BuildLayout());
     }
@@ -133,10 +141,13 @@ public sealed class TrainerForm : Form
         AddRow(panel, "Resume", _resumeBox);
         AddRow(panel, "Эпохи", _epochsBox);
         AddRow(panel, "Batch", _batchBox);
-        AddRow(panel, "Learning rate", _learningRateBox);
-        AddRow(panel, "Label smoothing", _labelSmoothingBox);
+        AddRow(panel, "Скорость обучения (learning rate)", _learningRateBox);
+        AddRow(panel, "Мягкость ответов (label smoothing)", _labelSmoothingBox);
+        AddRow(panel, "Показывать прогресс каждые N batches", _progressEveryBox);
         panel.Controls.Add(_resetOptimizerBox);
         panel.Controls.Add(_cpuBox);
+        panel.Controls.Add(_progressLabel);
+        panel.Controls.Add(_trainProgress);
         AddButtonRow(panel, Button("Старт", Train_Click), Button("Стоп", Stop_Click), Button("Открыть runs", OpenRuns_Click));
 
         var note = Note("Для RTX 3060 Ti обычно стартуй с batch 256. Если будет CUDA out of memory, снизь до 128.");
@@ -262,6 +273,8 @@ public sealed class TrainerForm : Form
     private async void Train_Click(object? sender, EventArgs e)
     {
         _epochList.Items.Clear();
+        _trainProgress.Value = 0;
+        _progressLabel.Text = "Прогресс эпохи: запуск обучения";
         string args =
             $"--dataset {Quote(_datasetBox.Text)} " +
             $"--epochs {_epochsBox.Value:0} " +
@@ -270,7 +283,8 @@ public sealed class TrainerForm : Form
             $"--label-smoothing {DecimalText(_labelSmoothingBox.Value)} " +
             $"--output-dir {Quote(_outputDirBox.Text)} " +
             $"--resume {Quote(_resumeBox.Text)} " +
-            "--save-every 10";
+            $"--save-every 10 " +
+            $"--progress-every {_progressEveryBox.Value:0}";
 
         if (_resetOptimizerBox.Checked)
             args += " --reset-optimizer";
@@ -370,6 +384,7 @@ public sealed class TrainerForm : Form
                     {
                         AppendLog(line);
                         ParseEpoch(line);
+                        ParseProgress(line);
                         if (captureResult)
                             result.AppendLine(line);
                     }));
@@ -399,6 +414,23 @@ public sealed class TrainerForm : Form
         item.SubItems.Add(match.Groups["top3"].Value);
         _epochList.Items.Add(item);
         item.EnsureVisible();
+        _trainProgress.Value = 1000;
+        _progressLabel.Text = $"Эпоха {match.Groups["epoch"].Value}/{match.Groups["total"].Value}: validation готова";
+    }
+
+    private void ParseProgress(string line)
+    {
+        Match match = ProgressRegex.Match(line);
+        if (!match.Success)
+            return;
+
+        double percent = double.Parse(match.Groups["percent"].Value, CultureInfo.InvariantCulture);
+        _trainProgress.Value = Math.Clamp((int)Math.Round(percent * 10), 0, 1000);
+        _progressLabel.Text =
+            $"Эпоха {match.Groups["epoch"].Value}/{match.Groups["total"].Value}: " +
+            $"{percent:0.0}% " +
+            $"batch {match.Groups["batch"].Value}/{match.Groups["batches"].Value}, " +
+            $"loss {match.Groups["loss"].Value}";
     }
 
     private void AppendLog(string text)
@@ -503,5 +535,14 @@ public sealed class TrainerForm : Form
             Dock = DockStyle.Top,
             Margin = new Padding(0, 8, 0, 0)
         };
+    }
+
+    private void ConfigureToolTips()
+    {
+        _toolTip.SetToolTip(_learningRateBox, "Размер шага обучения. Меньше = медленнее, но аккуратнее; для финального fine-tune обычно 0.00005-0.0001.");
+        _toolTip.SetToolTip(_labelSmoothingBox, "Оставляет часть вероятности альтернативным аккордам. Больше = вариативнее, но выше риск странных ходов.");
+        _toolTip.SetToolTip(_progressEveryBox, "Как часто train.py пишет прогресс внутри эпохи. 0 отключает промежуточный вывод.");
+        _toolTip.SetToolTip(_resetOptimizerBox, "Веса модели сохраняются, но AdamW начинает без старой инерции. Обычно включать при новом датасете или learning rate.");
+        _toolTip.SetToolTip(_cpuBox, "Полезно только для отладки. Для нормального обучения оставь выключенным, чтобы работала видеокарта.");
     }
 }
