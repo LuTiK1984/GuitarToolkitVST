@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using System.Globalization;
 using System.Text;
+using System.Text.Json;
 using System.Text.RegularExpressions;
 
 namespace GuitarToolkit.MLTrainer;
@@ -23,6 +24,7 @@ public sealed class TrainerForm : Form
     private readonly ListView _epochList = new();
     private readonly TextBox _previewBox = new();
     private readonly TextBox _resultBox = new();
+    private readonly ListView _metricsList = new();
 
     private readonly TextBox _datasetBox = new() { Text = "synthetic_dataset_gui.jsonl" };
     private readonly NumericUpDown _datasetCountBox = new() { Minimum = 100, Maximum = 1_000_000, Value = 80000, Increment = 1000 };
@@ -245,6 +247,14 @@ public sealed class TrainerForm : Form
         _resultBox.Font = new Font("Consolas", 9);
         tabs.TabPages.Add(new TabPage("Результат") { Controls = { _resultBox } });
 
+        _metricsList.Dock = DockStyle.Fill;
+        _metricsList.View = View.Details;
+        _metricsList.FullRowSelect = true;
+        _metricsList.Columns.Add("Метрика", 240);
+        _metricsList.Columns.Add("Значение", 120);
+        _metricsList.Columns.Add("Смысл", 520);
+        tabs.TabPages.Add(new TabPage("Оценка модели") { Controls = { _metricsList } });
+
         return tabs;
     }
 
@@ -312,7 +322,7 @@ public sealed class TrainerForm : Form
     private async void Evaluate_Click(object? sender, EventArgs e)
     {
         string args = $"--checkpoint {Quote(_checkpointBox.Text)} --top-k 8";
-        await RunPythonAsync("evaluate_checkpoint.py", args, captureResult: true);
+        await RunPythonAsync("evaluate_checkpoint.py", args, captureResult: true, parseEvaluation: true);
     }
 
     private async void Export_Click(object? sender, EventArgs e)
@@ -357,12 +367,12 @@ public sealed class TrainerForm : Form
         OpenFolder(path);
     }
 
-    private async Task RunPythonAsync(string script, string arguments, bool captureResult = false)
+    private async Task RunPythonAsync(string script, string arguments, bool captureResult = false, bool parseEvaluation = false)
     {
-        await RunProcessAsync(_pythonBox.Text, $"{script} {arguments}", _progressionRootBox.Text, captureResult);
+        await RunProcessAsync(_pythonBox.Text, $"{script} {arguments}", _progressionRootBox.Text, captureResult, parseEvaluation);
     }
 
-    private async Task RunProcessAsync(string fileName, string arguments, string workingDirectory, bool captureResult = false)
+    private async Task RunProcessAsync(string fileName, string arguments, string workingDirectory, bool captureResult = false, bool parseEvaluation = false)
     {
         if (_runner.IsRunning)
         {
@@ -393,7 +403,11 @@ public sealed class TrainerForm : Form
 
             AppendLog($"exit={exitCode}");
             if (captureResult)
+            {
                 _resultBox.Text = result.ToString();
+                if (parseEvaluation)
+                    RenderEvaluationMetrics(result.ToString());
+            }
         }
         catch (Exception ex) when (ex is not OperationCanceledException)
         {
@@ -436,6 +450,57 @@ public sealed class TrainerForm : Form
     private void AppendLog(string text)
     {
         _logBox.AppendText(text + Environment.NewLine);
+    }
+
+    private void RenderEvaluationMetrics(string json)
+    {
+        _metricsList.Items.Clear();
+
+        try
+        {
+            using JsonDocument document = JsonDocument.Parse(json);
+            JsonElement summary = document.RootElement.GetProperty("summary");
+
+            AddMetric(summary, "overall_score_percent", "Итоговая оценка", "%", "Сводный балл: разнообразие, музыкальность, настроение, стиль и баланс уверенности.");
+            AddMetric(summary, "diversity_score_percent", "Разнообразие", "%", "Насколько модель оставляет живой выбор вместо одного жесткого ответа.");
+            AddMetric(summary, "musicality_score_percent", "Музыкальное попадание", "%", "Масса вероятности и top-1 внутри допустимых для лада ступеней.");
+            AddMetric(summary, "mood_fit_score_percent", "Попадание в настроение", "%", "Насколько ответы соответствуют выбранному mood.");
+            AddMetric(summary, "style_fit_score_percent", "Попадание в стиль", "%", "Насколько ответы соответствуют выбранному style.");
+            AddMetric(summary, "confidence_balance_percent", "Баланс уверенности", "%", "Штрафует слишком зажатую и слишком размазанную модель.");
+            AddMetric(summary, "distinct_top1_percent", "Уникальность top-1", "%", "Сколько разных первых ответов модель дала на тестовый набор.");
+            AddMetric(summary, "avg_entropy", "Средняя энтропия", "", "Сырая мера вариативности распределения.");
+            AddMetric(summary, "avg_top3_mass", "Масса top-3", "", "Сколько вероятности забирают три первых варианта.");
+            AddMetric(summary, "top1_musical_hit_percent", "Top-1 в ладу", "%", "Процент тестов, где первый ответ попал в допустимые ступени.");
+            AddMetric(summary, "top1_mood_hit_percent", "Top-1 в настроении", "%", "Процент тестов, где первый ответ попал в mood-набор.");
+            AddMetric(summary, "top1_style_hit_percent", "Top-1 в стиле", "%", "Процент тестов, где первый ответ попал в style-набор.");
+        }
+        catch (JsonException ex)
+        {
+            AppendLog($"evaluation metrics parse failed: {ex.Message}");
+        }
+        catch (KeyNotFoundException ex)
+        {
+            AppendLog($"evaluation summary is missing expected field: {ex.Message}");
+        }
+    }
+
+    private void AddMetric(JsonElement summary, string propertyName, string label, string suffix, string description)
+    {
+        if (!summary.TryGetProperty(propertyName, out JsonElement value))
+            return;
+
+        string text = value.ValueKind switch
+        {
+            JsonValueKind.Number => value.TryGetInt32(out int integer)
+                ? integer.ToString(CultureInfo.InvariantCulture)
+                : value.GetDouble().ToString("0.####", CultureInfo.InvariantCulture),
+            _ => value.ToString()
+        };
+
+        var item = new ListViewItem(label);
+        item.SubItems.Add(string.IsNullOrEmpty(suffix) ? text : $"{text}{suffix}");
+        item.SubItems.Add(description);
+        _metricsList.Items.Add(item);
     }
 
     private string ResolveToolPath(string path)
