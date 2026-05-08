@@ -10,6 +10,7 @@ All notable changes to GuitarToolkit are documented here.
 - Fixed progression-model label smoothing so loss is computed only across valid output tokens instead of masked vocabulary entries.
 - Added Inspiration Engine playback controls for tempo, volume, and looped audition playback.
 - Added checkpoint evaluation summaries by style, mode, and mood, plus explicit training-device logging for GPU training checks.
+- Added a standalone WinForms ML Trainer utility for dataset generation, training runs, checkpoint inspection, ONNX export/install, and the future melody Transformer workflow.
 
 ## [1.6.0] - 2026-05-07
 
