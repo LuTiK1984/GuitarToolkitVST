@@ -138,6 +138,8 @@ def train(args: argparse.Namespace) -> None:
     )
 
     device = torch.device("cuda" if torch.cuda.is_available() and not args.cpu else "cpu")
+    device_name = torch.cuda.get_device_name(0) if device.type == "cuda" else "cpu"
+    print(f"device={device} name={device_name}")
     model = ProgressionNextTokenModel(
         vocabulary_size=len(vocab.id_to_token),
         embedding_size=config.embedding_size,
@@ -210,6 +212,7 @@ def train(args: argparse.Namespace) -> None:
                 "validation_loss": validation_loss,
                 "accuracy": accuracy,
                 "top3_accuracy": top3_accuracy,
+                "device": str(device),
                 "mode": "resume" if checkpoint else "fresh",
             }
         )

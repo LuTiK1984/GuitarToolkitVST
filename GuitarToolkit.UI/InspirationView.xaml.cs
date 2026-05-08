@@ -226,29 +226,37 @@ public partial class InspirationView : UserControl, IThemeAware
             return;
 
         int sampleRate = _audio.SampleRate;
-        double beatDuration = 60.0 / 96;
+        double tempo = GetPlaybackTempo();
+        double volume = GetPlaybackVolume();
+        int repeats = LoopCheck.IsChecked == true ? 4 : 1;
+        double beatDuration = 60.0 / tempo;
         int samplesPerBeat = (int)(sampleRate * beatDuration);
-        int bufferLength = samplesPerBeat * _currentProgression.Chords.Count;
+        int progressionLength = samplesPerBeat * _currentProgression.Chords.Count;
+        int bufferLength = progressionLength * repeats;
         var buffer = new float[bufferLength];
 
-        for (int i = 0; i < _currentProgression.Chords.Count; i++)
+        for (int repeat = 0; repeat < repeats; repeat++)
         {
-            var generatedChord = _currentProgression.Chords[i];
-            var chord = ChordLibrary.Get(generatedChord.Root, generatedChord.ChordType);
-            if (chord == null)
-                continue;
-
-            float[] chordSamples = ChordPlayer.Synthesize(
-                chord,
-                sampleRate,
-                duration: (float)beatDuration * 0.95f,
-                strumDelay: 0.02f);
-
-            int offset = i * samplesPerBeat;
-            int length = Math.Min(chordSamples.Length, bufferLength - offset);
-            for (int j = 0; j < length; j++)
+            int repeatOffset = repeat * progressionLength;
+            for (int i = 0; i < _currentProgression.Chords.Count; i++)
             {
-                buffer[offset + j] += chordSamples[j];
+                var generatedChord = _currentProgression.Chords[i];
+                var chord = ChordLibrary.Get(generatedChord.Root, generatedChord.ChordType);
+                if (chord == null)
+                    continue;
+
+                float[] chordSamples = ChordPlayer.Synthesize(
+                    chord,
+                    sampleRate,
+                    duration: (float)beatDuration * 0.95f,
+                    strumDelay: 0.02f);
+
+                int offset = repeatOffset + i * samplesPerBeat;
+                int length = Math.Min(chordSamples.Length, bufferLength - offset);
+                for (int j = 0; j < length; j++)
+                {
+                    buffer[offset + j] += chordSamples[j] * (float)volume;
+                }
             }
         }
 
@@ -267,6 +275,38 @@ public partial class InspirationView : UserControl, IThemeAware
         if (TemperatureLabel != null)
         {
             TemperatureLabel.Text = e.NewValue.ToString("0.00");
+        }
+    }
+
+    private double GetPlaybackTempo()
+    {
+        if (TempoSlider == null)
+            return 96;
+
+        return Math.Clamp(TempoSlider.Value, 50, 220);
+    }
+
+    private double GetPlaybackVolume()
+    {
+        if (VolumeSlider == null)
+            return 0.75;
+
+        return Math.Clamp(VolumeSlider.Value / 100.0, 0.0, 1.0);
+    }
+
+    private void Tempo_Changed(object sender, RoutedPropertyChangedEventArgs<double> e)
+    {
+        if (TempoLabel != null)
+        {
+            TempoLabel.Text = $"{Math.Round(e.NewValue):0} BPM";
+        }
+    }
+
+    private void Volume_Changed(object sender, RoutedPropertyChangedEventArgs<double> e)
+    {
+        if (VolumeLabel != null)
+        {
+            VolumeLabel.Text = $"{Math.Round(e.NewValue):0}%";
         }
     }
 
