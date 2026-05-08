@@ -12,6 +12,8 @@ This tool wraps the Python scripts in `tools/ml/progression_next_token` so train
 - watch epoch metrics as they arrive;
 - inspect a checkpoint on a single musical prompt;
 - evaluate checkpoint diversity by style, mode, and mood;
+- compare multiple checkpoints in one table;
+- keep a local JSONL history of model evaluation cards;
 - export ONNX;
 - install the exported model into `%APPDATA%\GuitarToolkit\models`.
 

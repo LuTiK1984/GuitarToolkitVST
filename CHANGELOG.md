@@ -4,6 +4,10 @@ All notable changes to GuitarToolkit are documented here.
 
 ## [Unreleased]
 
+### Added
+
+- Added ML Trainer model comparison, evaluation history, and a wider full checkpoint prompt suite for more objective model selection.
+
 ## [1.7.0] - 2026-05-08
 
 ### Added

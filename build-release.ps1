@@ -34,6 +34,22 @@ $releaseDocs = @(
     "docs\user\KNOWN_TAB_IMPORT_ISSUES.md"
 )
 
+$mlTrainerToolFiles = @(
+    "evaluate_checkpoint.py",
+    "eval_prompts.jsonl",
+    "eval_prompts_full.jsonl",
+    "export_onnx.py",
+    "generate_synthetic_dataset.py",
+    "inspect_checkpoint.py",
+    "model.py",
+    "README.md",
+    "requirements.txt",
+    "sample_dataset.jsonl",
+    "train.py",
+    "validate_dataset.py",
+    "vocab.json"
+)
+
 Write-Host "== GuitarToolkit release build v$Version =="
 Write-Host "Configuration: $Configuration"
 Write-Host
@@ -119,6 +135,17 @@ Compress-Archive -Path (Join-Path $pluginPackage "*") -DestinationPath $pluginZi
 Write-Host "Creating ML Trainer archive..."
 Copy-Item -Path (Join-Path $trainerOut "*") -Destination $trainerPackage -Recurse -Force
 Copy-Item -LiteralPath (Join-Path $root "tools\ml\GuitarToolkit.MLTrainer\README.md") -Destination $trainerPackage -Force
+$trainerToolsPackage = Join-Path $trainerPackage "progression_next_token"
+New-Item -ItemType Directory -Path $trainerToolsPackage -Force | Out-Null
+foreach ($fileName in $mlTrainerToolFiles) {
+    $source = Join-Path $root "tools\ml\progression_next_token\$fileName"
+    if (Test-Path -LiteralPath $source) {
+        Copy-Item -LiteralPath $source -Destination $trainerToolsPackage -Force
+    }
+    else {
+        Write-Warning "Optional ML Trainer tool file not found: $fileName"
+    }
+}
 Copy-ReleaseDocs -Destination $trainerPackage
 Compress-Archive -Path (Join-Path $trainerPackage "*") -DestinationPath $trainerZip -Force
 

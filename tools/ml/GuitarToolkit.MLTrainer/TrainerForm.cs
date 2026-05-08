@@ -25,6 +25,8 @@ public sealed class TrainerForm : Form
     private readonly TextBox _previewBox = new();
     private readonly TextBox _resultBox = new();
     private readonly ListView _metricsList = new();
+    private readonly ListView _comparisonList = new();
+    private readonly ListView _historyList = new();
 
     private readonly TextBox _datasetBox = new() { Text = "synthetic_dataset_gui.jsonl" };
     private readonly NumericUpDown _datasetCountBox = new() { Minimum = 100, Maximum = 1_000_000, Value = 80000, Increment = 1000 };
@@ -45,6 +47,10 @@ public sealed class TrainerForm : Form
     private readonly ToolTip _toolTip = new();
 
     private readonly TextBox _checkpointBox = new() { Text = @"runs\progression_gui\best_model.pt" };
+    private readonly TextBox _promptsBox = new() { Text = "eval_prompts_full.jsonl" };
+    private readonly TextBox _compareABox = new() { Text = @"runs\progression_gui\best_model.pt" };
+    private readonly TextBox _compareBBox = new() { Text = @"runs\progression_diverse_plateau\best_model.pt" };
+    private readonly TextBox _compareCBox = new();
     private readonly TextBox _previousBox = new() { Text = "<BOS>,i,VI" };
     private readonly ComboBox _styleBox = new() { DropDownStyle = ComboBoxStyle.DropDownList };
     private readonly ComboBox _modeBox = new() { DropDownStyle = ComboBoxStyle.DropDownList };
@@ -161,6 +167,7 @@ public sealed class TrainerForm : Form
     {
         var panel = Panel("Проверка и экспорт");
         AddRow(panel, "Checkpoint", _checkpointBox);
+        AddRow(panel, "Eval prompts", _promptsBox);
         AddRow(panel, "Previous", _previousBox);
         AddRow(panel, "Style", _styleBox);
         AddRow(panel, "Mode", _modeBox);
@@ -170,6 +177,10 @@ public sealed class TrainerForm : Form
             Button("Evaluate", Evaluate_Click),
             Button("Export ONNX", Export_Click));
         AddButtonRow(panel, Button("Install in app", Install_Click), Button("Папка модели", OpenModelFolder_Click));
+        AddRow(panel, "Compare A", _compareABox);
+        AddRow(panel, "Compare B", _compareBBox);
+        AddRow(panel, "Compare C", _compareCBox);
+        AddButtonRow(panel, Button("Compare models", Compare_Click), Button("Load history", LoadHistory_Click));
 
         var note = Note("Inspect показывает вероятности следующей ступени. Evaluate считает энтропию, top3 и разрезы по style/mode/mood.");
         panel.Controls.Add(note);
@@ -255,6 +266,31 @@ public sealed class TrainerForm : Form
         _metricsList.Columns.Add("Смысл", 520);
         tabs.TabPages.Add(new TabPage("Оценка модели") { Controls = { _metricsList } });
 
+        _comparisonList.Dock = DockStyle.Fill;
+        _comparisonList.View = View.Details;
+        _comparisonList.FullRowSelect = true;
+        _comparisonList.Columns.Add("Model", 260);
+        _comparisonList.Columns.Add("Overall", 80);
+        _comparisonList.Columns.Add("Diversity", 80);
+        _comparisonList.Columns.Add("Musical", 80);
+        _comparisonList.Columns.Add("Mood", 80);
+        _comparisonList.Columns.Add("Style", 80);
+        _comparisonList.Columns.Add("Entropy", 80);
+        _comparisonList.Columns.Add("Top3 mass", 90);
+        tabs.TabPages.Add(new TabPage("Сравнение") { Controls = { _comparisonList } });
+
+        _historyList.Dock = DockStyle.Fill;
+        _historyList.View = View.Details;
+        _historyList.FullRowSelect = true;
+        _historyList.Columns.Add("Date", 150);
+        _historyList.Columns.Add("Model", 260);
+        _historyList.Columns.Add("Overall", 80);
+        _historyList.Columns.Add("Diversity", 80);
+        _historyList.Columns.Add("Musical", 80);
+        _historyList.Columns.Add("Mood", 80);
+        _historyList.Columns.Add("Style", 80);
+        tabs.TabPages.Add(new TabPage("История") { Controls = { _historyList } });
+
         return tabs;
     }
 
@@ -321,8 +357,43 @@ public sealed class TrainerForm : Form
 
     private async void Evaluate_Click(object? sender, EventArgs e)
     {
-        string args = $"--checkpoint {Quote(_checkpointBox.Text)} --top-k 8";
+        string args = $"--checkpoint {Quote(_checkpointBox.Text)} --prompts {Quote(_promptsBox.Text)} --top-k 8";
         await RunPythonAsync("evaluate_checkpoint.py", args, captureResult: true, parseEvaluation: true);
+    }
+
+    private async void Compare_Click(object? sender, EventArgs e)
+    {
+        var checkpoints = new[] { _compareABox.Text, _compareBBox.Text, _compareCBox.Text }
+            .Where(value => !string.IsNullOrWhiteSpace(value))
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .ToList();
+
+        if (checkpoints.Count == 0)
+        {
+            AppendLog("compare skipped: no checkpoints selected");
+            return;
+        }
+
+        _comparisonList.Items.Clear();
+        foreach (string checkpoint in checkpoints)
+        {
+            string args = $"evaluate_checkpoint.py --checkpoint {Quote(checkpoint)} --prompts {Quote(_promptsBox.Text)} --top-k 8";
+            string? json = await RunProcessCaptureAsync(_pythonBox.Text, args, _progressionRootBox.Text);
+            if (string.IsNullOrWhiteSpace(json))
+                continue;
+
+            EvaluationSummary? summary = ParseEvaluationSummary(json);
+            if (summary == null)
+                continue;
+
+            AddComparisonRow(summary);
+            SaveEvaluationHistory(json, summary);
+        }
+    }
+
+    private void LoadHistory_Click(object? sender, EventArgs e)
+    {
+        LoadEvaluationHistory();
     }
 
     private async void Export_Click(object? sender, EventArgs e)
@@ -406,12 +477,50 @@ public sealed class TrainerForm : Form
             {
                 _resultBox.Text = result.ToString();
                 if (parseEvaluation)
+                {
                     RenderEvaluationMetrics(result.ToString());
+                    EvaluationSummary? summary = ParseEvaluationSummary(result.ToString());
+                    if (summary != null)
+                        SaveEvaluationHistory(result.ToString(), summary);
+                }
             }
         }
         catch (Exception ex) when (ex is not OperationCanceledException)
         {
             AppendLog(ex.Message);
+        }
+    }
+
+    private async Task<string?> RunProcessCaptureAsync(string fileName, string arguments, string workingDirectory)
+    {
+        if (_runner.IsRunning)
+        {
+            AppendLog("another process is already running");
+            return null;
+        }
+
+        var result = new StringBuilder();
+        AppendLog($"> {fileName} {arguments}");
+        try
+        {
+            int exitCode = await _runner.RunAsync(
+                fileName,
+                arguments,
+                workingDirectory,
+                line =>
+                {
+                    BeginInvoke((MethodInvoker)(() => AppendLog(line)));
+                    result.AppendLine(line);
+                },
+                _shutdown.Token);
+
+            AppendLog($"exit={exitCode}");
+            return exitCode == 0 ? result.ToString() : null;
+        }
+        catch (Exception ex) when (ex is not OperationCanceledException)
+        {
+            AppendLog(ex.Message);
+            return null;
         }
     }
 
@@ -484,6 +593,102 @@ public sealed class TrainerForm : Form
         }
     }
 
+    private EvaluationSummary? ParseEvaluationSummary(string json)
+    {
+        try
+        {
+            using JsonDocument document = JsonDocument.Parse(json);
+            JsonElement summary = document.RootElement.GetProperty("summary");
+            return new EvaluationSummary(
+                GetString(summary, "checkpoint"),
+                GetDouble(summary, "overall_score_percent"),
+                GetDouble(summary, "diversity_score_percent"),
+                GetDouble(summary, "musicality_score_percent"),
+                GetDouble(summary, "mood_fit_score_percent"),
+                GetDouble(summary, "style_fit_score_percent"),
+                GetDouble(summary, "avg_entropy"),
+                GetDouble(summary, "avg_top3_mass"),
+                GetDouble(summary, "distinct_top1_percent"));
+        }
+        catch (JsonException ex)
+        {
+            AppendLog($"evaluation summary parse failed: {ex.Message}");
+            return null;
+        }
+        catch (KeyNotFoundException ex)
+        {
+            AppendLog($"evaluation summary is missing expected field: {ex.Message}");
+            return null;
+        }
+    }
+
+    private void AddComparisonRow(EvaluationSummary summary)
+    {
+        var item = new ListViewItem(ModelLabel(summary.Checkpoint));
+        item.SubItems.Add(PercentText(summary.Overall));
+        item.SubItems.Add(PercentText(summary.Diversity));
+        item.SubItems.Add(PercentText(summary.Musicality));
+        item.SubItems.Add(PercentText(summary.MoodFit));
+        item.SubItems.Add(PercentText(summary.StyleFit));
+        item.SubItems.Add(summary.Entropy.ToString("0.####", CultureInfo.InvariantCulture));
+        item.SubItems.Add(summary.Top3Mass.ToString("0.####", CultureInfo.InvariantCulture));
+        _comparisonList.Items.Add(item);
+    }
+
+    private void SaveEvaluationHistory(string json, EvaluationSummary summary)
+    {
+        string historyPath = EvaluationHistoryPath();
+        Directory.CreateDirectory(Path.GetDirectoryName(historyPath)!);
+
+        using JsonDocument document = JsonDocument.Parse(json);
+        var record = new
+        {
+            timestamp = DateTimeOffset.Now.ToString("O", CultureInfo.InvariantCulture),
+            prompts = _promptsBox.Text,
+            checkpoint = summary.Checkpoint,
+            overall = summary.Overall,
+            diversity = summary.Diversity,
+            musicality = summary.Musicality,
+            mood_fit = summary.MoodFit,
+            style_fit = summary.StyleFit,
+            entropy = summary.Entropy,
+            top3_mass = summary.Top3Mass,
+            distinct_top1 = summary.DistinctTop1,
+            raw = document.RootElement.Clone()
+        };
+
+        File.AppendAllText(historyPath, JsonSerializer.Serialize(record) + Environment.NewLine);
+        LoadEvaluationHistory();
+    }
+
+    private void LoadEvaluationHistory()
+    {
+        _historyList.Items.Clear();
+        string historyPath = EvaluationHistoryPath();
+        if (!File.Exists(historyPath))
+        {
+            AppendLog($"history not found: {historyPath}");
+            return;
+        }
+
+        foreach (string line in File.ReadLines(historyPath).Reverse().Take(200))
+        {
+            if (string.IsNullOrWhiteSpace(line))
+                continue;
+
+            using JsonDocument document = JsonDocument.Parse(line);
+            JsonElement root = document.RootElement;
+            var item = new ListViewItem(GetString(root, "timestamp"));
+            item.SubItems.Add(ModelLabel(GetString(root, "checkpoint")));
+            item.SubItems.Add(PercentText(GetDouble(root, "overall")));
+            item.SubItems.Add(PercentText(GetDouble(root, "diversity")));
+            item.SubItems.Add(PercentText(GetDouble(root, "musicality")));
+            item.SubItems.Add(PercentText(GetDouble(root, "mood_fit")));
+            item.SubItems.Add(PercentText(GetDouble(root, "style_fit")));
+            _historyList.Items.Add(item);
+        }
+    }
+
     private void AddMetric(JsonElement summary, string propertyName, string label, string suffix, string description)
     {
         if (!summary.TryGetProperty(propertyName, out JsonElement value))
@@ -503,6 +708,33 @@ public sealed class TrainerForm : Form
         _metricsList.Items.Add(item);
     }
 
+    private string EvaluationHistoryPath()
+    {
+        return ResolveToolPath(Path.Combine("runs", "model_evaluation_history.jsonl"));
+    }
+
+    private static string ModelLabel(string checkpoint)
+    {
+        string directory = Path.GetFileName(Path.GetDirectoryName(checkpoint) ?? string.Empty);
+        string file = Path.GetFileName(checkpoint);
+        return string.IsNullOrWhiteSpace(directory) ? file : $"{directory}/{file}";
+    }
+
+    private static string PercentText(double value)
+    {
+        return $"{value:0.#}%";
+    }
+
+    private static string GetString(JsonElement element, string propertyName)
+    {
+        return element.GetProperty(propertyName).GetString() ?? string.Empty;
+    }
+
+    private static double GetDouble(JsonElement element, string propertyName)
+    {
+        return element.GetProperty(propertyName).GetDouble();
+    }
+
     private string ResolveToolPath(string path)
     {
         if (Path.IsPathRooted(path))
@@ -513,6 +745,14 @@ public sealed class TrainerForm : Form
 
     private static string FindProgressionRoot()
     {
+        string bundled = Path.Combine(AppContext.BaseDirectory, "progression_next_token");
+        if (Directory.Exists(bundled))
+            return bundled;
+
+        string sibling = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..", "progression_next_token"));
+        if (Directory.Exists(sibling))
+            return sibling;
+
         string current = AppContext.BaseDirectory;
         for (int i = 0; i < 8; i++)
         {
@@ -610,4 +850,15 @@ public sealed class TrainerForm : Form
         _toolTip.SetToolTip(_resetOptimizerBox, "Веса модели сохраняются, но AdamW начинает без старой инерции. Обычно включать при новом датасете или learning rate.");
         _toolTip.SetToolTip(_cpuBox, "Полезно только для отладки. Для нормального обучения оставь выключенным, чтобы работала видеокарта.");
     }
+
+    private sealed record EvaluationSummary(
+        string Checkpoint,
+        double Overall,
+        double Diversity,
+        double Musicality,
+        double MoodFit,
+        double StyleFit,
+        double Entropy,
+        double Top3Mass,
+        double DistinctTop1);
 }
