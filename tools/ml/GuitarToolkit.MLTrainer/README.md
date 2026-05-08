@@ -7,6 +7,7 @@ Small Windows Forms utility for local GuitarToolkit model training.
 This tool wraps the Python scripts in `tools/ml/progression_next_token` so training can be managed from one window:
 
 - generate and validate synthetic datasets;
+- pick an existing JSONL dataset from disk;
 - preview dataset rows;
 - start/stop training runs;
 - watch epoch metrics as they arrive;
@@ -16,6 +17,8 @@ This tool wraps the Python scripts in `tools/ml/progression_next_token` so train
 - keep a local JSONL history of model evaluation cards;
 - export ONNX;
 - install the exported model into `%APPDATA%\GuitarToolkit\models`.
+
+Use the `mood` dataset profile when the current model is already musical enough but does not react strongly enough to `MOOD_*` conditions.
 
 The second tab reserves the workflow for the future melody/riff Transformer model. It is intentionally non-executing until the transformer dataset and training scripts exist.
 

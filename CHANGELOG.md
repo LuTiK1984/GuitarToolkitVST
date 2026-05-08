@@ -7,6 +7,7 @@ All notable changes to GuitarToolkit are documented here.
 ### Added
 
 - Added ML Trainer model comparison, evaluation history, and a wider full checkpoint prompt suite for more objective model selection.
+- Added a mood-targeted synthetic dataset profile and a dataset file picker in ML Trainer for focused mood fine-tuning.
 
 ## [1.7.0] - 2026-05-08
 

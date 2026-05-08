@@ -63,8 +63,8 @@ public sealed class TrainerForm : Form
         StartPosition = FormStartPosition.CenterScreen;
 
         _progressionRootBox.Text = FindProgressionRoot();
-        _profileBox.Items.AddRange(["focused", "balanced", "diverse"]);
-        _profileBox.SelectedItem = "diverse";
+        _profileBox.Items.AddRange(["focused", "balanced", "diverse", "mood"]);
+        _profileBox.SelectedItem = "mood";
         _styleBox.Items.AddRange(["STYLE_METAL", "STYLE_ROCK", "STYLE_POP", "STYLE_AMBIENT", "STYLE_BLUES"]);
         _styleBox.SelectedItem = "STYLE_METAL";
         _modeBox.Items.AddRange(["MODE_NATURAL_MINOR", "MODE_MAJOR", "MODE_DORIAN", "MODE_PHRYGIAN", "MODE_HARMONIC_MINOR"]);
@@ -135,9 +135,10 @@ public sealed class TrainerForm : Form
         AddButtonRow(panel,
             Button("Сгенерировать", GenerateDataset_Click),
             Button("Проверить", ValidateDataset_Click),
-            Button("Превью", PreviewDataset_Click));
+            Button("Превью", PreviewDataset_Click),
+            Button("Выбрать файл", BrowseDataset_Click));
 
-        var note = Note("focused = точность, balanced = базовый баланс, diverse = больше неожиданных, но музыкальных вариантов.");
+        var note = Note("focused = точность, balanced = базовый баланс, diverse = больше неожиданных ходов, mood = targeted fine-tune на различие настроений.");
         panel.Controls.Add(note);
         return panel;
     }
@@ -314,6 +315,30 @@ public sealed class TrainerForm : Form
         }
 
         _previewBox.Text = string.Join(Environment.NewLine, File.ReadLines(path).Take(120));
+    }
+
+    private void BrowseDataset_Click(object? sender, EventArgs e)
+    {
+        using var dialog = new OpenFileDialog
+        {
+            Title = "Выбрать датасет JSONL",
+            InitialDirectory = Directory.Exists(_progressionRootBox.Text) ? _progressionRootBox.Text : AppContext.BaseDirectory,
+            Filter = "JSONL dataset (*.jsonl)|*.jsonl|All files (*.*)|*.*",
+            CheckFileExists = true
+        };
+
+        if (dialog.ShowDialog(this) != DialogResult.OK)
+            return;
+
+        _datasetBox.Text = MakeToolRelativePath(dialog.FileName);
+    }
+
+    private string MakeToolRelativePath(string path)
+    {
+        string root = Path.GetFullPath(_progressionRootBox.Text);
+        string fullPath = Path.GetFullPath(path);
+        string relative = Path.GetRelativePath(root, fullPath);
+        return relative.StartsWith("..", StringComparison.Ordinal) ? fullPath : relative;
     }
 
     private async void Train_Click(object? sender, EventArgs e)
