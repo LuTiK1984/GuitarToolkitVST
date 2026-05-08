@@ -1,0 +1,101 @@
+<UserControl x:Class="GuitarToolkit.UI.MelodyIdeasView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Background="{DynamicResource AppBackgroundBrush}">
+    <UserControl.Resources>
+        <Style x:Key="Panel" TargetType="{x:Type Border}">
+            <Setter Property="Background" Value="{DynamicResource PanelBrush}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource PanelBorderBrush}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="6"/>
+            <Setter Property="Padding" Value="18"/>
+        </Style>
+
+        <Style x:Key="MutedText" TargetType="{x:Type TextBlock}">
+            <Setter Property="Foreground" Value="{DynamicResource MutedTextBrush}"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="TextWrapping" Value="Wrap"/>
+        </Style>
+    </UserControl.Resources>
+
+    <Grid Margin="8" MinWidth="880">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="58*"/>
+            <ColumnDefinition Width="8"/>
+            <ColumnDefinition Width="42*"/>
+        </Grid.ColumnDefinitions>
+
+        <Border Grid.Column="0" Style="{StaticResource Panel}">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="12"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="18"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <TextBlock Text="Melody Transformer"
+                           FontSize="28"
+                           FontWeight="Bold"
+                           Foreground="{DynamicResource TextBrush}"/>
+
+                <TextBlock Grid.Row="2"
+                           Text="Будущая модель для коротких мелодий и риффов"
+                           FontSize="16"
+                           FontWeight="Bold"
+                           Foreground="{DynamicResource AccentBrush}"/>
+
+                <Border Grid.Row="4"
+                        Background="{DynamicResource DarkBrush}"
+                        BorderBrush="{DynamicResource PanelBorderBrush}"
+                        BorderThickness="1"
+                        CornerRadius="6"
+                        Padding="18">
+                    <StackPanel>
+                        <TextBlock Text="Здесь будет отдельный ONNX Transformer, который получает стиль, лад, настроение, размер такта и опорную прогрессию, а возвращает токены нот, пауз и длительностей."
+                                   Style="{StaticResource MutedText}"
+                                   Margin="0 0 0 12"/>
+                        <TextBlock Text="GuitarToolkit не будет ждать от модели готовый звук: программа сама проиграет и покажет результат своими синтезаторами и музыкальными инструментами."
+                                   Style="{StaticResource MutedText}"/>
+                    </StackPanel>
+                </Border>
+            </Grid>
+        </Border>
+
+        <Border Grid.Column="2" Style="{StaticResource Panel}">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="14"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="14"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <TextBlock Text="План вкладки"
+                           FontSize="18"
+                           FontWeight="Bold"
+                           Foreground="{DynamicResource TextBrush}"/>
+
+                <StackPanel Grid.Row="2">
+                    <TextBlock Text="1. Выбор размера такта и длины фразы" Style="{StaticResource MutedText}" Margin="0 0 0 8"/>
+                    <TextBlock Text="2. Привязка к текущей прогрессии" Style="{StaticResource MutedText}" Margin="0 0 0 8"/>
+                    <TextBlock Text="3. Генерация нескольких вариантов" Style="{StaticResource MutedText}" Margin="0 0 0 8"/>
+                    <TextBlock Text="4. Прослушивание, повтор, экспорт и перенос в табы" Style="{StaticResource MutedText}"/>
+                </StackPanel>
+
+                <Border Grid.Row="4"
+                        Background="{DynamicResource DarkBrush}"
+                        BorderBrush="{DynamicResource PanelBorderBrush}"
+                        BorderThickness="1"
+                        CornerRadius="6"
+                        Padding="14">
+                    <TextBlock Text="Сейчас это заготовка интерфейса. Следующий технический слой: формат токенов melody dataset, генератор обучающих фраз, маленький Transformer и ONNX inference."
+                               Style="{StaticResource MutedText}"/>
+                </Border>
+            </Grid>
+        </Border>
+    </Grid>
+</UserControl>

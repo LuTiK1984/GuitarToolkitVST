@@ -114,7 +114,7 @@
         </Style>
     </UserControl.Resources>
 
-    <Grid Margin="8">
+    <Grid Margin="8" MinWidth="880">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="8"/>
@@ -124,11 +124,11 @@
         <Border Grid.Row="0" Style="{StaticResource Panel}">
             <Grid>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="2*"/>
+                    <ColumnDefinition Width="2*" MinWidth="300"/>
                     <ColumnDefinition Width="10"/>
-                    <ColumnDefinition Width="2*"/>
+                    <ColumnDefinition Width="2*" MinWidth="310"/>
                     <ColumnDefinition Width="10"/>
-                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="230"/>
                 </Grid.ColumnDefinitions>
 
                 <Grid Grid.Column="0">
@@ -206,7 +206,6 @@
                 </Grid>
 
                 <StackPanel Grid.Column="4"
-                            Width="230"
                             VerticalAlignment="Bottom">
                     <Grid Margin="0 0 0 8">
                         <Grid.ColumnDefinitions>

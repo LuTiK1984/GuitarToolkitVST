@@ -8,6 +8,12 @@ All notable changes to GuitarToolkit are documented here.
 
 - Added ML Trainer model comparison, evaluation history, and a wider full checkpoint prompt suite for more objective model selection.
 - Added a mood-targeted synthetic dataset profile and a dataset file picker in ML Trainer for focused mood fine-tuning.
+- Added a Melody tab placeholder for the future short-phrase Transformer model.
+
+### Fixed
+
+- Fixed the toolkit minimum window/editor size so dense tabs do not collapse under the sidebar.
+- Fixed the Inspiration tab compact layout so the sampling controls stay in their own column.
 
 ## [1.7.0] - 2026-05-08
 
