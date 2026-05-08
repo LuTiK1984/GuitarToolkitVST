@@ -15,6 +15,7 @@ All notable changes to GuitarToolkit are documented here.
 - Fixed the toolkit minimum window/editor size so dense tabs do not collapse under the sidebar.
 - Fixed the Inspiration tab compact layout so the sampling controls stay in their own column.
 - Fixed desktop resize tracking so the custom window chrome respects the minimum size.
+- Increased the desktop minimum height so the tuner string row is visible at startup.
 
 ## [1.7.0] - 2026-05-08
 

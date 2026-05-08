@@ -82,7 +82,7 @@ public partial class MainWindow : Window
         minMaxInfo.MaxSize.X = Math.Abs(workArea.Right - workArea.Left);
         minMaxInfo.MaxSize.Y = Math.Abs(workArea.Bottom - workArea.Top);
         minMaxInfo.MinTrackSize.X = 1050;
-        minMaxInfo.MinTrackSize.Y = 720;
+        minMaxInfo.MinTrackSize.Y = 780;
 
         Marshal.StructureToPtr(minMaxInfo, lParam, true);
     }
