@@ -136,7 +136,7 @@
                            Width="16"
                            Height="16"
                            Margin="0 0 6 0"/>
-                    <TextBlock Text="GuitarToolkit v1.6.0"
+                    <TextBlock Text="GuitarToolkit v1.7.0"
                                Foreground="{DynamicResource TitleTextBrush}"
                                FontSize="12"
                                VerticalAlignment="Center"/>
