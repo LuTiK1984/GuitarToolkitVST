@@ -11,12 +11,15 @@ $releaseDir = Join-Path $artifacts "release"
 $packageDir = Join-Path $artifacts "package"
 $desktopPackage = Join-Path $packageDir "desktop"
 $pluginPackage = Join-Path $packageDir "vst3"
+$trainerPackage = Join-Path $packageDir "ml-trainer"
 
 $desktopOut = Join-Path $root "GuitarToolkit.Desktop\bin\x64\$Configuration\net8.0-windows"
 $pluginOut = Join-Path $root "GuitarToolkit.Plugin\bin\x64\$Configuration\net8.0-windows"
+$trainerOut = Join-Path $root "tools\ml\GuitarToolkit.MLTrainer\bin\x64\$Configuration\net8.0-windows"
 
 $desktopZip = Join-Path $releaseDir "GuitarToolkit_DESKTOP_v.$Version.zip"
 $pluginZip = Join-Path $releaseDir "GuitarToolkit_VST3_v.$Version.zip"
+$trainerZip = Join-Path $releaseDir "GuitarToolkit_ML_TRAINER_v.$Version.zip"
 
 $releaseDocs = @(
     "README.md",
@@ -44,6 +47,7 @@ if (Test-Path $packageDir) {
 New-Item -ItemType Directory -Path $releaseDir | Out-Null
 New-Item -ItemType Directory -Path $desktopPackage | Out-Null
 New-Item -ItemType Directory -Path $pluginPackage | Out-Null
+New-Item -ItemType Directory -Path $trainerPackage | Out-Null
 
 Write-Host "Building solution..."
 dotnet build (Join-Path $root "GuitarToolkit.sln") --configuration $Configuration --no-restore
@@ -98,6 +102,9 @@ Assert-File (Join-Path $pluginOut "GuitarToolkit.PluginBridge.vst3")
 Assert-File (Join-Path $pluginOut "GuitarToolkit.PluginBridge.runtimeconfig.json")
 Assert-File (Join-Path $pluginOut "Ijwhost.dll")
 
+Write-Host "Checking ML Trainer output..."
+Assert-File (Join-Path $trainerOut "GuitarToolkit.MLTrainer.exe")
+
 Write-Host
 Write-Host "Creating desktop archive..."
 Copy-Item -Path (Join-Path $desktopOut "*") -Destination $desktopPackage -Recurse -Force
@@ -109,9 +116,15 @@ Copy-Item -Path (Join-Path $pluginOut "*") -Destination $pluginPackage -Recurse 
 Copy-ReleaseDocs -Destination $pluginPackage
 Compress-Archive -Path (Join-Path $pluginPackage "*") -DestinationPath $pluginZip -Force
 
+Write-Host "Creating ML Trainer archive..."
+Copy-Item -Path (Join-Path $trainerOut "*") -Destination $trainerPackage -Recurse -Force
+Copy-Item -LiteralPath (Join-Path $root "tools\ml\GuitarToolkit.MLTrainer\README.md") -Destination $trainerPackage -Force
+Copy-ReleaseDocs -Destination $trainerPackage
+Compress-Archive -Path (Join-Path $trainerPackage "*") -DestinationPath $trainerZip -Force
+
 Write-Host
 Write-Host "Release artifacts:"
-Get-Item $desktopZip, $pluginZip | Format-Table Name, Length, LastWriteTime
+Get-Item $desktopZip, $pluginZip, $trainerZip | Format-Table Name, Length, LastWriteTime
 
 Write-Host
 Write-Host "Done."

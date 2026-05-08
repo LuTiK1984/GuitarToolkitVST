@@ -6,6 +6,31 @@ import random
 from pathlib import Path
 
 
+GENERATION_PROFILES = {
+    "focused": {
+        "substitution_rate": 0.12,
+        "cadence_rate": 0.52,
+        "mutation_scale": 0.75,
+        "bridge_rate": 0.08,
+        "borrowed_rate": 0.06,
+    },
+    "balanced": {
+        "substitution_rate": 0.18,
+        "cadence_rate": 0.42,
+        "mutation_scale": 1.0,
+        "bridge_rate": 0.16,
+        "borrowed_rate": 0.12,
+    },
+    "diverse": {
+        "substitution_rate": 0.26,
+        "cadence_rate": 0.34,
+        "mutation_scale": 1.25,
+        "bridge_rate": 0.28,
+        "borrowed_rate": 0.20,
+    },
+}
+
+
 MAJOR_PROGRESSIONS = [
     ["I", "V", "vi", "IV"],
     ["I", "vi", "IV", "V"],
@@ -25,6 +50,9 @@ MAJOR_PROGRESSIONS = [
     ["I", "IV", "V", "vi"],
     ["ii", "IV", "V", "I"],
     ["I", "V", "vi", "iii", "IV", "I", "IV", "V"],
+    ["I", "bVII", "IV", "I"],
+    ["I", "bVI", "bVII", "I"],
+    ["I", "V", "bVII", "IV"],
 ]
 
 MINOR_PROGRESSIONS = [
@@ -46,6 +74,9 @@ MINOR_PROGRESSIONS = [
     ["i", "bVI", "bVII", "i"],
     ["i", "v", "VI", "VII"],
     ["i", "VI", "VII", "iv", "i", "VI", "V", "i"],
+    ["i", "bII", "VII", "VI"],
+    ["i", "bVI", "iv", "bVII"],
+    ["i", "III", "bVII", "iv"],
 ]
 
 DORIAN_PROGRESSIONS = [
@@ -57,6 +88,8 @@ DORIAN_PROGRESSIONS = [
     ["i", "ii", "IV", "i"],
     ["i", "v", "VII", "IV"],
     ["i", "III", "IV", "v"],
+    ["i", "bVII", "IV", "i"],
+    ["i", "IV", "bVII", "III"],
 ]
 
 PHRYGIAN_PROGRESSIONS = [
@@ -67,6 +100,8 @@ PHRYGIAN_PROGRESSIONS = [
     ["i", "VII", "bII", "i"],
     ["i", "bII", "VI", "VII"],
     ["i", "VI", "VII", "bII"],
+    ["i", "bII", "iv", "bII"],
+    ["i", "bII", "bVII", "VI"],
 ]
 
 HARMONIC_MINOR_PROGRESSIONS = [
@@ -78,6 +113,8 @@ HARMONIC_MINOR_PROGRESSIONS = [
     ["i", "iv", "VI", "V"],
     ["i", "III", "VI", "V"],
     ["i", "V", "VI", "V"],
+    ["i", "bII", "V", "i"],
+    ["i", "VI", "bII", "V"],
 ]
 
 STYLE_WEIGHTS = {
@@ -123,11 +160,27 @@ CADENCES = {
 }
 
 SUBSTITUTIONS = {
-    "MODE_MAJOR": {"I": ["I", "vi"], "IV": ["IV", "ii"], "V": ["V"], "vi": ["vi", "I"]},
-    "MODE_NATURAL_MINOR": {"i": ["i"], "VI": ["VI", "III"], "VII": ["VII", "v"], "iv": ["iv"], "V": ["V", "VII"]},
-    "MODE_DORIAN": {"i": ["i"], "IV": ["IV", "ii"], "VII": ["VII", "v"], "v": ["v", "III"]},
-    "MODE_PHRYGIAN": {"i": ["i"], "bII": ["bII"], "VII": ["VII"], "VI": ["VI"]},
-    "MODE_HARMONIC_MINOR": {"i": ["i"], "iv": ["iv"], "V": ["V"], "VI": ["VI"], "ii°": ["ii°"]},
+    "MODE_MAJOR": {"I": ["I", "vi"], "IV": ["IV", "ii"], "V": ["V"], "vi": ["vi", "I"], "bVII": ["bVII", "IV"]},
+    "MODE_NATURAL_MINOR": {"i": ["i"], "VI": ["VI", "III", "bVI"], "VII": ["VII", "v", "bVII"], "iv": ["iv"], "V": ["V", "VII"]},
+    "MODE_DORIAN": {"i": ["i"], "IV": ["IV", "ii"], "VII": ["VII", "v", "bVII"], "v": ["v", "III"]},
+    "MODE_PHRYGIAN": {"i": ["i"], "bII": ["bII"], "VII": ["VII", "bVII"], "VI": ["VI", "bVI"]},
+    "MODE_HARMONIC_MINOR": {"i": ["i"], "iv": ["iv"], "V": ["V"], "VI": ["VI", "bVI"], "ii°": ["ii°"], "bII": ["bII"]},
+}
+
+BRIDGE_TOKENS = {
+    "MODE_MAJOR": ["ii", "iii", "IV", "V", "vi", "bVII"],
+    "MODE_NATURAL_MINOR": ["III", "iv", "v", "VI", "VII", "bII", "bVI", "bVII"],
+    "MODE_DORIAN": ["ii", "III", "IV", "v", "VII", "bVII"],
+    "MODE_PHRYGIAN": ["bII", "iv", "VI", "VII", "bVII"],
+    "MODE_HARMONIC_MINOR": ["ii°", "III", "iv", "V", "VI", "bII"],
+}
+
+BORROWED_MOVES = {
+    "MODE_MAJOR": [["I", "bVII", "IV"], ["I", "bVI", "bVII"], ["vi", "bVII", "IV"]],
+    "MODE_NATURAL_MINOR": [["i", "bII", "VII"], ["i", "bVI", "bVII"], ["VI", "bII", "V"]],
+    "MODE_DORIAN": [["i", "IV", "bVII"], ["i", "bVII", "III"]],
+    "MODE_PHRYGIAN": [["i", "bII", "bVII"], ["i", "bII", "VI"]],
+    "MODE_HARMONIC_MINOR": [["i", "bII", "V"], ["i", "VI", "bII"]],
 }
 
 
@@ -143,18 +196,18 @@ def stretch(tokens: list[str], target_length: int) -> list[str]:
     return result[:target_length]
 
 
-def reharmonize(tokens: list[str], mode: str, rng: random.Random) -> list[str]:
+def reharmonize(tokens: list[str], mode: str, rng: random.Random, substitution_rate: float) -> list[str]:
     substitutions = SUBSTITUTIONS.get(mode, {})
     result: list[str] = []
     for token in tokens:
         choices = substitutions.get(token)
-        result.append(rng.choice(choices) if choices and rng.random() < 0.18 else token)
+        result.append(rng.choice(choices) if choices and rng.random() < substitution_rate else token)
     return result
 
 
-def add_cadence(tokens: list[str], mode: str, rng: random.Random) -> list[str]:
+def add_cadence(tokens: list[str], mode: str, rng: random.Random, cadence_rate: float) -> list[str]:
     cadences = CADENCES.get(mode, [])
-    if not cadences or rng.random() > 0.42:
+    if not cadences or rng.random() > cadence_rate:
         return tokens
 
     cadence = rng.choice(cadences)
@@ -162,17 +215,40 @@ def add_cadence(tokens: list[str], mode: str, rng: random.Random) -> list[str]:
     return [*tokens[:keep], *cadence]
 
 
-def mutate(tokens: list[str], mode: str, mood: str, rng: random.Random) -> list[str]:
+def add_bridge(tokens: list[str], mode: str, rng: random.Random, bridge_rate: float) -> list[str]:
+    bridge_tokens = BRIDGE_TOKENS.get(mode, [])
+    if len(tokens) < 4 or not bridge_tokens or rng.random() > bridge_rate:
+        return tokens
+
     result = list(tokens)
-    if mood == "MOOD_TENSE" and "V" in result and rng.random() < 0.35:
+    index = rng.randrange(1, max(2, len(result) - 1))
+    result[index] = rng.choice(bridge_tokens)
+    return result
+
+
+def add_borrowed_move(tokens: list[str], mode: str, rng: random.Random, borrowed_rate: float) -> list[str]:
+    moves = BORROWED_MOVES.get(mode, [])
+    if len(tokens) < 4 or not moves or rng.random() > borrowed_rate:
+        return tokens
+
+    result = list(tokens)
+    move = rng.choice(moves)
+    index = rng.randrange(0, max(1, len(result) - len(move) + 1))
+    result[index:index + len(move)] = move
+    return result
+
+
+def mutate(tokens: list[str], mode: str, mood: str, rng: random.Random, mutation_scale: float) -> list[str]:
+    result = list(tokens)
+    if mood == "MOOD_TENSE" and "V" in result and rng.random() < 0.35 * mutation_scale:
         result.insert(max(1, len(result) - 1), "bII")
-    if mood == "MOOD_EPIC" and "VI" in result and rng.random() < 0.30:
+    if mood == "MOOD_EPIC" and "VI" in result and rng.random() < 0.30 * mutation_scale:
         result.append("VII")
-    if mood == "MOOD_CALM" and len(result) > 4 and rng.random() < 0.45:
+    if mood == "MOOD_CALM" and len(result) > 4 and rng.random() < 0.45 * mutation_scale:
         result = result[:4]
-    if mood == "MOOD_DARK" and mode in {"MODE_NATURAL_MINOR", "MODE_PHRYGIAN", "MODE_HARMONIC_MINOR"} and rng.random() < 0.28:
+    if mood == "MOOD_DARK" and mode in {"MODE_NATURAL_MINOR", "MODE_PHRYGIAN", "MODE_HARMONIC_MINOR"} and rng.random() < 0.28 * mutation_scale:
         result = ["i", *result[1:]]
-    if mood == "MOOD_BRIGHT" and mode == "MODE_MAJOR" and rng.random() < 0.30:
+    if mood == "MOOD_BRIGHT" and mode == "MODE_MAJOR" and rng.random() < 0.30 * mutation_scale:
         result = ["I", *result[1:]]
     return result
 
@@ -189,8 +265,9 @@ def choose_context(rng: random.Random, balanced: bool, index: int) -> tuple[str,
     return style, mode, mood
 
 
-def build_examples(count: int, seed: int, balanced: bool) -> list[dict[str, object]]:
+def build_examples(count: int, seed: int, balanced: bool, profile_name: str) -> list[dict[str, object]]:
     rng = random.Random(seed)
+    profile = GENERATION_PROFILES[profile_name]
     examples: list[dict[str, object]] = []
 
     while len(examples) < count:
@@ -198,9 +275,11 @@ def build_examples(count: int, seed: int, balanced: bool) -> list[dict[str, obje
         base = rng.choice(STYLE_WEIGHTS[style][mode])
         length = rng.choice([4, 4, 6, 8, 8, 12])
         tokens = stretch(rotate(base, rng.randrange(len(base))), length)
-        tokens = reharmonize(tokens, mode, rng)
-        tokens = add_cadence(tokens, mode, rng)
-        tokens = mutate(tokens, mode, mood, rng)
+        tokens = reharmonize(tokens, mode, rng, profile["substitution_rate"])
+        tokens = add_bridge(tokens, mode, rng, profile["bridge_rate"])
+        tokens = add_borrowed_move(tokens, mode, rng, profile["borrowed_rate"])
+        tokens = add_cadence(tokens, mode, rng, profile["cadence_rate"])
+        tokens = mutate(tokens, mode, mood, rng, profile["mutation_scale"])
         examples.append(
             {
                 "style": style,
@@ -218,16 +297,17 @@ def main() -> None:
     parser.add_argument("--output", default="synthetic_dataset.jsonl")
     parser.add_argument("--count", type=int, default=5000)
     parser.add_argument("--seed", type=int, default=1984)
+    parser.add_argument("--profile", choices=GENERATION_PROFILES.keys(), default="balanced")
     parser.add_argument("--random-context", action="store_true", help="Use random style/mode/mood sampling instead of balanced coverage.")
     args = parser.parse_args()
 
-    examples = build_examples(args.count, args.seed, balanced=not args.random_context)
+    examples = build_examples(args.count, args.seed, balanced=not args.random_context, profile_name=args.profile)
     output = Path(args.output)
     output.write_text(
         "\n".join(json.dumps(example, ensure_ascii=False, separators=(",", ":")) for example in examples) + "\n",
         encoding="utf-8",
     )
-    print(f"written={output} examples={len(examples)} balanced={not args.random_context}")
+    print(f"written={output} examples={len(examples)} balanced={not args.random_context} profile={args.profile}")
 
 
 if __name__ == "__main__":

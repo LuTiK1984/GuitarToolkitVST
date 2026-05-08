@@ -206,8 +206,57 @@
                 </Grid>
 
                 <StackPanel Grid.Column="4"
-                            Width="170"
+                            Width="230"
                             VerticalAlignment="Bottom">
+                    <Grid Margin="0 0 0 8">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="62"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="6"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text="Темп" Style="{StaticResource GroupLabel}"/>
+                        <TextBlock x:Name="TempoLabel"
+                                   Grid.Row="0"
+                                   Grid.Column="1"
+                                   Text="96 BPM"
+                                   FontWeight="Bold"
+                                   HorizontalAlignment="Right"/>
+                        <Slider x:Name="TempoSlider"
+                                Grid.Row="1"
+                                Grid.ColumnSpan="2"
+                                Minimum="50"
+                                Maximum="220"
+                                Value="96"
+                                TickFrequency="1"
+                                ValueChanged="Tempo_Changed"/>
+
+                        <TextBlock Grid.Row="3" Grid.Column="0" Text="Громкость" Style="{StaticResource GroupLabel}"/>
+                        <TextBlock x:Name="VolumeLabel"
+                                   Grid.Row="3"
+                                   Grid.Column="1"
+                                   Text="75%"
+                                   FontWeight="Bold"
+                                   HorizontalAlignment="Right"/>
+                        <Slider x:Name="VolumeSlider"
+                                Grid.Row="4"
+                                Grid.ColumnSpan="2"
+                                Minimum="0"
+                                Maximum="100"
+                                Value="75"
+                                TickFrequency="1"
+                                ValueChanged="Volume_Changed"/>
+                    </Grid>
+                    <CheckBox x:Name="LoopCheck"
+                              Content="Цикл"
+                              Margin="0 0 0 8"
+                              VerticalAlignment="Center"/>
                     <Button Content="Сгенерировать"
                             Style="{StaticResource PrimaryButton}"
                             Margin="0 0 0 6"

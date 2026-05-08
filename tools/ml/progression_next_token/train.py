@@ -23,6 +23,7 @@ class TrainConfig:
     epochs: int = 40
     batch_size: int = 16
     learning_rate: float = 0.001
+    label_smoothing: float = 0.0
     max_sequence_length: int = 16
     validation_ratio: float = 0.15
     seed: int = 1984
@@ -94,6 +95,7 @@ def train(args: argparse.Namespace) -> None:
         epochs=args.epochs,
         batch_size=args.batch_size,
         learning_rate=args.learning_rate,
+        label_smoothing=args.label_smoothing,
         max_sequence_length=args.max_sequence_length,
         validation_ratio=args.validation_ratio,
         seed=args.seed,
@@ -103,6 +105,7 @@ def train(args: argparse.Namespace) -> None:
         resumed_config["epochs"] = args.epochs
         resumed_config["batch_size"] = args.batch_size
         resumed_config["learning_rate"] = args.learning_rate
+        resumed_config["label_smoothing"] = args.label_smoothing
         resumed_config["validation_ratio"] = args.validation_ratio
         resumed_config["seed"] = args.seed
         config = TrainConfig(**resumed_config)
@@ -135,6 +138,8 @@ def train(args: argparse.Namespace) -> None:
     )
 
     device = torch.device("cuda" if torch.cuda.is_available() and not args.cpu else "cpu")
+    device_name = torch.cuda.get_device_name(0) if device.type == "cuda" else "cpu"
+    print(f"device={device} name={device_name}")
     model = ProgressionNextTokenModel(
         vocabulary_size=len(vocab.id_to_token),
         embedding_size=config.embedding_size,
@@ -162,8 +167,9 @@ def train(args: argparse.Namespace) -> None:
         metrics = load_existing_metrics(Path(args.output_dir))
         print(f"resumed={resume_checkpoint} start_epoch={start_epoch} best_val_loss={best_validation_loss:.4f}")
 
-    loss_fn = nn.CrossEntropyLoss(ignore_index=vocab.pad_id)
-    output_mask = build_output_mask(len(vocab.id_to_token), vocab.output_token_ids, device)
+    loss_fn = nn.CrossEntropyLoss(ignore_index=-1, label_smoothing=config.label_smoothing)
+    output_token_ids = torch.tensor(vocab.output_token_ids, dtype=torch.long, device=device)
+    output_index_map = build_output_index_map(len(vocab.id_to_token), vocab.output_token_ids, device)
 
     output_dir = Path(args.output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -175,7 +181,8 @@ def train(args: argparse.Namespace) -> None:
         total_loss = 0.0
         total_items = 0
 
-        for style_id, mode_id, mood_id, previous_tokens, targets in train_loader:
+        total_batches = len(train_loader)
+        for batch_index, (style_id, mode_id, mood_id, previous_tokens, targets) in enumerate(train_loader, start=1):
             style_id = style_id.to(device)
             mode_id = mode_id.to(device)
             mood_id = mood_id.to(device)
@@ -183,16 +190,27 @@ def train(args: argparse.Namespace) -> None:
             targets = targets.to(device)
 
             optimizer.zero_grad(set_to_none=True)
-            logits = apply_output_mask(model(style_id, mode_id, mood_id, previous_tokens), output_mask)
-            loss = loss_fn(logits, targets)
+            logits = model(style_id, mode_id, mood_id, previous_tokens).index_select(1, output_token_ids)
+            target_classes = output_index_map[targets]
+            loss = loss_fn(logits, target_classes)
             loss.backward()
             optimizer.step()
 
             total_loss += float(loss.item()) * targets.numel()
             total_items += targets.numel()
+            if args.progress_every > 0 and (batch_index % args.progress_every == 0 or batch_index == total_batches):
+                progress = batch_index / max(total_batches, 1) * 100.0
+                running_loss = total_loss / max(total_items, 1)
+                print(
+                    f"train_progress epoch={epoch:03d}/{total_target_epoch:03d} "
+                    f"batch={batch_index}/{total_batches} "
+                    f"percent={progress:.1f} "
+                    f"train_loss={running_loss:.4f}",
+                    flush=True,
+                )
 
         train_loss = total_loss / max(total_items, 1)
-        validation_loss, accuracy, top3_accuracy = evaluate(model, validation_loader, loss_fn, device, output_mask)
+        validation_loss, accuracy, top3_accuracy = evaluate(model, validation_loader, loss_fn, device, output_token_ids, output_index_map)
         improved = validation_loss < best_validation_loss
         if improved:
             best_validation_loss = validation_loss
@@ -205,6 +223,7 @@ def train(args: argparse.Namespace) -> None:
                 "validation_loss": validation_loss,
                 "accuracy": accuracy,
                 "top3_accuracy": top3_accuracy,
+                "device": str(device),
                 "mode": "resume" if checkpoint else "fresh",
             }
         )
@@ -318,7 +337,8 @@ def evaluate(
     loader: DataLoader,
     loss_fn: nn.CrossEntropyLoss,
     device: torch.device,
-    output_mask: torch.Tensor,
+    output_token_ids: torch.Tensor,
+    output_index_map: torch.Tensor,
 ) -> tuple[float, float, float]:
     model.eval()
     total_loss = 0.0
@@ -333,28 +353,29 @@ def evaluate(
         previous_tokens = previous_tokens.to(device)
         targets = targets.to(device)
 
-        logits = apply_output_mask(model(style_id, mode_id, mood_id, previous_tokens), output_mask)
-        loss = loss_fn(logits, targets)
+        logits = model(style_id, mode_id, mood_id, previous_tokens).index_select(1, output_token_ids)
+        target_classes = output_index_map[targets]
+        loss = loss_fn(logits, target_classes)
         total_loss += float(loss.item()) * targets.numel()
         total_items += targets.numel()
 
         predictions = logits.argmax(dim=1)
-        correct += int((predictions == targets).sum().item())
+        correct += int((predictions == target_classes).sum().item())
         top3 = logits.topk(k=min(3, logits.shape[1]), dim=1).indices
-        top3_correct += int((top3 == targets.unsqueeze(1)).any(dim=1).sum().item())
+        top3_correct += int((top3 == target_classes.unsqueeze(1)).any(dim=1).sum().item())
 
     total_items = max(total_items, 1)
     return total_loss / total_items, correct / total_items, top3_correct / total_items
 
 
-def build_output_mask(vocabulary_size: int, output_token_ids: list[int], device: torch.device) -> torch.Tensor:
-    mask = torch.full((vocabulary_size,), -1_000_000.0, dtype=torch.float32, device=device)
-    mask[output_token_ids] = 0.0
-    return mask
-
-
-def apply_output_mask(logits: torch.Tensor, output_mask: torch.Tensor) -> torch.Tensor:
-    return logits + output_mask.unsqueeze(0)
+def build_output_index_map(vocabulary_size: int, output_token_ids: list[int], device: torch.device) -> torch.Tensor:
+    output_index_map = torch.full((vocabulary_size,), -1, dtype=torch.long, device=device)
+    output_index_map[torch.tensor(output_token_ids, dtype=torch.long, device=device)] = torch.arange(
+        len(output_token_ids),
+        dtype=torch.long,
+        device=device,
+    )
+    return output_index_map
 
 
 def parse_args() -> argparse.Namespace:
@@ -370,12 +391,14 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--epochs", type=int, default=40)
     parser.add_argument("--batch-size", type=int, default=16)
     parser.add_argument("--learning-rate", type=float, default=0.001)
+    parser.add_argument("--label-smoothing", type=float, default=0.0, help="Softens one-hot targets so the model can keep plausible alternatives alive.")
     parser.add_argument("--max-sequence-length", type=int, default=16)
     parser.add_argument("--validation-ratio", type=float, default=0.15)
     parser.add_argument("--seed", type=int, default=1984)
     parser.add_argument("--resume", default=None, help="Path to an existing .pt checkpoint to continue training.")
     parser.add_argument("--reset-optimizer", action="store_true", help="Resume weights but start with a fresh optimizer.")
     parser.add_argument("--save-every", type=int, default=0, help="Save numbered checkpoints every N global epochs.")
+    parser.add_argument("--progress-every", type=int, default=100, help="Print in-epoch progress every N training batches. Use 0 to disable.")
     parser.add_argument("--cpu", action="store_true")
     return parser.parse_args()
 
