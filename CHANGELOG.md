@@ -12,6 +12,7 @@ All notable changes to GuitarToolkit are documented here.
 
 ### Fixed
 
+- Streamlined the public README into a shorter bilingual project landing page with current Inspiration Engine and ML Trainer links.
 - Fixed the toolkit minimum window/editor size so dense tabs do not collapse under the sidebar.
 - Fixed the Inspiration tab compact layout so the sampling controls stay in their own column.
 - Fixed desktop resize tracking so the custom window chrome respects the minimum size.
